@@ -703,7 +703,7 @@ function MainContent() {
 
   return (
     <PayPalScriptProvider options={{ 
-      "clientId": "ATNUPKM6CKGqJaD7mEkPXmHWoZf_TYIY1F8Md2gwbFWmRSHwyKAmIzjrVJ2MZt4DI5QzZSTrfGvpKMJf",
+      "clientId": import.meta.env.VITE_PAYPAL_CLIENT_ID || "ATNUPKM6CKGqJaD7mEkPXmHWoZf_TYIY1F8Md2gwbFWmRSHwyKAmIzjrVJ2MZt4DI5QzZSTrfGvpKMJf",
       currency: "USD"
     }}>
       <div className="min-h-screen bg-deep-black text-white font-sans selection:bg-gold selection:text-deep-black">
