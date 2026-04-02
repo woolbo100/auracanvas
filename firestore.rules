@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: wallpapers
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - category: string (required)
+    //   - price: number (required)
+    //   - thumb_url: string (required)
+    //   - high_res_url: string (required)
+    //   - created_at: timestamp (required)
+    //   - status: string (required, 'active' or 'inactive')
+    //   - artist: string (optional)
+    //
+    // Collection: categories
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - icon_url: string (optional)
+    //
+    // Collection: sales
+    // Document ID: auto-generated
+    // Fields:
+    //   - wallpaper_id: string (required)
+    //   - amount: number (required)
+    //   - timestamp: timestamp (required)
+    //   - buyer_email: string (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        ((request.auth.token.email == "buzasun@gmail.com" && request.auth.token.email_verified == true) ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    function isValidWallpaper(data) {
+      return data.keys().hasAll(['title', 'category', 'price', 'thumb_url', 'high_res_url', 'created_at', 'status']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.category is string &&
+             data.price is number && data.price >= 0 &&
+             data.thumb_url is string && data.thumb_url.matches("^https://.*") &&
+             data.high_res_url is string && data.high_res_url.matches("^https://.*") &&
+             data.status in ['active', 'inactive'];
+    }
+
+    function isValidSale(data) {
+      return data.keys().hasAll(['wallpaper_id', 'amount', 'timestamp', 'buyer_email']) &&
+             data.wallpaper_id is string &&
+             data.amount is number && data.amount >= 0 &&
+             data.buyer_email is string && 
+             (data.buyer_email == 'anonymous' || data.buyer_email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"));
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['user_id', 'wallpaper_id', 'amount', 'timestamp', 'status']) &&
+             data.user_id is string &&
+             data.wallpaper_id is string &&
+             data.amount is number && data.amount >= 0 &&
+             data.status in ['completed', 'pending'];
+    }
+
+    // ===============================================================
+    // Match Rules
+    // ===============================================================
+
+    match /wallpapers/{wallpaperId} {
+      allow read: if true; // Publicly readable for gallery
+      allow create, update: if isAdmin() && isValidWallpaper(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /sales/{saleId} {
+      allow read: if isAdmin();
+      allow create: if isValidSale(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.user_id == request.auth.uid);
+      allow create: if isValidOrder(request.resource.data) && 
+                    (request.resource.data.user_id == 'anonymous' || (isAuthenticated() && request.resource.data.user_id == request.auth.uid));
+      allow update, delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

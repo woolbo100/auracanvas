@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "Wallpaper": {
+      "title": "Wallpaper",
+      "description": "Artistic wallpaper artwork for sale",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the artwork" },
+        "category": { "type": "string", "description": "Category tag" },
+        "price": { "type": "number", "description": "Price in USD" },
+        "thumb_url": { "type": "string", "description": "Low-res preview image URL" },
+        "high_res_url": { "type": "string", "description": "High-resolution image URL" },
+        "created_at": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "status": { "type": "string", "enum": ["active", "inactive"], "description": "Sales status" },
+        "artist": { "type": "string", "description": "Artist name" }
+      },
+      "required": ["title", "category", "price", "thumb_url", "high_res_url", "created_at", "status"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Wallpaper category",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Category name" },
+        "icon_url": { "type": "string", "description": "Category icon URL" }
+      },
+      "required": ["name"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Record of a wallpaper purchase",
+      "type": "object",
+      "properties": {
+        "wallpaper_id": { "type": "string", "description": "ID of the purchased wallpaper" },
+        "amount": { "type": "number", "description": "Sale amount in USD" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Time of purchase" },
+        "buyer_email": { "type": "string", "format": "email", "description": "Email of the buyer" }
+      },
+      "required": ["wallpaper_id", "amount", "timestamp", "buyer_email"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile and role",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email", "description": "User email" },
+        "role": { "type": "string", "enum": ["admin", "client"], "description": "User role" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "photoURL": { "type": "string", "description": "User photo URL" }
+      },
+      "required": ["email", "role"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "User's purchase record",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string", "description": "UID of the buyer" },
+        "wallpaper_id": { "type": "string", "description": "ID of the purchased wallpaper" },
+        "amount": { "type": "number", "description": "Amount paid" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Time of purchase" },
+        "status": { "type": "string", "enum": ["completed", "pending"], "description": "Order status" }
+      },
+      "required": ["user_id", "wallpaper_id", "amount", "timestamp", "status"]
+    }
+  },
+  "firestore": {
+    "/wallpapers/{wallpaperId}": {
+      "schema": "Wallpaper",
+      "description": "Collection of all wallpapers"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Collection of available categories"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Collection of all sales transactions"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user profiles"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Collection of user purchase records"
+    }
+  }
+}
