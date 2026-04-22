@@ -67,14 +67,20 @@ import { cn } from '../lib/utils';
 
 interface Wallpaper {
   id: string;
-  title: string;
+  slug: string;
+  title_ko: string;
+  title_en: string;
   category: string;
   price: number;
-  description: string;
-  thumb_url: string;
-  high_res_url: string;
+  description_ko?: string;
+  description_en?: string;
+  thumbnailUrl: string;
+  imageUrl: string;
   created_at: any;
-  status: 'active' | 'inactive';
+  isActive: boolean;
+  locked: boolean;
+  featured: boolean;
+  sortOrder: number;
   artist?: string;
 }
 
@@ -103,13 +109,13 @@ export const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const qWallpapers = query(collection(db, 'wallpapers'), orderBy('created_at', 'desc'));
+    const qWallpapers = query(collection(db, 'products'), orderBy('sortOrder', 'asc'));
     const unsubscribeWallpapers = onSnapshot(qWallpapers, (snapshot) => {
       const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Wallpaper));
       setWallpapers(docs);
       setLoading(false);
     }, (error) => {
-      console.error("Error fetching wallpapers:", error);
+      console.error("Error fetching products:", error);
     });
 
     const qSales = query(collection(db, 'sales'), orderBy('timestamp', 'desc'));
@@ -229,7 +235,7 @@ export const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
 
 const DashboardView = ({ wallpapers, sales }: { wallpapers: Wallpaper[], sales: Sale[] }) => {
   const totalRevenue = sales.reduce((acc, sale) => acc + sale.amount, 0);
-  const activeWallpapers = wallpapers.filter(w => w.status === 'active').length;
+  const activeWallpapers = wallpapers.filter(w => w.isActive).length;
 
   // Process data for trend chart
   const salesByDate = sales.reduce((acc: any, sale) => {
@@ -403,15 +409,22 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [formData, setFormData] = useState({
-    title: '',
-    category: 'Wealth',
-    price: '7.77',
-    artist: 'Aura AI',
-    description: ''
+    slug: '',
+    title_ko: '',
+    title_en: '',
+    category: 'Abundance',
+    price: '8.88',
+    description_ko: '',
+    description_en: '',
+    locked: true,
+    featured: false,
+    isActive: true,
+    sortOrder: '0',
+    artist: 'Aura AI'
   });
   const [success, setSuccess] = useState(false);
 
-  const ADMIN_CATEGORIES = ["Wealth", "Love", "Success", "Peace"];
+  const ADMIN_CATEGORIES = ["Abundance", "Love", "Energy", "Healing"];
 
   useEffect(() => {
     if (!formData.category) {
@@ -486,107 +499,128 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
     setProgress(0);
 
     try {
-      console.log("Starting upload process...");
       const timestamp = Date.now();
       
       // 1. Generate Thumbnail
-      console.log("Generating thumbnail...");
       const thumbBlob = await generateThumbnail(file);
-      console.log("Thumbnail generated.");
       
       // 2. Determine High Res File
       const fileToUploadAsHighRes = highResFile || file;
-      console.log("High-res file selected:", fileToUploadAsHighRes.name);
       
       // 3. Upload High Res
-      const highResRef = ref(storage, `talisman-images/${timestamp}_original_${fileToUploadAsHighRes.name}`);
-      console.log("High-res ref created:", highResRef.fullPath);
-      
-      // Use uploadBytes for a more robust upload in this environment
-      console.log("Starting high-res upload...");
+      const highResRef = ref(storage, `products/${timestamp}_original_${fileToUploadAsHighRes.name}`);
       const highResSnapshot = await uploadBytes(highResRef, fileToUploadAsHighRes);
-      console.log("High-res uploaded.");
       setProgress(50);
 
       // 4. Upload Thumbnail
-      const thumbRef = ref(storage, `talisman-images/${timestamp}_thumb_${file.name.split('.')[0]}.webp`);
-      console.log("Thumb ref created:", thumbRef.fullPath);
-      
-      console.log("Starting thumbnail upload...");
+      const thumbRef = ref(storage, `products/${timestamp}_thumb_${file.name.split('.')[0]}.webp`);
       const thumbSnapshot = await uploadBytes(thumbRef, thumbBlob);
-      console.log("Thumbnail uploaded.");
       setProgress(100);
 
-      const highResURL = await getDownloadURL(highResSnapshot.ref);
-      const thumbURL = await getDownloadURL(thumbSnapshot.ref);
+      const imageUrl = await getDownloadURL(highResSnapshot.ref);
+      const thumbnailUrl = await getDownloadURL(thumbSnapshot.ref);
       
-      // Save to Firestore
-      console.log("Saving to Firestore...");
-      await addDoc(collection(db, 'wallpapers'), {
-        title: formData.title,
+      // Save to Firestore 'products'
+      await addDoc(collection(db, 'products'), {
+        slug: formData.slug || formData.title_en.toLowerCase().replace(/\s+/g, '-'),
+        title_ko: formData.title_ko,
+        title_en: formData.title_en,
         category: formData.category,
         price: parseFloat(formData.price),
+        description_ko: formData.description_ko,
+        description_en: formData.description_en,
+        thumbnailUrl: thumbnailUrl,
+        imageUrl: imageUrl,
+        locked: formData.locked,
+        featured: formData.featured,
+        isActive: formData.isActive,
+        sortOrder: parseInt(formData.sortOrder),
         artist: formData.artist,
-        description: formData.description,
-        thumb_url: thumbURL,
-        high_res_url: highResURL,
-        created_at: serverTimestamp(),
-        status: 'active'
+        created_at: serverTimestamp()
       });
-      console.log("Firestore document saved.");
 
       setUploading(false);
       setSuccess(true);
       setFile(null);
       setHighResFile(null);
       setPreview(null);
-      setFormData({ title: '', category: ADMIN_CATEGORIES[0], price: '7.77', artist: 'Aura AI', description: '' });
+      setFormData({ 
+        slug: '', title_ko: '', title_en: '', category: 'Abundance', price: '8.88', 
+        description_ko: '', description_en: '', locked: true, featured: false, 
+        isActive: true, sortOrder: '0', artist: 'Aura AI' 
+      });
       setTimeout(() => setSuccess(false), 3000);
     } catch (error: any) {
-      console.error("Upload error details:", error);
+      console.error("Upload error:", error);
       alert(`Upload failed: ${error.message}`);
       setUploading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12">
+    <div className="max-w-6xl mx-auto space-y-12">
       <header>
-        <h1 className="text-5xl font-serif font-bold text-white tracking-tight">Manifest New Art</h1>
-        <p className="text-white/40 mt-3 text-lg font-light italic">Bring a new talisman into the digital sanctuary.</p>
+        <h1 className="text-5xl font-serif font-bold text-white tracking-tight">Manifest New Ritual Art</h1>
+        <p className="text-white/40 mt-3 text-lg font-light italic">Define the frequency and essence of a new creation.</p>
       </header>
 
-      <form onSubmit={handleUpload} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div className="space-y-8">
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Talisman Title</label>
-            <input 
-              required
-              type="text" 
-              value={formData.title}
-              onChange={e => setFormData({...formData, title: e.target.value})}
-              placeholder="e.g. Ethereal Bloom"
-              className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all"
-            />
-          </div>
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Artist / Channeler</label>
-            <input 
-              required
-              type="text" 
-              value={formData.artist}
-              onChange={e => setFormData({...formData, artist: e.target.value})}
-              placeholder="e.g. Elena Rossi"
-              className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-6">
+      <form onSubmit={handleUpload} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Left Column: Form Fields */}
+        <div className="lg:col-span-7 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Energy Category</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Title (English)</label>
+              <input 
+                required
+                type="text" 
+                value={formData.title_en}
+                onChange={e => setFormData({...formData, title_en: e.target.value})}
+                placeholder="e.g. 888 Abundance Activation"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">상품명 (한국어)</label>
+              <input 
+                required
+                type="text" 
+                value={formData.title_ko}
+                onChange={e => setFormData({...formData, title_ko: e.target.value})}
+                placeholder="예: 888 풍요의 활성화"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all font-sans"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Slug (URL)</label>
+              <input 
+                type="text" 
+                value={formData.slug}
+                onChange={e => setFormData({...formData, slug: e.target.value})}
+                placeholder="e.g. 888-abundance"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/60 focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Artist</label>
+              <input 
+                type="text" 
+                value={formData.artist}
+                onChange={e => setFormData({...formData, artist: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/60 focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Category</label>
               <select 
                 value={formData.category}
                 onChange={e => setFormData({...formData, category: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all appearance-none"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all appearance-none"
               >
                 {ADMIN_CATEGORIES.map(cat => (
                   <option key={cat} value={cat} className="bg-charcoal">{cat}</option>
@@ -594,10 +628,172 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
               </select>
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Energy Exchange ($)</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Exchange ($)</label>
               <input 
                 required
                 type="number" 
+                step="0.01"
+                value={formData.price}
+                onChange={e => setFormData({...formData, price: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-3 col-span-2 lg:col-span-1">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Sort Order</label>
+              <input 
+                type="number" 
+                value={formData.sortOrder}
+                onChange={e => setFormData({...formData, sortOrder: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Description (EN)</label>
+            <textarea 
+              rows={3}
+              value={formData.description_en}
+              onChange={e => setFormData({...formData, description_en: e.target.value})}
+              placeholder="English description..."
+              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white/80 focus:border-gold/50 outline-none transition-all resize-none"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">상품 설명 (한국어)</label>
+            <textarea 
+              rows={3}
+              value={formData.description_ko}
+              onChange={e => setFormData({...formData, description_ko: e.target.value})}
+              placeholder="한국어 설명을 입력하세요..."
+              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white/80 focus:border-gold/50 outline-none transition-all resize-none font-sans"
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 p-6 bg-white/5 rounded-3xl border border-white/5">
+            <div className="flex flex-col gap-3">
+              <label className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Locked</label>
+              <button 
+                type="button"
+                onClick={() => setFormData({...formData, locked: !formData.locked})}
+                className={cn(
+                  "h-10 rounded-xl text-[10px] font-bold transition-all border",
+                  formData.locked ? "bg-gold/20 border-gold/40 text-gold" : "bg-white/5 border-white/10 text-white/20"
+                )}
+              >
+                {formData.locked ? 'YES' : 'NO'}
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              <label className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Featured</label>
+              <button 
+                type="button"
+                onClick={() => setFormData({...formData, featured: !formData.featured})}
+                className={cn(
+                  "h-10 rounded-xl text-[10px] font-bold transition-all border",
+                  formData.featured ? "bg-gold/20 border-gold/40 text-gold" : "bg-white/5 border-white/10 text-white/20"
+                )}
+              >
+                {formData.featured ? 'YES' : 'NO'}
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              <label className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Active</label>
+              <button 
+                type="button"
+                onClick={() => setFormData({...formData, isActive: !formData.isActive})}
+                className={cn(
+                  "h-10 rounded-xl text-[10px] font-bold transition-all border",
+                  formData.isActive ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400" : "bg-white/5 border-white/10 text-white/20"
+                )}
+              >
+                {formData.isActive ? 'LIVE' : 'HIDDEN'}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="flex-1 space-y-3">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">High-Res Image (Optional)</label>
+              <button 
+                type="button"
+                onClick={() => document.getElementById('high-res-upload')?.click()}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/40 text-[10px] uppercase tracking-widest font-bold hover:border-gold/30 transition-all flex items-center justify-center gap-2"
+              >
+                <UploadCloud className="w-4 h-4" />
+                {highResFile ? highResFile.name : 'Select High-Res'}
+              </button>
+              <input id="high-res-upload" type="file" accept="image/*" onChange={(e) => setHighResFile(e.target.files?.[0] || null)} className="hidden" />
+            </div>
+            {highResFile && (
+              <button type="button" onClick={() => setHighResFile(null)} className="mt-7 p-4 bg-rose-500/10 text-rose-500 rounded-2xl border border-rose-500/20 hover:bg-rose-500/20 transition-all">
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column: Preview & Main Upload */}
+        <div className="lg:col-span-5 space-y-8">
+          <div className="space-y-3">
+            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Thumbnail & Preview Art</label>
+            <div 
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={cn(
+                "relative aspect-[9/14] rounded-[3.5rem] border-2 border-dashed transition-all duration-700 overflow-hidden flex flex-col items-center justify-center group cursor-pointer",
+                isDragging ? "border-gold bg-gold/10 scale-[0.98]" : "border-white/10 bg-white/5 hover:border-gold/30"
+              )}
+              onClick={() => document.getElementById('file-upload')?.click()}
+            >
+              {preview ? (
+                <>
+                  <img src={preview} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-deep-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-white bg-gold/20 px-8 py-4 rounded-full backdrop-blur-xl border border-gold/30">Change Artwork</span>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center p-12 space-y-6">
+                  <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 group-hover:border-gold/40 transition-all duration-500 shadow-2xl">
+                    <ImageIcon className="w-10 h-10 text-white/10 group-hover:text-gold transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-xs text-white/40 uppercase tracking-[0.3em] font-bold">Drop High-Res Ritual Art</p>
+                    <p className="text-[10px] text-white/20 font-light italic">Recommended: 1080x1920 WebP/JPG</p>
+                  </div>
+                </div>
+              )}
+              <input id="file-upload" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+            </div>
+          </div>
+
+          <button 
+            type="submit"
+            disabled={uploading || !file}
+            className="w-full bg-gold text-deep-black h-20 rounded-[2rem] font-bold uppercase tracking-[0.4em] text-xs flex items-center justify-center gap-4 hover:bg-white transition-all shadow-[0_0_50px_rgba(212,175,55,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+          >
+            {uploading && (
+              <div className="absolute inset-0 bg-gold/20 flex items-center justify-center">
+                <div className="w-full h-full bg-gold/20 origin-left transition-transform duration-300" style={{ transform: `scaleX(${progress/100})` }} />
+              </div>
+            )}
+            <UploadCloud className="w-6 h-6 relative z-10" />
+            <span className="relative z-10">{uploading ? `Manifesting ${Math.round(progress)}%` : 'Manifest Product'}</span>
+          </button>
+
+          {success && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl text-emerald-400 text-center text-[10px] uppercase tracking-[0.3em] font-bold">
+              Product Successfully Manifested into the Sanctuary!
+            </motion.div>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+};
                 step="0.01"
                 value={formData.price}
                 onChange={e => setFormData({...formData, price: e.target.value})}
@@ -724,19 +920,19 @@ const InventoryView = ({ wallpapers, categories }: { wallpapers: Wallpaper[], ca
     if (confirm("Are you sure you want to remove this piece from the sanctuary?")) {
       try {
         // 1. Delete from Storage
-        const thumbRef = ref(storage, wp.thumb_url);
-        const highResRef = ref(storage, wp.high_res_url);
+        // We use the full URL to get the reference
+        const thumbRef = ref(storage, wp.thumbnailUrl);
+        const imageRef = ref(storage, wp.imageUrl);
         
         try {
           await deleteObject(thumbRef);
-          await deleteObject(highResRef);
+          await deleteObject(imageRef);
         } catch (storageError) {
           console.error("Error deleting from storage:", storageError);
-          // Continue with Firestore deletion even if storage fails (maybe files were already gone)
         }
 
         // 2. Delete from Firestore
-        await deleteDoc(doc(db, 'wallpapers', wp.id));
+        await deleteDoc(doc(db, 'products', wp.id));
       } catch (error) {
         console.error("Error deleting document:", error);
       }
@@ -744,9 +940,8 @@ const InventoryView = ({ wallpapers, categories }: { wallpapers: Wallpaper[], ca
   };
 
   const toggleStatus = async (wp: Wallpaper) => {
-    const newStatus = wp.status === 'active' ? 'inactive' : 'active';
     try {
-      await updateDoc(doc(db, 'wallpapers', wp.id), { status: newStatus });
+      await updateDoc(doc(db, 'products', wp.id), { isActive: !wp.isActive });
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -781,11 +976,11 @@ const InventoryView = ({ wallpapers, categories }: { wallpapers: Wallpaper[], ca
                 <td className="px-10 py-6">
                   <div className="flex items-center gap-6">
                     <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-white/10 group-hover:border-gold/30 transition-all">
-                      <img src={wp.thumb_url} className="w-full h-full object-cover" />
+                      <img src={wp.thumbnailUrl} className="w-full h-full object-cover" />
                     </div>
                     <div>
-                      <p className="text-base font-serif font-bold text-white group-hover:text-gold transition-colors">{wp.title}</p>
-                      <p className="text-xs text-white/40 font-light italic">{wp.artist}</p>
+                      <p className="text-base font-serif font-bold text-white group-hover:text-gold transition-colors">{wp.title_en}</p>
+                      <p className="text-[10px] text-white/40 font-light italic font-sans">{wp.title_ko}</p>
                     </div>
                   </div>
                 </td>
@@ -800,12 +995,12 @@ const InventoryView = ({ wallpapers, categories }: { wallpapers: Wallpaper[], ca
                     onClick={() => toggleStatus(wp)}
                     className={cn(
                       "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] transition-all border",
-                      wp.status === 'active' 
+                      wp.isActive 
                         ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20" 
                         : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"
                     )}
                   >
-                    {wp.status}
+                    {wp.isActive ? 'LIVE' : 'HIDDEN'}
                   </button>
                 </td>
                 <td className="px-10 py-6 text-right">
@@ -845,11 +1040,17 @@ const InventoryView = ({ wallpapers, categories }: { wallpapers: Wallpaper[], ca
 
 const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, categories: Category[], onClose: () => void }) => {
   const [formData, setFormData] = useState({
-    title: wallpaper.title,
+    slug: wallpaper.slug,
+    title_ko: wallpaper.title_ko,
+    title_en: wallpaper.title_en,
     category: wallpaper.category,
     price: wallpaper.price.toString(),
-    artist: wallpaper.artist || '',
-    description: wallpaper.description || ''
+    description_ko: wallpaper.description_ko || '',
+    description_en: wallpaper.description_en || '',
+    locked: wallpaper.locked,
+    featured: wallpaper.featured,
+    sortOrder: wallpaper.sortOrder.toString(),
+    artist: wallpaper.artist || ''
   });
   const [saving, setSaving] = useState(false);
 
@@ -857,93 +1058,165 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
     e.preventDefault();
     setSaving(true);
     try {
-      await updateDoc(doc(db, 'wallpapers', wallpaper.id), {
-        title: formData.title,
+      await updateDoc(doc(db, 'products', wallpaper.id), {
+        slug: formData.slug,
+        title_ko: formData.title_ko,
+        title_en: formData.title_en,
         category: formData.category,
         price: parseFloat(formData.price),
-        artist: formData.artist,
-        description: formData.description
+        description_ko: formData.description_ko,
+        description_en: formData.description_en,
+        locked: formData.locked,
+        featured: formData.featured,
+        sortOrder: parseInt(formData.sortOrder),
+        artist: formData.artist
       });
       onClose();
     } catch (error) {
-      console.error("Error updating wallpaper:", error);
+      console.error("Error updating product:", error);
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-deep-black/80 backdrop-blur-xl">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-deep-black/90 backdrop-blur-3xl overflow-y-auto">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="bg-charcoal w-full max-w-md rounded-[3rem] p-12 shadow-2xl border border-white/10"
+        className="bg-charcoal w-full max-w-2xl rounded-[3rem] p-10 lg:p-14 shadow-2xl border border-white/10 my-auto"
       >
         <div className="flex items-center justify-between mb-10">
-          <h3 className="text-3xl font-serif font-bold text-white">Refine Talisman</h3>
+          <h3 className="text-3xl font-serif font-bold text-white">Refine Product</h3>
           <button onClick={onClose} className="p-3 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white">
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-8">
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Talisman Title</label>
-            <input 
-              required
-              type="text" 
-              value={formData.title}
-              onChange={e => setFormData({...formData, title: e.target.value})}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all"
-            />
-          </div>
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Artist / Channeler</label>
-            <input 
-              required
-              type="text" 
-              value={formData.artist}
-              onChange={e => setFormData({...formData, artist: e.target.value})}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all"
-            />
-          </div>
+        <form onSubmit={handleSave} className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Energy Category</label>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Title (EN)</label>
+              <input 
+                required
+                type="text" 
+                value={formData.title_en}
+                onChange={e => setFormData({...formData, title_en: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">상품명 (KO)</label>
+              <input 
+                required
+                type="text" 
+                value={formData.title_ko}
+                onChange={e => setFormData({...formData, title_ko: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all font-sans"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Slug</label>
+              <input 
+                type="text" 
+                value={formData.slug}
+                onChange={e => setFormData({...formData, slug: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/60 focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Artist</label>
+              <input 
+                type="text" 
+                value={formData.artist}
+                onChange={e => setFormData({...formData, artist: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/60 focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Category</label>
               <select 
                 value={formData.category}
                 onChange={e => setFormData({...formData, category: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all appearance-none"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all appearance-none"
               >
                 {categories.map(cat => (
                   <option key={cat.id} value={cat.name} className="bg-charcoal">{cat.name}</option>
                 ))}
               </select>
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Exchange ($)</label>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Price ($)</label>
               <input 
                 required
                 type="number" 
                 step="0.01"
                 value={formData.price}
                 onChange={e => setFormData({...formData, price: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Sort Order</label>
+              <input 
+                type="number" 
+                value={formData.sortOrder}
+                onChange={e => setFormData({...formData, sortOrder: e.target.value})}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
               />
             </div>
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Spiritual Meaning (Description)</label>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Description (EN)</label>
             <textarea 
-              required
-              rows={3}
-              value={formData.description}
-              onChange={e => setFormData({...formData, description: e.target.value})}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white focus:border-gold/50 outline-none transition-all resize-none"
+              rows={2}
+              value={formData.description_en}
+              onChange={e => setFormData({...formData, description_en: e.target.value})}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white/80 focus:border-gold/50 outline-none transition-all resize-none"
             />
           </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">설명 (KO)</label>
+            <textarea 
+              rows={2}
+              value={formData.description_ko}
+              onChange={e => setFormData({...formData, description_ko: e.target.value})}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white/80 focus:border-gold/50 outline-none transition-all resize-none font-sans"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <button 
+              type="button"
+              onClick={() => setFormData({...formData, locked: !formData.locked})}
+              className={cn(
+                "h-12 rounded-xl text-[10px] font-bold transition-all border",
+                formData.locked ? "bg-gold/20 border-gold/40 text-gold" : "bg-white/5 border-white/10 text-white/20"
+              )}
+            >
+              LOCKED: {formData.locked ? 'YES' : 'NO'}
+            </button>
+            <button 
+              type="button"
+              onClick={() => setFormData({...formData, featured: !formData.featured})}
+              className={cn(
+                "h-12 rounded-xl text-[10px] font-bold transition-all border",
+                formData.featured ? "bg-gold/20 border-gold/40 text-gold" : "bg-white/5 border-white/10 text-white/20"
+              )}
+            >
+              FEATURED: {formData.featured ? 'YES' : 'NO'}
+            </button>
+          </div>
+
           <div className="flex gap-4 pt-6">
             <button 
               type="button"
@@ -957,7 +1230,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
               disabled={saving}
               className="flex-2 h-16 bg-gold text-deep-black rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-white transition-all shadow-[0_0_30px_rgba(219,198,126,0.2)] disabled:opacity-50"
             >
-              {saving ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Update Talisman'}
+              {saving ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Refine Manifestation'}
             </button>
           </div>
         </form>
@@ -1131,7 +1404,7 @@ const SalesView = ({ sales, wallpapers }: { sales: Sale[], wallpapers: Wallpaper
   })).reverse();
 
   const bestSellers = wallpapers.map(wp => ({
-    title: wp.title,
+    title: wp.title_en,
     sales: sales.filter(s => s.wallpaper_id === wp.id).length
   })).sort((a, b) => b.sales - a.sales).slice(0, 5);
 

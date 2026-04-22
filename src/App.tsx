@@ -265,7 +265,8 @@ const MockupOverlay = ({
   user,
   isPurchasing,
   setIsPurchasing,
-  handlePurchaseSuccess
+  handlePurchaseSuccess,
+  currentLang
 }: { 
   wallpaper: Wallpaper, 
   onClose: () => void,
@@ -274,7 +275,8 @@ const MockupOverlay = ({
   user: User | null,
   isPurchasing: boolean,
   setIsPurchasing: (v: boolean) => void,
-  handlePurchaseSuccess: (wp: Wallpaper) => void
+  handlePurchaseSuccess: (wp: Wallpaper) => void,
+  currentLang: string
 }) => {
   return (
     <motion.div
@@ -305,7 +307,7 @@ const MockupOverlay = ({
           </div>
           
           <img 
-            src={wallpaper.thumb_url} 
+            src={wallpaper.thumbnailUrl} 
             alt="Mockup"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -337,7 +339,9 @@ const MockupOverlay = ({
                 {wallpaper.category} Activation
               </span>
             </div>
-            <h2 className="text-6xl lg:text-7xl font-serif font-bold leading-[0.9] tracking-tight">{wallpaper.title}</h2>
+            <h2 className="text-6xl lg:text-7xl font-serif font-bold leading-[0.9] tracking-tight">
+              {currentLang === 'EN' ? wallpaper.title_en : (wallpaper.title_ko || wallpaper.title_en)}
+            </h2>
             <p className="text-white/50 leading-relaxed font-light text-xl italic max-w-md">
               "{wallpaper.meaning}"
             </p>
@@ -444,10 +448,10 @@ const MockupOverlay = ({
 
 const SuccessModal = ({ onClose, lang, wallpaper }: { onClose: () => void, lang: any, wallpaper: Wallpaper | null }) => {
   const handleDownload = () => {
-    if (wallpaper?.high_res_url) {
+    if (wallpaper?.imageUrl) {
       const link = document.createElement('a');
-      link.href = wallpaper.high_res_url;
-      link.download = `${wallpaper.title.replace(/\s+/g, '_')}_AuraCanvas.jpg`;
+      link.href = wallpaper.imageUrl;
+      link.download = `${wallpaper.title_en.replace(/\s+/g, '_')}_AuraCanvas.jpg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -626,10 +630,10 @@ function MainContent() {
       });
 
       // Automatically trigger download
-      if (wp.high_res_url) {
+      if (wp.imageUrl) {
         const link = document.createElement('a');
-        link.href = wp.high_res_url;
-        link.download = `${wp.title.replace(/\s+/g, '_')}_AuraCanvas.jpg`;
+        link.href = wp.imageUrl;
+        link.download = `${wp.title_en.replace(/\s+/g, '_')}_AuraCanvas.jpg`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -679,10 +683,12 @@ function MainContent() {
 
   useEffect(() => {
     const q = query(
-      collection(db, 'wallpapers'), 
-      where('status', '==', 'active')
+      collection(db, 'products'), 
+      where('isActive', '==', true),
+      orderBy('sortOrder', 'asc')
     );
     
+    setLoading(true);
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Wallpaper));
       if (docs.length > 0) {
@@ -692,7 +698,8 @@ function MainContent() {
       }
       setLoading(false);
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'wallpapers');
+      console.error("Error fetching products:", error);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -885,34 +892,66 @@ function MainContent() {
                         }}
                         className="group relative flex flex-col gap-4 cursor-pointer mb-10"
                       >
-                        {/* Ritual Card Container */}
+                        {/* Premium Ritual Card Container */}
                         <div className="relative aspect-[9/16] bg-charcoal rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 border border-white/10 talisman-glow group-hover:border-gold/30">
+                          
+                          {/* Artwork Image */}
                           <img
-                            src={wp.thumb_url}
-                            alt={wp.title}
-                            className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
+                            src={wp.thumbnailUrl}
+                            alt={wp.title_en}
+                            className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
                             referrerPolicy="no-referrer"
                           />
                           
-                          {/* Energy Lock UI */}
-                          <div className="absolute inset-0 energy-veil flex flex-col items-center justify-center group-hover:opacity-0">
-                            <div className="energy-glow-overlay absolute inset-0" />
-                            <div className="glass-seal w-16 h-16 rounded-full flex items-center justify-center mb-4 relative z-10">
-                              <div className="absolute inset-0 bg-gold/10 rounded-full animate-ping" />
-                              <ShieldCheck className="w-7 h-7 text-gold animate-pulse-gold" />
+                          {/* Premium Lock Overlay */}
+                          {wp.locked && (
+                            <div className="absolute inset-0 energy-veil flex flex-col items-center justify-center transition-all duration-700 group-hover:opacity-40">
+                              {/* Mystery Glow Layer */}
+                              <div className="absolute inset-0 bg-gradient-to-br from-deep-purple/30 via-transparent to-deep-black/60 pointer-events-none" />
+                              <div className="energy-glow-overlay absolute inset-0 opacity-60" />
+                              
+                              {/* Glass Seal Icon */}
+                              <div className="glass-seal w-20 h-20 rounded-full flex items-center justify-center mb-4 relative z-10">
+                                <div className="absolute inset-0 bg-gold/10 rounded-full animate-ping" />
+                                <ShieldCheck className="w-8 h-8 text-gold animate-pulse-gold" />
+                              </div>
+                              
+                              <span className="text-[10px] uppercase tracking-[0.6em] text-gold/80 font-bold relative z-10 shadow-sm">
+                                Energy Locked
+                              </span>
                             </div>
-                            <span className="text-[10px] uppercase tracking-[0.5em] text-gold/80 font-bold relative z-10">Energy Locked</span>
-                          </div>
+                          )}
 
+                          {/* Ambient Dark Gradient */}
                           <div className="absolute inset-0 bg-gradient-to-t from-deep-black/90 via-transparent to-transparent opacity-80" />
                           
-                          <div className="absolute top-6 right-6 bg-deep-black/60 backdrop-blur-md text-gold px-4 py-2 rounded-full text-[10px] font-bold border border-gold/20 shadow-xl">
+                          {/* Price Badge - Top Right */}
+                          <div className="absolute top-6 right-6 bg-deep-black/70 backdrop-blur-xl text-gold px-4 py-2 rounded-full text-[11px] font-bold border border-gold/30 shadow-2xl z-20">
                             ${wp.price}
                           </div>
 
-                          <div className="absolute bottom-8 left-8 right-8 flex flex-col gap-2">
-                            <span className="text-[9px] uppercase tracking-[0.4em] text-gold/60 font-bold">{wp.category}</span>
-                            <h3 className="font-serif font-bold text-xl text-white leading-tight">{wp.title}</h3>
+                          {/* Text Information - Bottom */}
+                          <div className="absolute bottom-10 left-8 right-8 flex flex-col gap-2 z-10">
+                            <div className="flex items-center gap-3">
+                              <span className="text-[9px] uppercase tracking-[0.4em] text-gold/60 font-bold">{wp.category}</span>
+                              {wp.featured && (
+                                <span className="w-1 h-1 bg-gold rounded-full" />
+                              )}
+                              {wp.featured && (
+                                <span className="text-[9px] uppercase tracking-[0.4em] text-white/40 font-medium">Core Piece</span>
+                              )}
+                            </div>
+                            <h3 className="font-serif font-bold text-2xl text-ivory leading-tight group-hover:text-white transition-colors">
+                              {currentLang === 'EN' ? wp.title_en : wp.title_ko}
+                            </h3>
+                            <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-medium">
+                              {currentLang === 'EN' ? 'Activation Art' : '의식 활성화 도구'}
+                            </p>
+                          </div>
+
+                          {/* Hover Shine Effect */}
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent w-full h-full animate-shimmer" />
                           </div>
                         </div>
                       </motion.div>
@@ -952,7 +991,7 @@ function MainContent() {
                   {myLibrary.map(wp => (
                     <div key={wp.id} className="flex flex-col gap-4">
                       <div className="relative aspect-[9/19] bg-charcoal rounded-[2.5rem] overflow-hidden border border-white/10">
-                        <img src={wp.thumb_url} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <img src={wp.thumbnailUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         <div className="absolute inset-0 bg-deep-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                           <button 
                             onClick={() => { setSelectedWallpaper(wp); setIsSuccess(true); }}
@@ -962,7 +1001,9 @@ function MainContent() {
                           </button>
                         </div>
                       </div>
-                      <h3 className="font-serif font-bold text-white text-center">{wp.title}</h3>
+                      <h3 className="font-serif font-bold text-white text-center">
+                        {currentLang === 'EN' ? wp.title_en : (wp.title_ko || wp.title_en)}
+                      </h3>
                     </div>
                   ))}
                 </div>
@@ -1000,6 +1041,7 @@ function MainContent() {
               isPurchasing={isPurchasing}
               setIsPurchasing={setIsPurchasing}
               handlePurchaseSuccess={handlePurchaseSuccess}
+              currentLang={currentLang}
             />
           )}
         </AnimatePresence>
