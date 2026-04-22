@@ -43,7 +43,6 @@ import {
 } from 'firebase/firestore';
 import { 
   ref, 
-  uploadBytesResumable, 
   uploadBytes,
   getDownloadURL,
   deleteObject
@@ -70,6 +69,7 @@ interface Wallpaper {
   slug: string;
   title_ko: string;
   title_en: string;
+  badge?: string;
   category: string;
   price: number;
   description_ko?: string;
@@ -365,18 +365,18 @@ const DashboardView = ({ wallpapers, sales }: { wallpapers: Wallpaper[], sales: 
             {wallpapers.slice(0, 5).map((wp) => (
               <div key={wp.id} className="flex items-center gap-5 p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:border-gold/20 transition-all group">
                 <div className="relative w-14 h-14 shrink-0">
-                  <img src={wp.thumb_url} className="w-full h-full object-cover rounded-2xl border border-white/10" />
+                  <img src={wp.thumbnailUrl} className="w-full h-full object-cover rounded-2xl border border-white/10" />
                   <div className="absolute inset-0 bg-gold/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-white">{wp.title}</p>
+                  <p className="text-sm font-bold text-white">{wp.title_en}</p>
                   <p className="text-[10px] text-white/30 uppercase tracking-widest mt-1">{wp.category}</p>
                 </div>
                 <span className={cn(
                   "px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border",
-                  wp.status === 'active' ? "bg-gold/10 text-gold border-gold/20" : "bg-white/5 text-white/30 border-white/5"
+                  wp.isActive ? "bg-gold/10 text-gold border-gold/20" : "bg-white/5 text-white/30 border-white/5"
                 )}>
-                  {wp.status}
+                  {wp.isActive ? 'active' : 'hidden'}
                 </span>
               </div>
             ))}
@@ -405,16 +405,17 @@ const StatCard = ({ label, value, icon: Icon, trend, color }: any) => (
 const UploadView = ({ categories }: { categories: Category[] }) => {
   const [mainFile, setMainFile] = useState<File | null>(null);
   const [thumbFile, setThumbFile] = useState<File | null>(null);
-  const [highResFile, setHighResFile] = useState<File | null>(null);
   const [mainPreview, setMainPreview] = useState<string | null>(null);
   const [thumbPreview, setThumbPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     slug: '',
     title_ko: '',
     title_en: '',
-    category: 'Abundance',
+    badge: '',
+    category: 'abundance',
     price: '8.88',
     description_ko: '',
     description_en: '',
@@ -424,393 +425,342 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
     sortOrder: '0',
     artist: 'Aura AI'
   });
-  const [success, setSuccess] = useState(false);
 
-  const ADMIN_CATEGORIES = ["Abundance", "Love", "Energy", "Healing"];
+  const manifestCategories = [
+    { value: 'abundance', label: 'Abundance' },
+    { value: 'love', label: 'Love' },
+    { value: 'energy', label: 'Energy' },
+    { value: 'healing', label: 'Healing' }
+  ] as const;
 
-  useEffect(() => {
-    if (!formData.category) {
-      setFormData(prev => ({ ...prev, category: ADMIN_CATEGORIES[0] }));
-    }
-  }, []);
+  const categoryMeta = manifestCategories.find((item) => item.value === formData.category) ?? manifestCategories[0];
 
-  const [isDragging, setIsDragging] = useState(false);
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile && droppedFile.type.startsWith('image/')) {
-      setFile(droppedFile);
-      const reader = new FileReader();
-      reader.onloadend = () => setPreview(reader.result as string);
-      reader.readAsDataURL(droppedFile);
-    }
+  const setPreviewFromFile = (
+    file: File,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setPreview: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    setFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setPreview(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
   const handleMainFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
-    if (selected) {
-      setMainFile(selected);
-      const reader = new FileReader();
-      reader.onloadend = () => setMainPreview(reader.result as string);
-      reader.readAsDataURL(selected);
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setMainFile, setMainPreview);
     }
   };
 
   const handleThumbFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
-    if (selected) {
-      setThumbFile(selected);
-      const reader = new FileReader();
-      reader.onloadend = () => setThumbPreview(reader.result as string);
-      reader.readAsDataURL(selected);
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setThumbFile, setThumbPreview);
     }
   };
 
-  const generateThumbnail = (file: File): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 400;
-          const scaleSize = MAX_WIDTH / img.width;
-          canvas.width = MAX_WIDTH;
-          canvas.height = img.height * scaleSize;
+  const buildSlug = () =>
+    (formData.slug || formData.title_en || formData.title_ko)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\u3131-\u318e\uac00-\ud7a3\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
 
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-          canvas.toBlob((blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error('Canvas to Blob failed'));
-          }, 'image/webp', 0.8);
-        };
-        img.src = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-    });
-  };
+  const toCategoryLabel = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mainFile || uploading) return;
+    if (!mainFile || !thumbFile || uploading) return;
 
     setUploading(true);
     setProgress(0);
 
     try {
       const timestamp = Date.now();
-      
-      // 1. Determine High Res File (Optional extra file or main file)
-      const fileToUploadAsHighRes = highResFile || mainFile;
-      
-      // 2. Upload Representative Image (High Res)
-      const highResRef = ref(storage, `products/${timestamp}_original_${fileToUploadAsHighRes.name}`);
-      const highResSnapshot = await uploadBytes(highResRef, fileToUploadAsHighRes);
-      setProgress(40);
+      const imageRef = ref(storage, `products/${timestamp}_image_${mainFile.name}`);
+      const imageSnapshot = await uploadBytes(imageRef, mainFile);
+      setProgress(45);
 
-      // 3. Handle Thumbnail
-      let thumbToUpload: Blob | File;
-      let thumbName: string;
+      const thumbnailRef = ref(storage, `products/${timestamp}_thumbnail_${thumbFile.name}`);
+      const thumbnailSnapshot = await uploadBytes(thumbnailRef, thumbFile);
+      setProgress(85);
 
-      if (thumbFile) {
-        thumbToUpload = thumbFile;
-        thumbName = `${timestamp}_manual_thumb_${thumbFile.name}`;
-      } else {
-        thumbToUpload = await generateThumbnail(mainFile);
-        thumbName = `${timestamp}_auto_thumb_${mainFile.name.split('.')[0]}.webp`;
-      }
+      const imageUrl = await getDownloadURL(imageSnapshot.ref);
+      const thumbnailUrl = await getDownloadURL(thumbnailSnapshot.ref);
 
-      // 4. Upload Thumbnail
-      const thumbRef = ref(storage, `products/${thumbName}`);
-      const thumbSnapshot = await uploadBytes(thumbRef, thumbToUpload);
-      setProgress(80);
-
-      const imageUrl = await getDownloadURL(highResSnapshot.ref);
-      const thumbnailUrl = await getDownloadURL(thumbSnapshot.ref);
-      
-      // Save to Firestore 'products'
       await addDoc(collection(db, 'products'), {
-        slug: formData.slug || formData.title_en.toLowerCase().replace(/\s+/g, '-'),
+        slug: buildSlug(),
         title_ko: formData.title_ko,
         title_en: formData.title_en,
-        category: formData.category,
+        badge: formData.badge.trim(),
+        category: toCategoryLabel(formData.category),
         price: parseFloat(formData.price),
         description_ko: formData.description_ko,
         description_en: formData.description_en,
-        thumbnailUrl: thumbnailUrl,
-        imageUrl: imageUrl,
+        thumbnailUrl,
+        imageUrl,
         locked: formData.locked,
         featured: formData.featured,
         isActive: formData.isActive,
-        sortOrder: parseInt(formData.sortOrder),
+        sortOrder: parseInt(formData.sortOrder, 10) || 0,
         artist: formData.artist,
         created_at: serverTimestamp()
       });
 
       setProgress(100);
-      setUploading(false);
       setSuccess(true);
       setMainFile(null);
       setThumbFile(null);
-      setHighResFile(null);
       setMainPreview(null);
       setThumbPreview(null);
-      setFormData({ 
-        slug: '', title_ko: '', title_en: '', category: 'Abundance', price: '8.88', 
-        description_ko: '', description_en: '', locked: true, featured: false, 
-        isActive: true, sortOrder: '0', artist: 'Aura AI' 
+      setFormData({
+        slug: '',
+        title_ko: '',
+        title_en: '',
+        badge: '',
+        category: 'abundance',
+        price: '8.88',
+        description_ko: '',
+        description_en: '',
+        locked: true,
+        featured: false,
+        isActive: true,
+        sortOrder: '0',
+        artist: 'Aura AI'
       });
       setTimeout(() => setSuccess(false), 3000);
     } catch (error: any) {
-      console.error("Upload error:", error);
+      console.error('Upload error:', error);
       alert(`Upload failed: ${error.message}`);
+    } finally {
       setUploading(false);
     }
+  };
+
+  const toggleField = (key: 'locked' | 'featured' | 'isActive') => {
+    setFormData((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
     <div className="max-w-6xl mx-auto space-y-12">
       <header>
-        <h1 className="text-5xl font-serif font-bold text-white tracking-tight">Manifest New Ritual Art</h1>
-        <p className="text-white/40 mt-3 text-lg font-light italic">Define the frequency and essence of a new creation.</p>
+        <div className="inline-flex items-center gap-3 rounded-full border border-gold/20 bg-gold/10 px-5 py-2 text-[10px] uppercase tracking-[0.35em] text-gold">
+          <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />
+          Manifest Chamber
+        </div>
+        <h1 className="mt-6 text-5xl font-serif font-bold text-white tracking-tight">Manifest Art Activation</h1>
+        <p className="mt-3 text-lg font-light italic text-white/40">
+          Craft a collectible product ritual with premium visuals, aligned metadata, and sanctuary-ready presence.
+        </p>
       </header>
 
-      <form onSubmit={handleUpload} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        {/* Left Column: Form Fields */}
-        <div className="lg:col-span-7 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Title (English)</label>
-              <input 
-                required
-                type="text" 
-                value={formData.title_en}
-                onChange={e => setFormData({...formData, title_en: e.target.value})}
-                placeholder="e.g. 888 Abundance Activation"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
-              />
+      <form onSubmit={handleUpload} className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+        <div className="space-y-8 lg:col-span-7">
+          <div className="rounded-[2.5rem] border border-gold/15 bg-[radial-gradient(circle_at_top,rgba(201,169,91,0.18),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">Essence Metadata</p>
+                <h2 className="mt-3 text-3xl font-serif text-white">Product Identity</h2>
+              </div>
+              <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-white/40">
+                {categoryMeta.label} Frequency
+              </div>
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">상품명 (한국어)</label>
-              <input 
-                required
-                type="text" 
-                value={formData.title_ko}
-                onChange={e => setFormData({...formData, title_ko: e.target.value})}
-                placeholder="예: 888 풍요의 활성화"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all font-sans"
-              />
+
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Product Name (EN)</label>
+                <input required type="text" value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} placeholder="e.g. 888 Abundance Activation" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">상품명 (KO)</label>
+                <input required type="text" value={formData.title_ko} onChange={(e) => setFormData({ ...formData, title_ko: e.target.value })} placeholder="예: 888 풍요 활성화" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 font-sans text-white outline-none transition-all focus:border-gold/50" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Badge</label>
+                <input type="text" value={formData.badge} onChange={(e) => setFormData({ ...formData, badge: e.target.value })} placeholder="e.g. 888" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Slug</label>
+                <input type="text" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder="auto-generated if left blank" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white/70 outline-none transition-all focus:border-gold/50" />
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Slug (URL)</label>
-              <input 
-                type="text" 
-                value={formData.slug}
-                onChange={e => setFormData({...formData, slug: e.target.value})}
-                placeholder="e.g. 888-abundance"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/60 focus:border-gold/50 outline-none transition-all"
-              />
-            </div>
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Artist</label>
-              <input 
-                type="text" 
-                value={formData.artist}
-                onChange={e => setFormData({...formData, artist: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/60 focus:border-gold/50 outline-none transition-all"
-              />
-            </div>
-          </div>
+          <div className="rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur-sm">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">Manifest Details</p>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Category</label>
-              <select 
-                value={formData.category}
-                onChange={e => setFormData({...formData, category: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all appearance-none"
-              >
-                {ADMIN_CATEGORIES.map(cat => (
-                  <option key={cat} value={cat} className="bg-charcoal">{cat}</option>
-                ))}
-              </select>
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Short Description (EN)</label>
+                <textarea required rows={4} value={formData.description_en} onChange={(e) => setFormData({ ...formData, description_en: e.target.value })} placeholder="A concise premium description for the product card." className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 p-6 text-white/80 outline-none transition-all focus:border-gold/50" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">짧은 설명 (KO)</label>
+                <textarea required rows={4} value={formData.description_ko} onChange={(e) => setFormData({ ...formData, description_ko: e.target.value })} placeholder="상품 카드에 표시될 짧은 한국어 설명을 입력하세요." className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 p-6 font-sans text-white/80 outline-none transition-all focus:border-gold/50" />
+              </div>
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Exchange ($)</label>
-              <input 
-                required
-                type="number" 
-                step="0.01"
-                value={formData.price}
-                onChange={e => setFormData({...formData, price: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
-              />
+
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Category</label>
+                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="h-14 w-full appearance-none rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50">
+                  {manifestCategories.map((cat) => (
+                    <option key={cat.value} value={cat.value} className="bg-charcoal">
+                      {cat.value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Price (USD)</label>
+                <input required type="number" step="0.01" min="0" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Sort Order</label>
+                <input type="number" value={formData.sortOrder} onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })} className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
+              </div>
             </div>
-            <div className="space-y-3 col-span-2 lg:col-span-1">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Sort Order</label>
-              <input 
-                type="number" 
-                value={formData.sortOrder}
-                onChange={e => setFormData({...formData, sortOrder: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white focus:border-gold/50 outline-none transition-all"
-              />
-            </div>
-          </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Description (EN)</label>
-            <textarea 
-              rows={3}
-              value={formData.description_en}
-              onChange={e => setFormData({...formData, description_en: e.target.value})}
-              placeholder="English description..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white/80 focus:border-gold/50 outline-none transition-all resize-none"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">상품 설명 (한국어)</label>
-            <textarea 
-              rows={3}
-              value={formData.description_ko}
-              onChange={e => setFormData({...formData, description_ko: e.target.value})}
-              placeholder="한국어 설명을 입력하세요..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white/80 focus:border-gold/50 outline-none transition-all resize-none font-sans"
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-4 p-6 bg-white/5 rounded-3xl border border-white/5">
-            <div className="flex flex-col gap-3">
-              <label className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Locked</label>
-              <button 
-                type="button"
-                onClick={() => setFormData({...formData, locked: !formData.locked})}
-                className={cn(
-                  "h-10 rounded-xl text-[10px] font-bold transition-all border",
-                  formData.locked ? "bg-gold/20 border-gold/40 text-gold" : "bg-white/5 border-white/10 text-white/20"
-                )}
-              >
-                {formData.locked ? 'YES' : 'NO'}
+            <div className="mt-8 grid grid-cols-1 gap-4 rounded-[2rem] border border-gold/10 bg-deep-black/40 p-5 md:grid-cols-3">
+              <button type="button" onClick={() => toggleField('locked')} className={cn('rounded-[1.5rem] border px-5 py-5 text-left transition-all', formData.locked ? 'border-gold/30 bg-gold/10 shadow-[0_0_24px_rgba(201,169,91,0.12)]' : 'border-white/10 bg-white/5')}>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">Locked</p>
+                <p className={cn('mt-3 text-lg font-serif', formData.locked ? 'text-gold' : 'text-white/70')}>{formData.locked ? 'Sealed' : 'Open'}</p>
               </button>
-            </div>
-            <div className="flex flex-col gap-3">
-              <label className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Featured</label>
-              <button 
-                type="button"
-                onClick={() => setFormData({...formData, featured: !formData.featured})}
-                className={cn(
-                  "h-10 rounded-xl text-[10px] font-bold transition-all border",
-                  formData.featured ? "bg-gold/20 border-gold/40 text-gold" : "bg-white/5 border-white/10 text-white/20"
-                )}
-              >
-                {formData.featured ? 'YES' : 'NO'}
+              <button type="button" onClick={() => toggleField('featured')} className={cn('rounded-[1.5rem] border px-5 py-5 text-left transition-all', formData.featured ? 'border-gold/30 bg-gold/10 shadow-[0_0_24px_rgba(201,169,91,0.12)]' : 'border-white/10 bg-white/5')}>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">Featured</p>
+                <p className={cn('mt-3 text-lg font-serif', formData.featured ? 'text-gold' : 'text-white/70')}>{formData.featured ? 'Core Piece' : 'Standard'}</p>
               </button>
-            </div>
-            <div className="flex flex-col gap-3">
-              <label className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Active</label>
-              <button 
-                type="button"
-                onClick={() => setFormData({...formData, isActive: !formData.isActive})}
-                className={cn(
-                  "h-10 rounded-xl text-[10px] font-bold transition-all border",
-                  formData.isActive ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400" : "bg-white/5 border-white/10 text-white/20"
-                )}
-              >
-                {formData.isActive ? 'LIVE' : 'HIDDEN'}
+              <button type="button" onClick={() => toggleField('isActive')} className={cn('rounded-[1.5rem] border px-5 py-5 text-left transition-all', formData.isActive ? 'border-gold/30 bg-gold/10 shadow-[0_0_24px_rgba(201,169,91,0.12)]' : 'border-white/10 bg-white/5')}>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">isActive</p>
+                <p className={cn('mt-3 text-lg font-serif', formData.isActive ? 'text-gold' : 'text-white/70')}>{formData.isActive ? 'Live' : 'Dormant'}</p>
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex-1 space-y-3">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">High-Res Image (Optional)</label>
-              <button 
-                type="button"
-                onClick={() => document.getElementById('high-res-upload')?.click()}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/40 text-[10px] uppercase tracking-widest font-bold hover:border-gold/30 transition-all flex items-center justify-center gap-2"
-              >
-                <UploadCloud className="w-4 h-4" />
-                {highResFile ? highResFile.name : 'Select High-Res'}
-              </button>
-              <input id="high-res-upload" type="file" accept="image/*" onChange={(e) => setHighResFile(e.target.files?.[0] || null)} className="hidden" />
+          <div className="rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-8">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">Visual Assets</p>
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">대표 이미지 업로드 (imageUrl)</label>
+                <button type="button" onClick={() => document.getElementById('manifest-main-upload')?.click()} className="group relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] border border-dashed border-gold/20 bg-[radial-gradient(circle_at_top,rgba(201,169,91,0.18),transparent_45%),rgba(255,255,255,0.03)]">
+                  {mainPreview ? (
+                    <>
+                      <img src={mainPreview} alt="Main preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-6 py-3 text-[10px] uppercase tracking-[0.3em] text-gold">Change image</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-5 p-8 text-center">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full border border-gold/20 bg-gold/10">
+                        <ImageIcon className="h-8 w-8 text-gold" />
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-white/70">Representative Aura</p>
+                        <p className="mt-2 text-[11px] text-white/30">Upload the full product artwork shown after activation.</p>
+                      </div>
+                    </div>
+                  )}
+                </button>
+                <input id="manifest-main-upload" type="file" accept="image/*" onChange={handleMainFileChange} className="hidden" />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">썸네일 업로드 (thumbnailUrl)</label>
+                <button type="button" onClick={() => document.getElementById('manifest-thumb-upload')?.click()} className="group relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] border border-dashed border-white/15 bg-white/[0.03]">
+                  {thumbPreview ? (
+                    <>
+                      <img src={thumbPreview} alt="Thumbnail preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-6 py-3 text-[10px] uppercase tracking-[0.3em] text-gold">Change thumbnail</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-5 p-8 text-center">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                        <UploadCloud className="h-8 w-8 text-white/40" />
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-white/70">Thumbnail Seal</p>
+                        <p className="mt-2 text-[11px] text-white/30">Upload the gallery preview image used before activation.</p>
+                      </div>
+                    </div>
+                  )}
+                </button>
+                <input id="manifest-thumb-upload" type="file" accept="image/*" onChange={handleThumbFileChange} className="hidden" />
+              </div>
             </div>
-            {highResFile && (
-              <button type="button" onClick={() => setHighResFile(null)} className="mt-7 p-4 bg-rose-500/10 text-rose-500 rounded-2xl border border-rose-500/20 hover:bg-rose-500/20 transition-all">
-                <Trash2 className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </div>
 
-        {/* Right Column: Preview & Main Upload */}
-        <div className="lg:col-span-5 space-y-8">
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Thumbnail & Preview Art</label>
-            <div 
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={cn(
-                "relative aspect-[9/14] rounded-[3.5rem] border-2 border-dashed transition-all duration-700 overflow-hidden flex flex-col items-center justify-center group cursor-pointer",
-                isDragging ? "border-gold bg-gold/10 scale-[0.98]" : "border-white/10 bg-white/5 hover:border-gold/30"
-              )}
-              onClick={() => document.getElementById('file-upload')?.click()}
-            >
-              {preview ? (
-                <>
-                  <img src={preview} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-deep-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-white bg-gold/20 px-8 py-4 rounded-full backdrop-blur-xl border border-gold/30">Change Artwork</span>
+        <div className="space-y-8 lg:col-span-5">
+          <div className="rounded-[2.75rem] border border-gold/20 bg-[radial-gradient(circle_at_top,rgba(201,169,91,0.22),transparent_35%),linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-gold">Activation Preview</p>
+                <h2 className="mt-3 text-3xl font-serif text-white">{formData.title_en || 'Untitled Manifest'}</h2>
+              </div>
+              {formData.badge && <div className="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-bold text-gold">{formData.badge}</div>}
+            </div>
+
+            <div className="mt-8 rounded-[2.25rem] border border-white/10 bg-deep-black/60 p-5">
+              <div className="relative aspect-[9/14] overflow-hidden rounded-[1.75rem] bg-white/5">
+                {thumbPreview || mainPreview ? (
+                  <img src={thumbPreview || mainPreview || ''} alt="Manifest preview" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-10 text-center text-white/25">Your collectible preview will awaken here.</div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/15 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.35em] text-gold/80">
+                    <span>{categoryMeta.label}</span>
+                    {formData.featured && <span className="h-1 w-1 rounded-full bg-gold" />}
+                    {formData.featured && <span>Featured</span>}
                   </div>
-                </>
-              ) : (
-                <div className="text-center p-12 space-y-6">
-                  <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 group-hover:border-gold/40 transition-all duration-500 shadow-2xl">
-                    <ImageIcon className="w-10 h-10 text-white/10 group-hover:text-gold transition-colors" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-xs text-white/40 uppercase tracking-[0.3em] font-bold">Drop High-Res Ritual Art</p>
-                    <p className="text-[10px] text-white/20 font-light italic">Recommended: 1080x1920 WebP/JPG</p>
-                  </div>
+                  <p className="mt-3 text-2xl font-serif text-white">{formData.title_ko || formData.title_en || 'AuraCanvas Manifest'}</p>
+                  <p className="mt-2 line-clamp-3 text-sm text-white/55">{formData.description_ko || formData.description_en || 'Short description will appear here.'}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 space-y-4 rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
+              <div className="flex items-center justify-between text-sm text-white/70">
+                <span>Price</span>
+                <span className="text-2xl font-serif text-gold">${Number(formData.price || 0).toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm text-white/70">
+                <span>Status</span>
+                <span>{formData.isActive ? 'Live in Sanctuary' : 'Hidden draft'}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm text-white/70">
+                <span>Seal</span>
+                <span>{formData.locked ? 'Locked access' : 'Open access'}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm text-white/70">
+                <span>Sort Order</span>
+                <span>{formData.sortOrder || '0'}</span>
+              </div>
+            </div>
+
+            <button type="submit" disabled={uploading || !mainFile || !thumbFile} className="aura-gold-btn relative mt-8 w-full overflow-hidden disabled:opacity-50">
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gold/20">
+                  <div className="h-full w-full origin-left bg-gold/30 transition-transform duration-300" style={{ transform: `scaleX(${progress / 100})` }} />
                 </div>
               )}
-              <input id="file-upload" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-            </div>
+              <UploadCloud className="relative z-10 h-6 w-6" />
+              <span className="relative z-10">{uploading ? `Manifesting ${Math.round(progress)}%` : 'Activate Manifest'}</span>
+            </button>
+
+            <p className="mt-4 text-center text-[10px] uppercase tracking-[0.25em] text-white/35">Saves representative image, thumbnail, and product metadata to Firestore.</p>
           </div>
 
-          <button 
-            type="submit"
-            disabled={uploading || !file}
-            className="w-full bg-gold text-deep-black h-20 rounded-[2rem] font-bold uppercase tracking-[0.4em] text-xs flex items-center justify-center gap-4 hover:bg-white transition-all shadow-[0_0_50px_rgba(212,175,55,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-          >
-            {uploading && (
-              <div className="absolute inset-0 bg-gold/20 flex items-center justify-center">
-                <div className="w-full h-full bg-gold/20 origin-left transition-transform duration-300" style={{ transform: `scaleX(${progress/100})` }} />
-              </div>
-            )}
-            <UploadCloud className="w-6 h-6 relative z-10" />
-            <span className="relative z-10">{uploading ? `Manifesting ${Math.round(progress)}%` : 'Manifest Product'}</span>
-          </button>
-
           {success && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl text-emerald-400 text-center text-[10px] uppercase tracking-[0.3em] font-bold">
-              Product Successfully Manifested into the Sanctuary!
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-8 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-emerald-400">
+              Product successfully manifested into the sanctuary.
             </motion.div>
           )}
         </div>
@@ -1426,3 +1376,4 @@ const SalesView = ({ sales, wallpapers }: { sales: Sale[], wallpapers: Wallpaper
     </div>
   );
 };
+

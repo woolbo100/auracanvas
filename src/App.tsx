@@ -52,7 +52,7 @@ const LANGUAGES = {
   EN: {
     brand: "AuraCanvas",
     tagline: "The Digital Sanctuary of Intent",
-    heroTitle: "This is not just art. <br /> Choose what you want to <span class='text-gold'>attract.</span>",
+    heroTitle: "This is not just art. <br /> Choose what you want to <span class='aura-gold-text'>attract.</span>",
     heroSubtitle: "Premium digital ritual tools designed to align your consciousness with the vibrations of Abundance, Love, and Energy.",
     enterGallery: "Enter the Gallery",
     categoryAll: "All Frequencies",
@@ -74,7 +74,7 @@ const LANGUAGES = {
   KO: {
     brand: "AuraCanvas",
     tagline: "의도가 깃든 디지털 성소",
-    heroTitle: "이건 단순한 이미지가 아닙니다. <br /> 당신이 <span class='text-gold'>끌어당길 것</span>을 선택하세요.",
+    heroTitle: "이건 단순한 이미지가 아닙니다. <br /> 당신이 <span class='aura-gold-text'>끌어당길 것</span>을 선택하세요.",
     heroSubtitle: "당신의 의식을 풍요, 사랑, 에너지의 파동과 정렬하도록 설계된 프리미엄 디지털 의식 도구입니다.",
     enterGallery: "갤러리 입장하기",
     categoryAll: "모든 주파수",
@@ -739,7 +739,7 @@ function MainContent() {
       "clientId": import.meta.env.VITE_PAYPAL_CLIENT_ID || "ATNUPKM6CKGqJaD7mEkPXmHWoZf_TYIY1F8Md2gwbFWmRSHwyKAmIzjrVJ2MZt4DI5QzZSTrfGvpKMJf",
       currency: "USD"
     }}>
-      <div className="min-h-screen bg-deep-black text-white font-sans selection:bg-gold selection:text-deep-black">
+      <div className="aura-site-bg min-h-screen text-white font-sans selection:bg-gold selection:text-deep-black">
         <Navbar 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
@@ -750,49 +750,39 @@ function MainContent() {
           lang={lang}
         />
 
-        <main className="pb-32">
+        <main className="relative z-10 pb-32">
           {activeTab === 'Home' && (
-            <>
-              {/* Mystic Hero Section */}
-              <section className="relative h-[90vh] flex items-center justify-center overflow-hidden mb-20 pt-32">
-                <div className="absolute inset-0 z-0">
-                  <img 
-                    src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1920" 
-                    alt="Mystic Energy Background" 
-                    className="w-full h-full object-cover scale-110 opacity-40 blur-sm"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-deep-black/20 via-deep-black/60 to-deep-black" />
-                </div>
-                
-                <div className="relative z-10 text-center px-6 max-w-5xl mt-12">
+            <div className="relative">
+              <section className="aura-hero aura-hero-bg">
+                <div className="relative z-10 mx-auto max-w-6xl px-6 pt-12 text-center lg:px-16">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                   >
-                    <span className="inline-block text-gold uppercase tracking-[0.6em] text-[10px] font-bold bg-white/5 backdrop-blur-xl px-6 py-2 rounded-full border border-white/10 shadow-[0_0_20px_rgba(219,198,126,0.1)] animate-pulse-gold">
+                    <span className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-6 py-2 text-[10px] font-bold uppercase tracking-[0.6em] text-gold shadow-[0_0_20px_rgba(219,198,126,0.08)] backdrop-blur-xl">
+                      <span className="h-2 w-2 rounded-full bg-gold/80" />
                       {lang.tagline}
                     </span>
                   </motion.div>
-                  
-                  <motion.h1 
+
+                  <motion.h1
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-[1.1] mb-10 text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                    className="mx-auto mb-10 max-w-5xl text-4xl font-serif font-bold leading-[1.06] text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)] md:text-6xl lg:text-7xl"
                     dangerouslySetInnerHTML={{ __html: lang.heroTitle }}
                   />
-                  
-                  <motion.p 
+
+                  <motion.p
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="text-white/60 font-light text-lg lg:text-2xl max-w-2xl mx-auto mb-14 leading-relaxed"
+                    className="mx-auto mb-14 max-w-3xl text-lg font-light leading-relaxed text-white/62 lg:text-2xl"
                   >
                     {lang.heroSubtitle}
                   </motion.p>
-                  
+
                   <motion.button
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -801,20 +791,18 @@ function MainContent() {
                       const gallery = document.getElementById('gallery-start');
                       gallery?.scrollIntoView({ behavior: 'smooth' });
                     }}
-                    className="group flex items-center gap-4 mx-auto bg-gold text-deep-black px-12 py-6 rounded-full text-xs uppercase tracking-[0.4em] font-bold hover:bg-white transition-all shadow-[0_0_30px_rgba(219,198,126,0.4)] hover:scale-105 active:scale-95 relative overflow-hidden"
+                    className="aura-gold-btn group mx-auto"
                   >
-                    {/* Shimmer */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full -translate-x-full group-hover:animate-shimmer pointer-events-none" />
-                    
                     <span className="relative z-10 flex items-center gap-4">
                       {lang.enterGallery}
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" />
                     </span>
                   </motion.button>
                 </div>
               </section>
 
-              <div id="gallery-start" className="px-6 lg:px-16 max-w-[2000px] mx-auto">
+              <section id="gallery-start" className="aura-gallery-section">
+                <div className="mx-auto max-w-[2000px] px-6 lg:px-16">
                 {/* Pull to refresh indicator */}
                 <AnimatePresence>
                   {refreshing && (
@@ -834,10 +822,8 @@ function MainContent() {
                   <button
                     onClick={() => setSelectedCategory('All')}
                     className={cn(
-                      "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold whitespace-nowrap transition-all border",
-                      selectedCategory === 'All' 
-                        ? "bg-gold border-gold text-deep-black shadow-[0_0_25px_rgba(219,198,126,0.4)] scale-105" 
-                        : "bg-white/5 border-white/10 text-white/40 hover:border-gold/40"
+                      "aura-ghost-btn whitespace-nowrap",
+                      selectedCategory === 'All' && "active"
                     )}
                   >
                     {lang.categoryAll}
@@ -847,10 +833,8 @@ function MainContent() {
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.name)}
                       className={cn(
-                        "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold whitespace-nowrap transition-all border",
-                        selectedCategory === cat.name 
-                          ? "bg-gold border-gold text-deep-black shadow-[0_0_25px_rgba(219,198,126,0.4)] scale-105" 
-                          : "bg-white/5 border-white/10 text-white/40 hover:border-gold/40"
+                        "aura-ghost-btn whitespace-nowrap",
+                        selectedCategory === cat.name && "active"
                       )}
                     >
                       {cat.name}
@@ -868,7 +852,7 @@ function MainContent() {
                     768: 2,
                     500: 2
                   }}
-                  className="flex -ml-6 lg:-ml-10 w-auto"
+                  className="flex w-auto -ml-6 lg:-ml-10"
                   columnClassName="pl-6 lg:pl-10 bg-clip-padding"
                 >
                   {loading && wallpapers.length === 0 ? (
@@ -893,30 +877,25 @@ function MainContent() {
                         className="group relative flex flex-col gap-4 cursor-pointer mb-10"
                       >
                         {/* Premium Ritual Card Container */}
-                        <div className="relative aspect-[9/16] bg-charcoal rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 border border-white/10 talisman-glow group-hover:border-gold/30">
+                        <div className="aura-card aspect-[9/16] overflow-hidden">
                           
                           {/* Artwork Image */}
-                          <img
-                            src={wp.thumbnailUrl}
-                            alt={wp.title_en}
-                            className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
-                            referrerPolicy="no-referrer"
-                          />
+                          <div className="aura-card-media w-full h-full">
+                            <img
+                              src={wp.thumbnailUrl}
+                              alt={wp.title_en}
+                              className="aura-card-image"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
                           
                           {/* Premium Lock Overlay */}
                           {wp.locked && (
-                            <div className="absolute inset-0 energy-veil flex flex-col items-center justify-center transition-all duration-700 group-hover:opacity-40">
-                              {/* Mystery Glow Layer */}
-                              <div className="absolute inset-0 bg-gradient-to-br from-deep-purple/30 via-transparent to-deep-black/60 pointer-events-none" />
-                              <div className="energy-glow-overlay absolute inset-0 opacity-60" />
-                              
-                              {/* Glass Seal Icon */}
-                              <div className="glass-seal w-20 h-20 rounded-full flex items-center justify-center mb-4 relative z-10">
-                                <div className="absolute inset-0 bg-gold/10 rounded-full animate-ping" />
-                                <ShieldCheck className="w-8 h-8 text-gold animate-pulse-gold" />
+                            <div className="aura-lock-overlay">
+                              <div className="aura-lock-seal">
+                                <ShieldCheck className="aura-lock-icon" />
                               </div>
-                              
-                              <span className="text-[10px] uppercase tracking-[0.6em] text-gold/80 font-bold relative z-10 shadow-sm">
+                              <span className="text-[9px] uppercase tracking-[0.5em] text-gold/60 font-bold relative z-10">
                                 Energy Locked
                               </span>
                             </div>
@@ -926,7 +905,7 @@ function MainContent() {
                           <div className="absolute inset-0 bg-gradient-to-t from-deep-black/90 via-transparent to-transparent opacity-80" />
                           
                           {/* Price Badge - Top Right */}
-                          <div className="absolute top-6 right-6 bg-deep-black/70 backdrop-blur-xl text-gold px-4 py-2 rounded-full text-[11px] font-bold border border-gold/30 shadow-2xl z-20">
+                          <div className="aura-price-badge">
                             ${wp.price}
                           </div>
 
@@ -949,17 +928,14 @@ function MainContent() {
                             </p>
                           </div>
 
-                          {/* Hover Shine Effect */}
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none">
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent w-full h-full animate-shimmer" />
-                          </div>
                         </div>
                       </motion.div>
                     ))
                   )}
                 </Masonry>
-              </div>
-            </>
+                </div>
+              </section>
+            </div>
           )}
 
           {activeTab === 'Categories' && (
