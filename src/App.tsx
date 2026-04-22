@@ -51,47 +51,47 @@ const ADMIN_EMAIL = "buzasun@gmail.com";
 const LANGUAGES = {
   EN: {
     brand: "AuraCanvas",
-    tagline: "Modern Talismans for the Digital Soul",
-    heroTitle: "Manifest Your <br /> Inner <span class='text-gold'>Energy</span>",
-    heroSubtitle: "Midjourney-generated digital amulets designed to align your space with Wealth, Love, and Success.",
-    enterGallery: "Enter the Sanctuary",
-    categoryAll: "All Energies",
-    acquisition: "Acquisition",
-    acquirePiece: "Acquire this Talisman",
+    tagline: "The Digital Sanctuary of Intent",
+    heroTitle: "This is not just art. <br /> Choose what you want to <span class='text-gold'>attract.</span>",
+    heroSubtitle: "Premium digital ritual tools designed to align your consciousness with the vibrations of Abundance, Love, and Energy.",
+    enterGallery: "Enter the Gallery",
+    categoryAll: "All Frequencies",
+    acquisition: "Activation",
+    acquirePiece: "Begin Activation",
     investment: "Energy Exchange",
-    downloadArt: "Download Talisman",
-    successTitle: "The Energy is Yours",
-    successSubtitle: "Your digital talisman has been successfully acquired and is ready to manifest in your daily life.",
-    footerText: "Modern Talismans for the Digital Soul. Every screen is an altar, and every wallpaper is a manifestation of your intent.",
+    downloadArt: "Activate Frequency",
+    successTitle: "The Alignment is Complete",
+    successSubtitle: "Your ritual art is now synchronized with your intent. Choose your mode of activation below.",
+    footerText: "Premium digital art for the intentional soul. Every pixel is a prayer, every screen an altar.",
     copyright: "© 2026 AuraCanvas. Manifested with Intent.",
-    adminPanel: "Sanctuary Control",
+    adminPanel: "Gallery Control",
     signIn: "Connect Soul",
     signOut: "Disconnect",
-    categories: "Energies",
-    myLibrary: "My Amulets",
-    home: "Sanctuary"
+    categories: "Frequencies",
+    myLibrary: "My Sanctuary",
+    home: "Gallery"
   },
   KO: {
     brand: "AuraCanvas",
-    tagline: "디지털 영혼을 위한 현대적 부적",
-    heroTitle: "당신의 내면 <br /> <span class='text-gold'>에너지</span>를 발현하세요",
-    heroSubtitle: "부, 사랑, 성공과 당신의 공간을 정렬하기 위해 디자인된 미드저니 생성 디지털 부적입니다.",
-    enterGallery: "성소 입장하기",
-    categoryAll: "모든 에너지",
-    acquisition: "획득",
-    acquirePiece: "이 부적 획득하기",
+    tagline: "의도가 깃든 디지털 성소",
+    heroTitle: "이건 단순한 이미지가 아닙니다. <br /> 당신이 <span class='text-gold'>끌어당길 것</span>을 선택하세요.",
+    heroSubtitle: "당신의 의식을 풍요, 사랑, 에너지의 파동과 정렬하도록 설계된 프리미엄 디지털 의식 도구입니다.",
+    enterGallery: "갤러리 입장하기",
+    categoryAll: "모든 주파수",
+    acquisition: "활성화",
+    acquirePiece: "의식 시작하기",
     investment: "에너지 교환",
-    downloadArt: "부적 다운로드",
-    successTitle: "에너지가 당신과 함께합니다",
-    successSubtitle: "디지털 부적이 성공적으로 획득되었으며 당신의 일상에서 발현될 준비가 되었습니다.",
-    footerText: "디지털 영혼을 위한 현대적 부적. 모든 화면은 제단이며, 모든 배경화면은 당신의 의지의 발현입니다.",
+    downloadArt: "주파수 활성화",
+    successTitle: "정렬이 완료되었습니다",
+    successSubtitle: "작품이 당신의 의도와 동기화되었습니다. 아래에서 활성화 방식을 선택하세요.",
+    footerText: "의식 있는 영혼을 위한 프리미엄 디지털 아트. 모든 픽셀은 기도이며, 모든 화면은 제단입니다.",
     copyright: "© 2026 AuraCanvas. 의지로 구현됨.",
-    adminPanel: "성소 관리",
+    adminPanel: "갤러리 관리",
     signIn: "영혼 연결",
     signOut: "연결 해제",
-    categories: "에너지 유형",
-    myLibrary: "나의 부적",
-    home: "성소"
+    categories: "에너지 주파수",
+    myLibrary: "나의 성소",
+    home: "갤러리"
   }
 };
 
@@ -334,32 +334,51 @@ const MockupOverlay = ({
           <div className="space-y-6">
             <div className="flex items-center justify-center lg:justify-start gap-4">
               <span className="text-gold uppercase tracking-[0.5em] text-[10px] font-bold px-4 py-1.5 bg-gold/10 rounded-full border border-gold/20 animate-pulse-gold">
-                {wallpaper.category} Energy
+                {wallpaper.category} Activation
               </span>
             </div>
             <h2 className="text-6xl lg:text-7xl font-serif font-bold leading-[0.9] tracking-tight">{wallpaper.title}</h2>
             <p className="text-white/50 leading-relaxed font-light text-xl italic max-w-md">
-              "{wallpaper.meaning || lang.heroSubtitle}"
+              "{wallpaper.meaning}"
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 py-8 border-y border-white/5">
-            <div className="flex flex-col gap-2 items-center lg:items-start">
-              <div className="flex items-center gap-3 text-gold">
-                <Smartphone className="w-4 h-4" />
-                <span className="text-[10px] uppercase tracking-widest font-bold">OLED Mastery</span>
-              </div>
-              <p className="text-[10px] text-white/30 uppercase tracking-widest">Optimized for Black</p>
+          {wallpaper.description && (
+            <div className="space-y-4">
+              <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold/60">The Intent</h4>
+              <p className="text-white/70 font-light leading-relaxed">{wallpaper.description}</p>
             </div>
-            <div className="flex flex-col gap-2 items-center lg:items-start">
-              <div className="flex items-center gap-3 text-gold">
-                <Monitor className="w-4 h-4" />
-                <span className="text-[10px] uppercase tracking-widest font-bold">4K Talisman</span>
-              </div>
-              <p className="text-[10px] text-white/30 uppercase tracking-widest">Ultra-High Fidelity</p>
-            </div>
-          </div>
+          )}
 
+          {wallpaper.ritual_steps && (
+            <div className="space-y-4">
+              <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold/60">Ritual Guide</h4>
+              <ul className="space-y-3">
+                {wallpaper.ritual_steps.map((step, idx) => (
+                  <li key={idx} className="flex gap-4 text-sm font-light text-white/50 text-left">
+                    <span className="text-gold font-serif italic">{idx + 1}.</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="grid grid-cols-3 gap-6 py-8 border-y border-white/5">
+            {[
+              { icon: Smartphone, label: "Phone Ritual" },
+              { icon: Library, label: "Focus Mode" },
+              { icon: Monitor, label: "Space Activation" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex flex-col gap-2 items-center lg:items-start">
+                <div className="flex items-center gap-3 text-gold">
+                  <item.icon className="w-4 h-4" />
+                  <span className="text-[10px] uppercase tracking-widest font-bold">{item.label}</span>
+                </div>
+                <p className="text-[9px] text-white/30 uppercase tracking-widest">Included</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -384,7 +403,7 @@ const MockupOverlay = ({
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full -translate-x-full group-hover/btn:animate-shimmer pointer-events-none" />
                   
                   <ShoppingCart className="w-4 h-4 relative z-10" />
-                  <span className="relative z-10">Manifest Now</span>
+                  <span className="relative z-10">{lang.acquirePiece}</span>
                 </button>
               ) : (
                 <div className="animate-in fade-in slide-in-from-bottom-4">
@@ -458,19 +477,26 @@ const SuccessModal = ({ onClose, lang, wallpaper }: { onClose: () => void, lang:
           </div>
           <h3 className="text-3xl font-serif font-bold mb-3 text-white">{lang.successTitle}</h3>
           <p className="text-white/50 font-light mb-10 leading-relaxed">{lang.successSubtitle}</p>
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 gap-4">
+            {[
+              { label: "Phone Ritual", icon: Smartphone },
+              { label: "Focus Mode", icon: Library },
+              { label: "Space Activation", icon: Monitor }
+            ].map((btn, idx) => (
+              <button 
+                key={idx}
+                className="w-full bg-white/5 hover:bg-gold/20 text-white h-16 rounded-2xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 transition-all border border-white/10"
+                onClick={handleDownload}
+              >
+                <btn.icon className="w-4 h-4 text-gold" />
+                {btn.label}
+              </button>
+            ))}
             <button 
-              className="w-full bg-gold text-deep-black h-16 rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-white transition-colors shadow-[0_0_20px_rgba(219,198,126,0.3)]"
-              onClick={handleDownload}
-            >
-              <Download className="w-4 h-4" />
-              {lang.downloadArt}
-            </button>
-            <button 
-              className="w-full h-16 rounded-2xl font-medium text-white/40 uppercase tracking-widest text-[10px] hover:text-gold transition-colors"
+              className="mt-4 text-white/40 uppercase tracking-widest text-[9px] hover:text-gold transition-colors"
               onClick={onClose}
             >
-              Return to Sanctuary
+              Return to Gallery
             </button>
           </div>
         </div>
@@ -501,18 +527,18 @@ const Footer = ({ lang, currentLang, setLang }: { lang: any, currentLang: string
         </div>
         
         <div>
-          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold mb-8">Manifestations</h5>
+          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold mb-8">Frequencies</h5>
           <ul className="flex flex-col gap-4 text-xs font-light text-white/60">
-            {['Abundance', 'Harmony', 'Vitality', 'Focus'].map(item => (
+            {['Abundance', 'Love', 'Energy', 'Healing'].map(item => (
               <li key={item}><a href="#" className="hover:text-gold transition-colors">{item}</a></li>
             ))}
           </ul>
         </div>
 
         <div>
-          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold mb-8">Sanctuary</h5>
+          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold mb-8">The Gallery</h5>
           <ul className="flex flex-col gap-4 text-xs font-light text-white/60">
-            {['FAQ', 'Licensing', 'Privacy', 'Terms', 'Contact'].map(item => (
+            {['About', 'FAQ', 'Privacy', 'Terms', 'Contact'].map(item => (
               <li key={item}><a href="#" className="hover:text-gold transition-colors">{item}</a></li>
             ))}
           </ul>
@@ -859,34 +885,34 @@ function MainContent() {
                         }}
                         className="group relative flex flex-col gap-4 cursor-pointer mb-10"
                       >
-                        {/* Phone Mockup Style Card */}
+                        {/* Ritual Card Container */}
                         <div className="relative aspect-[9/16] bg-charcoal rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 border border-white/10 talisman-glow group-hover:border-gold/30">
                           <img
                             src={wp.thumb_url}
                             alt={wp.title}
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
                             referrerPolicy="no-referrer"
                           />
                           
-                          {/* Shimmer Effect */}
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/10 to-transparent w-full h-full animate-shimmer" />
+                          {/* Energy Lock UI */}
+                          <div className="absolute inset-0 energy-veil flex flex-col items-center justify-center group-hover:opacity-0">
+                            <div className="energy-glow-overlay absolute inset-0" />
+                            <div className="glass-seal w-16 h-16 rounded-full flex items-center justify-center mb-4 relative z-10">
+                              <div className="absolute inset-0 bg-gold/10 rounded-full animate-ping" />
+                              <ShieldCheck className="w-7 h-7 text-gold animate-pulse-gold" />
+                            </div>
+                            <span className="text-[10px] uppercase tracking-[0.5em] text-gold/80 font-bold relative z-10">Energy Locked</span>
                           </div>
 
-                          <div className="absolute inset-0 bg-gradient-to-t from-deep-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-deep-black/90 via-transparent to-transparent opacity-80" />
                           
-                          {/* Energy Name Overlay */}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-deep-black/20 backdrop-blur-[2px]">
-                            <div className="absolute inset-0 bg-gold/5 animate-pulse-gold opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                            <span className="relative text-[10px] uppercase tracking-[0.5em] text-gold font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{wp.category}</span>
-                            <div className="relative w-12 h-[1px] bg-gold/40 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
-                          </div>
-
-                          <div className="absolute top-4 right-4 bg-gold text-deep-black px-3 py-1.5 rounded-full text-[10px] font-bold shadow-lg">
+                          <div className="absolute top-6 right-6 bg-deep-black/60 backdrop-blur-md text-gold px-4 py-2 rounded-full text-[10px] font-bold border border-gold/20 shadow-xl">
                             ${wp.price}
                           </div>
-                          <div className="absolute bottom-6 left-6 right-6 flex flex-col gap-1">
-                            <h3 className="font-serif font-bold text-lg text-white leading-tight">{wp.title}</h3>
+
+                          <div className="absolute bottom-8 left-8 right-8 flex flex-col gap-2">
+                            <span className="text-[9px] uppercase tracking-[0.4em] text-gold/60 font-bold">{wp.category}</span>
+                            <h3 className="font-serif font-bold text-xl text-white leading-tight">{wp.title}</h3>
                           </div>
                         </div>
                       </motion.div>
@@ -1023,7 +1049,7 @@ function AdminPage() {
     return (
       <div className="min-h-screen bg-deep-black flex flex-col items-center justify-center gap-6">
         <div className="w-12 h-12 border-2 border-gold border-t-transparent rounded-full animate-spin" />
-        <span className="text-[10px] uppercase tracking-[0.5em] text-gold animate-pulse">Aligning Sanctuary</span>
+        <span className="text-[10px] uppercase tracking-[0.5em] text-gold animate-pulse">Aligning Gallery</span>
       </div>
     );
   }
@@ -1034,8 +1060,8 @@ function AdminPage() {
         <div className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center mb-8 border border-gold/20 animate-pulse-gold">
           <ShieldCheck className="text-gold w-12 h-12" />
         </div>
-        <h1 className="text-4xl font-serif font-bold mb-4 text-white">Sanctuary Control</h1>
-        <p className="text-white/40 mb-12 max-w-md font-light italic">Only the Guardian of the Sanctuary may enter this space.</p>
+        <h1 className="text-4xl font-serif font-bold mb-4 text-white">Gallery Control</h1>
+        <p className="text-white/40 mb-12 max-w-md font-light italic">Only the Guardian of the Gallery may enter this space.</p>
         <button 
           onClick={handleLogin}
           className="bg-gold text-deep-black px-12 py-5 rounded-full text-xs uppercase tracking-[0.4em] font-bold hover:bg-white transition-all shadow-[0_0_30px_rgba(219,198,126,0.4)]"
