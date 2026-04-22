@@ -13,6 +13,7 @@ import {
   Monitor,
   CheckCircle2,
   Heart,
+  ArrowLeft,
   ArrowRight,
   LogIn,
   ShieldCheck,
@@ -278,6 +279,15 @@ const MockupOverlay = ({
   handlePurchaseSuccess: (wp: Wallpaper) => void,
   currentLang: string
 }) => {
+  const handleReturnToGallery = () => {
+    if (window.history.state?.auraMockupOpen) {
+      window.history.back();
+      return;
+    }
+
+    onClose();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -285,9 +295,30 @@ const MockupOverlay = ({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-deep-black/98 backdrop-blur-xl flex flex-col items-center justify-start overflow-y-auto pt-20 pb-40"
     >
+      <div className="fixed top-4 left-4 right-4 z-[115]">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between rounded-full border border-white/10 bg-deep-black/30 px-3 py-3 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.22)]">
+          <button
+            onClick={handleReturnToGallery}
+            className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.26em] text-white/75 transition-all hover:border-gold/30 hover:bg-gold/10 hover:text-gold"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Gallery
+          </button>
+
+          <button 
+            onClick={handleReturnToGallery}
+            className="p-3 bg-white/5 rounded-full text-white hover:bg-gold/20 transition-colors border border-white/10"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
       <button 
         onClick={onClose}
-        className="fixed top-6 right-6 z-[110] p-3 bg-white/5 rounded-full text-white hover:bg-gold/20 transition-colors border border-white/10"
+        className="sr-only"
+        aria-hidden="true"
+        tabIndex={-1}
       >
         <X className="w-6 h-6" />
       </button>
@@ -718,6 +749,28 @@ function MainContent() {
     setTimeout(() => setRefreshing(false), 1500);
   }, []);
 
+  const closeMockupOverlay = useCallback(() => {
+    setShowMockup(false);
+    setIsPurchasing(false);
+    setSelectedWallpaper(null);
+  }, []);
+
+  useEffect(() => {
+    if (!showMockup || !selectedWallpaper) return;
+
+    const state = { auraMockupOpen: true };
+    window.history.pushState(state, '', window.location.href);
+
+    const handlePopState = () => {
+      closeMockupOverlay();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showMockup, selectedWallpaper, closeMockupOverlay]);
+
   useEffect(() => {
     let startY = 0;
     const handleTouchStart = (e: TouchEvent) => { startY = e.touches[0].pageY; };
@@ -753,7 +806,7 @@ function MainContent() {
         <main className="relative z-10 pb-32">
           {activeTab === 'Home' && (
             <div className="relative">
-              <section className="aura-hero aura-hero-bg">
+              <section className="aura-hero">
                 <div className="relative z-10 mx-auto max-w-6xl px-6 pt-12 text-center lg:px-16">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -1006,11 +1059,7 @@ function MainContent() {
           {showMockup && selectedWallpaper && (
             <MockupOverlay 
               wallpaper={selectedWallpaper} 
-              onClose={() => {
-                setShowMockup(false);
-                setIsPurchasing(false);
-                setSelectedWallpaper(null);
-              }} 
+              onClose={closeMockupOverlay} 
               onPurchase={() => setIsPurchasing(true)}
               lang={lang}
               user={user}
