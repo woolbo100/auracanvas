@@ -403,9 +403,11 @@ const StatCard = ({ label, value, icon: Icon, trend, color }: any) => (
 );
 
 const UploadView = ({ categories }: { categories: Category[] }) => {
-  const [file, setFile] = useState<File | null>(null);
+  const [mainFile, setMainFile] = useState<File | null>(null);
+  const [thumbFile, setThumbFile] = useState<File | null>(null);
   const [highResFile, setHighResFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [mainPreview, setMainPreview] = useState<string | null>(null);
+  const [thumbPreview, setThumbPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [formData, setFormData] = useState({
@@ -455,12 +457,22 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMainFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
-      setFile(selected);
+      setMainFile(selected);
       const reader = new FileReader();
-      reader.onloadend = () => setPreview(reader.result as string);
+      reader.onloadend = () => setMainPreview(reader.result as string);
+      reader.readAsDataURL(selected);
+    }
+  };
+
+  const handleThumbFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setThumbFile(selected);
+      const reader = new FileReader();
+      reader.onloadend = () => setThumbPreview(reader.result as string);
       reader.readAsDataURL(selected);
     }
   };
@@ -493,7 +505,7 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || uploading) return;
+    if (!mainFile || uploading) return;
 
     setUploading(true);
     setProgress(0);
@@ -501,21 +513,30 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
     try {
       const timestamp = Date.now();
       
-      // 1. Generate Thumbnail
-      const thumbBlob = await generateThumbnail(file);
+      // 1. Determine High Res File (Optional extra file or main file)
+      const fileToUploadAsHighRes = highResFile || mainFile;
       
-      // 2. Determine High Res File
-      const fileToUploadAsHighRes = highResFile || file;
-      
-      // 3. Upload High Res
+      // 2. Upload Representative Image (High Res)
       const highResRef = ref(storage, `products/${timestamp}_original_${fileToUploadAsHighRes.name}`);
       const highResSnapshot = await uploadBytes(highResRef, fileToUploadAsHighRes);
-      setProgress(50);
+      setProgress(40);
+
+      // 3. Handle Thumbnail
+      let thumbToUpload: Blob | File;
+      let thumbName: string;
+
+      if (thumbFile) {
+        thumbToUpload = thumbFile;
+        thumbName = `${timestamp}_manual_thumb_${thumbFile.name}`;
+      } else {
+        thumbToUpload = await generateThumbnail(mainFile);
+        thumbName = `${timestamp}_auto_thumb_${mainFile.name.split('.')[0]}.webp`;
+      }
 
       // 4. Upload Thumbnail
-      const thumbRef = ref(storage, `products/${timestamp}_thumb_${file.name.split('.')[0]}.webp`);
-      const thumbSnapshot = await uploadBytes(thumbRef, thumbBlob);
-      setProgress(100);
+      const thumbRef = ref(storage, `products/${thumbName}`);
+      const thumbSnapshot = await uploadBytes(thumbRef, thumbToUpload);
+      setProgress(80);
 
       const imageUrl = await getDownloadURL(highResSnapshot.ref);
       const thumbnailUrl = await getDownloadURL(thumbSnapshot.ref);
@@ -539,11 +560,14 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
         created_at: serverTimestamp()
       });
 
+      setProgress(100);
       setUploading(false);
       setSuccess(true);
-      setFile(null);
+      setMainFile(null);
+      setThumbFile(null);
       setHighResFile(null);
-      setPreview(null);
+      setMainPreview(null);
+      setThumbPreview(null);
       setFormData({ 
         slug: '', title_ko: '', title_en: '', category: 'Abundance', price: '8.88', 
         description_ko: '', description_en: '', locked: true, featured: false, 
@@ -789,124 +813,6 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
               Product Successfully Manifested into the Sanctuary!
             </motion.div>
           )}
-        </div>
-      </form>
-    </div>
-  );
-};
-                step="0.01"
-                value={formData.price}
-                onChange={e => setFormData({...formData, price: e.target.value})}
-                placeholder="0.00"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white focus:border-gold/50 outline-none transition-all"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Spiritual Meaning (Description)</label>
-            <textarea 
-              required
-              rows={4}
-              value={formData.description}
-              onChange={e => setFormData({...formData, description: e.target.value})}
-              placeholder="Describe the mystical story or blessing message..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white focus:border-gold/50 outline-none transition-all resize-none"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">High-Res File (Optional)</label>
-            <div className="flex items-center gap-4">
-              <button 
-                type="button"
-                onClick={() => document.getElementById('high-res-upload')?.click()}
-                className="flex-1 bg-white/5 border border-white/10 rounded-2xl h-16 px-6 text-white/40 text-xs uppercase tracking-widest font-bold hover:border-gold/30 transition-all flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                {highResFile ? highResFile.name : 'Select High-Res File'}
-              </button>
-              {highResFile && (
-                <button 
-                  type="button"
-                  onClick={() => setHighResFile(null)}
-                  className="p-4 bg-rose-500/10 text-rose-500 rounded-2xl border border-rose-500/20 hover:bg-rose-500/20 transition-all"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              )}
-            </div>
-            <input 
-              id="high-res-upload"
-              type="file" 
-              accept="image/*"
-              onChange={(e) => setHighResFile(e.target.files?.[0] || null)}
-              className="hidden"
-            />
-          </div>
-
-          <button 
-            type="submit"
-            disabled={uploading || !file}
-            className="w-full bg-gold text-deep-black h-18 rounded-2xl font-bold uppercase tracking-[0.4em] text-xs flex items-center justify-center gap-3 hover:bg-white transition-all shadow-[0_0_30px_rgba(219,198,126,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-          >
-            {uploading && (
-              <div className="absolute inset-0 bg-gold/20 flex items-center justify-center">
-                <div className="w-full h-full bg-gold/20 origin-left transition-transform duration-300" style={{ transform: `scaleX(${progress/100})` }} />
-              </div>
-            )}
-            <UploadCloud className="w-5 h-5 relative z-10" />
-            <span className="relative z-10">{uploading ? `Manifesting ${Math.round(progress)}%` : 'Manifest Talisman'}</span>
-          </button>
-
-          {success && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 text-center text-xs uppercase tracking-widest font-bold"
-            >
-              Talisman Successfully Manifested!
-            </motion.div>
-          )}
-        </div>
-
-        <div className="space-y-8">
-          <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Artwork Preview</label>
-          <div 
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={cn(
-              "relative aspect-[9/16] rounded-[3rem] border-2 border-dashed transition-all duration-500 overflow-hidden flex flex-col items-center justify-center group cursor-pointer",
-              isDragging 
-                ? "border-gold bg-gold/10 scale-[0.98]" 
-                : "border-white/10 bg-white/5 hover:border-gold/30"
-            )}
-            onClick={() => document.getElementById('file-upload')?.click()}
-          >
-            {preview ? (
-              <>
-                <img src={preview} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-deep-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="text-[10px] uppercase tracking-widest font-bold text-white bg-gold/20 px-6 py-3 rounded-full backdrop-blur-md border border-gold/30">Change Artwork</span>
-                </div>
-              </>
-            ) : (
-              <div className="text-center p-12 space-y-4">
-                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 group-hover:border-gold/30 transition-all">
-                  <ImageIcon className="w-8 h-8 text-white/20 group-hover:text-gold transition-colors" />
-                </div>
-                <p className="text-xs text-white/40 uppercase tracking-widest leading-relaxed">Drop your high-res <br /> talisman here</p>
-              </div>
-            )}
-            <input 
-              id="file-upload"
-              type="file" 
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
         </div>
       </form>
     </div>
