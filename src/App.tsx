@@ -869,6 +869,7 @@ function MainContent() {
           {activeTab === 'Home' && (
             <div className="relative">
               <section className="aura-hero" onMouseMove={handleAuraMove} onMouseLeave={resetAuraMove}>
+                <div className="aura-hero-bg-flow" />
                 <div className="aura-hero-aurora" />
                 <div className="aura-hero-ripple" />
                 <div className="aura-hero-gold-trace" />

@@ -135,6 +135,12 @@
     color: var(--color-gold);
   }
 
+  @keyframes heroBgFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
   @keyframes auraDrift {
     0% {
       transform: translate3d(0px, 0px, 0) scale(1);
@@ -205,6 +211,24 @@
     background: transparent;
     --mx: 50%;
     --my: 50%;
+  }
+
+  .aura-hero-bg-flow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+      -45deg,
+      rgba(93, 58, 160, 0.15),
+      rgba(63, 116, 232, 0.12),
+      rgba(201, 169, 91, 0.08),
+      rgba(93, 58, 160, 0.15)
+    );
+    background-size: 400% 400%;
+    animation: heroBgFlow 24s ease infinite;
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
   }
 
   .aura-hero-aurora {
