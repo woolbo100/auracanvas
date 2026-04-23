@@ -978,6 +978,11 @@
     will-change: transform;
   }
 
+  .aura-frequency-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+  }
+
   .aura-frequency-card:active {
     transform: translateY(-3px);
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);

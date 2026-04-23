@@ -1865,7 +1865,7 @@ function MainContent() {
           )}
 
           {activeTab === 'Frequencies' && (
-            <div className="relative overflow-hidden px-6 lg:px-16 max-w-7xl mx-auto pt-28 pb-6">
+            <div className="relative overflow-hidden px-6 lg:px-16 max-w-7xl mx-auto pt-36 pb-6">
               <div className="pointer-events-none absolute inset-x-0 top-6 h-[460px] opacity-75">
                 <div className="absolute left-1/2 top-0 h-[220px] w-[240px] -translate-x-[145%] rounded-full bg-[rgba(126,87,255,0.11)] blur-[95px]" />
                 <div className="absolute left-1/2 top-8 h-[260px] w-[320px] -translate-x-1/2 rounded-full bg-[rgba(76,126,255,0.09)] blur-[120px]" />
