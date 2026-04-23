@@ -131,9 +131,9 @@
   }
 
   @keyframes heroBgFlow {
-    0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
-    50% { background-position: 100% 50%; filter: hue-rotate(15deg); }
-    100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   @keyframes auraDrift {
@@ -203,12 +203,14 @@
     background: linear-gradient(
       135deg,
       rgba(88, 54, 155, 0.35) 0%,
-      rgba(140, 90, 255, 0.2) 25%,
-      rgba(219, 185, 105, 0.15) 75%,
-      rgba(113, 68, 190, 0.3) 100%
+      rgba(219, 185, 105, 0.18) 20%,
+      rgba(60, 180, 255, 0.25) 40%,
+      rgba(140, 90, 255, 0.2) 60%,
+      rgba(113, 68, 190, 0.3) 80%,
+      rgba(88, 54, 155, 0.35) 100%
     );
-    background-size: 200% 200%;
-    animation: heroBgFlow 25s ease infinite;
+    background-size: 300% 300%;
+    animation: heroBgFlow 40s ease-in-out infinite;
     filter: blur(60px);
     opacity: 0.8;
   }
@@ -234,15 +236,17 @@
   .aura-hero-aurora::before {
     background:
       radial-gradient(circle at 15% 30%, rgba(150, 80, 255, 0.35), transparent 60%),
-      radial-gradient(circle at 85% 70%, rgba(219, 185, 105, 0.2), transparent 50%);
-    animation: auraDrift 25s ease-in-out infinite alternate;
+      radial-gradient(circle at 85% 70%, rgba(219, 185, 105, 0.22), transparent 50%),
+      radial-gradient(circle at 50% 10%, rgba(80, 180, 255, 0.15), transparent 45%);
+    animation: auraDrift 30s ease-in-out infinite alternate;
   }
 
   .aura-hero-aurora::after {
     background:
       radial-gradient(circle at 80% 20%, rgba(113, 68, 190, 0.25), transparent 55%),
-      radial-gradient(circle at 25% 80%, rgba(80, 180, 255, 0.15), transparent 50%);
-    animation: auraWave 18s ease-in-out infinite alternate-reverse;
+      radial-gradient(circle at 25% 80%, rgba(160, 100, 255, 0.18), transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(219, 185, 105, 0.12), transparent 40%);
+    animation: auraWave 22s ease-in-out infinite alternate-reverse;
     mix-blend-mode: screen;
     opacity: 0.7;
   }
