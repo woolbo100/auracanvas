@@ -252,12 +252,15 @@
 
   /* Reusable Aurora for Content Pages */
   .aura-page-aurora {
-    position: absolute;
-    inset: -20%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
     z-index: 0;
-    filter: blur(80px);
-    opacity: 0.5;
+    filter: blur(100px);
+    opacity: 0.4;
     mix-blend-mode: screen;
   }
 
