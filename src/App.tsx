@@ -1002,6 +1002,9 @@ function MainContent() {
                           <div className="aura-unlock-message">
                             {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
                           </div>
+
+                          {/* Golden Aura Mist Layer */}
+                          <div className="aura-card-gold-aura" />
                           
                           {/* Premium Lock Overlay */}
                           {wp.locked && (
