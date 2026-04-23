@@ -75,7 +75,7 @@ const LANGUAGES = {
   KO: {
     brand: "AuraCanvas",
     tagline: "의도가 깃든 디지털 성소",
-    heroTitle: "이건 단순한 이미지가 아닙니다. <br /> 당신이 <span class='aura-gold-text'>끌어당길 것</span>을 선택하세요.",
+    heroTitle: "이건 단순한 이미지가 아닙니다. <br /> <span class='whitespace-nowrap'>당신이 <span class='aura-gold-text'>끌어당길 것</span>을 선택하세요.</span>",
     heroSubtitle: "당신의 의식을 풍요, 사랑, 에너지의 파동과 정렬하도록 설계된 프리미엄 디지털 의식 도구입니다.",
     enterGallery: "갤러리 입장하기",
     categoryAll: "모든 주파수",
@@ -877,7 +877,7 @@ function MainContent() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="mx-auto mb-10 max-w-5xl text-4xl font-serif font-bold leading-[1.06] text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)] md:text-6xl lg:text-7xl"
+                    className="mx-auto mb-10 max-w-5xl text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-[1.06] tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)] break-keep"
                     dangerouslySetInnerHTML={{ __html: lang.heroTitle }}
                   />
 
