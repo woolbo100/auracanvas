@@ -410,7 +410,7 @@ const MockupOverlay = ({
 
           <div className="aura-unlock-flash" />
           <div className="aura-unlock-message">
-            {currentLang === 'EN' ? 'Activation complete' : '?쒖꽦???꾨즺'}
+            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
           </div>
 
           {wallpaper.locked && (
@@ -662,7 +662,7 @@ const MockupOverlay = ({
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-serif font-bold gold-metal-heading">${wallpaper.price}</span>
               </div>
-              <span className="text-[11px] mt-2 font-bold uppercase tracking-widest gold-metal-text">One-time purchase ??All formats included</span>
+              <span className="text-[11px] mt-2 font-bold uppercase tracking-widest gold-metal-text">One-time purchase / All formats included</span>
             </div>
             
             <div className="w-full md:w-auto min-w-[240px] flex flex-col gap-2">
@@ -974,9 +974,9 @@ const Footer = ({ lang, currentLang, setLang, setActiveTab }: { lang: any, curre
               currentLang === 'KO' ? "bg-gold text-deep-black" : "text-white/40 hover:text-white"
             )}
           >
-            ?쒓뎅??          </button>
+            한국어
+          </button>
         </div>
-
         <div className="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-white/30">
           <span>Digital Soul</span>
           <span>Global Energy</span>
@@ -1016,7 +1016,7 @@ const ContactSection = () => {
           <p className="mx-auto max-w-xl text-base font-light leading-8 text-white/72 md:text-lg">
             For all inquiries, please contact us via email.
             <br />
-            We typically respond within 24??8 hours.
+            We typically respond within 24-48 hours.
           </p>
 
           <a
@@ -1701,6 +1701,8 @@ function MainContent() {
               <section className="aura-hero" onMouseMove={handleAuraMove} onMouseLeave={resetAuraMove}>
                 <div className="aura-hero-bg-flow" />
                 <div className="aura-hero-aurora" />
+                <div className="aura-hero-mist" />
+                <div className="aura-hero-vignette" />
                 <div className="aura-hero-ripple" />
                 <div className="aura-hero-gold-trace" />
                 <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 lg:pt-32 text-center lg:px-16">
@@ -1855,7 +1857,7 @@ function MainContent() {
 
                           <div className="aura-unlock-flash" />
                           <div className="aura-unlock-message">
-                            {currentLang === 'EN' ? 'Activation complete' : '?쒖꽦???꾨즺'}
+                            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
                           </div>
 
                           {/* Golden Aura Mist Layer */}
@@ -1896,7 +1898,7 @@ function MainContent() {
                               {currentLang === 'EN' ? wp.title_en : wp.title_ko}
                             </h3>
                             <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-medium">
-                              {currentLang === 'EN' ? 'Activation Art' : '?섏떇 ?쒖꽦???꾧뎄'}
+                              {currentLang === 'EN' ? 'Activation Art' : '의식 활성화 도구'}
                             </p>
                           </div>
 
@@ -1975,7 +1977,7 @@ function MainContent() {
                 </p>
                 <div className="w-12 h-[1px] bg-gold/20 mx-auto my-16" />
                 <p>
-                  AURACANVAS was created to make the invisible??visible.
+                  AURACANVAS was created to make the invisible - visible.
                 </p>
                 <p>
                   We transform abstract inner states<br/>

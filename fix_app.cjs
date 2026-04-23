@@ -1,7 +1,21 @@
 const fs = require('fs');
 let content = fs.readFileSync('src/App.tsx', 'utf8');
 
-// Fix KO strings
+// Fix common corrupted Korean strings
+content = content.replace(/\?성\?\?\?료/g, '활성화 완료');
+content = content.replace(/\?국\?\?/g, '한국어');
+content = content.replace(/\?식 \?성\?\?\?구/g, '의식 활성화 도구');
+content = content.replace(/One-time purchase \?\?All formats included/g, 'One-time purchase / All formats included');
+content = content.replace(/within 24\?\?8 hours/g, 'within 24-48 hours');
+content = content.replace(/invisible\?\?visible/g, 'invisible - visible');
+
+// Fix corrupted About section strings if they still exist
+content = content.replace(/\?\?br\/>/g, '<br/>');
+content = content.replace(/\?셱e/g, "'re");
+content = content.replace(/\?셲/g, "'s");
+content = content.replace(/짤 2026/g, '© 2026');
+
+// Ensure KO language strings are correct
 const koStart = content.indexOf('KO: {');
 if (koStart !== -1) {
     const koEndSearch = content.indexOf(' home: ', koStart);
@@ -32,25 +46,5 @@ if (koStart !== -1) {
     content = content.substring(0, koStart) + newKo + content.substring(koEnd);
 }
 
-// Fix corrupted About section strings
-content = content.replace(/\?\?br\/>/g, '<br/>');
-content = content.replace(/\?셱e/g, "'re");
-content = content.replace(/\?셲/g, "'s");
-content = content.replace(/짤 2026/g, '© 2026');
-
-// Fix Card 3 placeholder
-const pocketSearch = 'mockups?.pocket?.imageUrl';
-const pocketIdx = content.lastIndexOf(pocketSearch);
-if (pocketIdx !== -1) {
-    const talismanStart = content.indexOf(') : (', pocketIdx);
-    if (talismanStart !== -1) {
-        const talismanEnd = content.indexOf(')}', talismanStart) + 2;
-        const replacement = `) : (
-                      <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.03] to-transparent z-10" />
-                    )}`;
-        content = content.substring(0, talismanStart) + replacement + content.substring(talismanEnd);
-    }
-}
-
 fs.writeFileSync('src/App.tsx', content, 'utf8');
-console.log('App.tsx restored successfully.');
+console.log('App.tsx final restoration complete.');
