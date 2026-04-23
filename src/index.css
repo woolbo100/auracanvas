@@ -274,17 +274,19 @@
 
   .aura-page-aurora::before {
     background:
-      radial-gradient(circle at 30% 20%, rgba(150, 80, 255, 0.15), transparent 50%),
-      radial-gradient(circle at 70% 40%, rgba(140, 90, 255, 0.1), transparent 40%),
-      radial-gradient(circle at 50% 80%, rgba(219, 185, 105, 0.08), transparent 50%);
-    animation: auraDrift 30s ease-in-out infinite alternate;
+      radial-gradient(circle at 15% 15%, rgba(150, 80, 255, 0.18) 0%, transparent 55%),
+      radial-gradient(circle at 85% 25%, rgba(219, 185, 105, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 50% 80%, rgba(113, 68, 190, 0.15) 0%, transparent 50%);
+    animation: auraDrift 40s ease-in-out infinite alternate;
   }
 
   .aura-page-aurora::after {
     background:
-      radial-gradient(circle at 60% 30%, rgba(80, 160, 255, 0.12), transparent 45%),
-      radial-gradient(circle at 20% 70%, rgba(140, 58, 200, 0.1), transparent 40%);
-    animation: auraWave 25s ease-in-out infinite alternate-reverse;
+      radial-gradient(circle at 75% 30%, rgba(60, 180, 255, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 25% 70%, rgba(140, 90, 255, 0.1) 0%, transparent 45%);
+    animation: auraWave 35s ease-in-out infinite alternate-reverse;
+    mix-blend-mode: screen;
+    opacity: 0.6;
   }
 
   .aura-hero-ripple {
@@ -645,14 +647,19 @@
     filter: blur(1.2px) saturate(0.96) brightness(0.95);
     transition: filter 0.45s ease, transform 0.6s ease;
   }
-
   .is-unlocked .aura-card-image {
     filter: blur(0px) saturate(1.02) brightness(1.02);
   }
 
+  .aura-card.is-locked .aura-card-image {
+    filter: blur(14px) brightness(0.4) saturate(0.6);
+    transform: scale(1.08);
+    transition: filter 0.8s ease, transform 0.8s ease;
+  }
+
   .aura-card:hover .aura-card-image {
-    filter: blur(0px) saturate(1.02) brightness(1.02);
-    transform: scale(1.025);
+    filter: blur(0) brightness(1) saturate(1);
+    transform: scale(1);
   }
 
   .aura-lock-overlay {
@@ -707,21 +714,21 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at center, rgba(201,169,91,0.08), transparent 36%),
-      radial-gradient(circle at center, rgba(93,58,160,0.10), transparent 54%);
-    filter: blur(18px);
+      radial-gradient(circle at center, rgba(201,169,91,0.12), transparent 45%),
+      radial-gradient(circle at center, rgba(15, 10, 20, 0.6), transparent 70%);
+    filter: blur(25px);
     z-index: 0;
     pointer-events: none;
     transition: opacity 0.9s ease;
   }
 
   .aura-card:hover .aura-lock-overlay {
-    background: radial-gradient(circle at center, rgba(15, 10, 20, 0.1), rgba(5, 5, 10, 0.4));
+    background: transparent;
   }
 
-  .aura-card:hover .aura-lock-overlay::before {
-    opacity: 1;
-    animation: sweepingWave 5s ease-in-out infinite alternate;
+  .aura-card:hover .aura-lock-overlay::before,
+  .aura-card:hover .aura-lock-overlay::after {
+    opacity: 0;
   }
 
   .aura-lock-seal {
@@ -733,27 +740,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05));
-    border: 1px solid rgba(231,215,162,0.20);
+    background: rgba(20, 18, 24, 0.85);
+    border: 1px solid rgba(231,215,162,0.25);
     box-shadow:
-      0 10px 30px rgba(0,0,0,0.30),
-      0 0 18px rgba(201,169,91,0.14);
-    backdrop-filter: blur(14px);
+      0 15px 35px rgba(0,0,0,0.45),
+      0 0 20px rgba(201,169,91,0.12);
+    backdrop-filter: blur(20px);
     transition:
-      opacity 0.35s ease,
-      transform 0.35s ease,
-      box-shadow 0.35s ease,
-      filter 0.35s ease;
+      opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.5s ease,
+      filter 0.5s ease;
   }
 
   .aura-card:hover .aura-lock-seal {
-    opacity: 0.45;
-    transform: scale(0.92);
-    filter: blur(1px);
-    box-shadow:
-      0 8px 18px rgba(0,0,0,0.24),
-      0 0 16px rgba(201,169,91,0.10);
-    border-color: rgba(231, 215, 162, 0.12);
+    opacity: 0;
+    transform: scale(1.1);
+    filter: blur(5px);
   }
 
   .is-unlocked .aura-lock-seal {
@@ -781,7 +784,8 @@
   }
 
   .aura-card:hover .aura-lock-overlay > span {
-    opacity: 0.4;
+    opacity: 0;
+    transform: translateY(10px);
   }
 
   .is-unlocked .aura-lock-overlay > span {
