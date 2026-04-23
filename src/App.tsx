@@ -1871,9 +1871,10 @@ function MainContent() {
           )}
 
           {activeTab === 'Frequencies' && (
-            <div className="relative overflow-hidden px-6 lg:px-16 max-w-7xl mx-auto pt-36 pb-12">
+            <div className="relative w-full overflow-hidden">
               <div className="aura-page-aurora" />
-              <h2 className="relative text-4xl font-serif font-bold mb-12 text-gold">Explore Energies</h2>
+              <div className="relative px-6 lg:px-16 max-w-7xl mx-auto pt-36 pb-20">
+                <h2 className="text-4xl font-serif font-bold mb-12 text-gold">Explore Energies</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {categories.map(cat => (
                   <button 
@@ -1896,8 +1897,9 @@ function MainContent() {
           )}
 
           {activeTab === 'About' && (
-            <div className="relative overflow-hidden px-6 lg:px-16 max-w-4xl mx-auto pt-40 pb-24 text-center">
+            <div className="relative w-full overflow-hidden">
               <div className="aura-page-aurora" />
+              <div className="relative px-6 lg:px-16 max-w-4xl mx-auto pt-40 pb-24 text-center">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
                 <h1 className="mb-10 font-serif text-5xl font-bold tracking-tight text-gold md:text-6xl">
                   ABOUT AURA
