@@ -722,10 +722,14 @@
   }
 
   .aura-card:hover .aura-lock-overlay {
-    background: transparent;
+    background: radial-gradient(circle at center, rgba(15, 10, 20, 0.1), rgba(5, 5, 10, 0.4));
   }
 
-  .aura-card:hover .aura-lock-overlay::before,
+  .aura-card:hover .aura-lock-overlay::before {
+    opacity: 1;
+    animation: sweepingWave 5s ease-in-out infinite alternate;
+  }
+
   .aura-card:hover .aura-lock-overlay::after {
     opacity: 0;
   }
