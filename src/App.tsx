@@ -1865,7 +1865,7 @@ function MainContent() {
           )}
 
           {activeTab === 'Frequencies' && (
-            <div className="relative overflow-hidden px-6 lg:px-16 max-w-7xl mx-auto pt-20 pb-6">
+            <div className="relative overflow-hidden px-6 lg:px-16 max-w-7xl mx-auto pt-28 pb-6">
               <div className="pointer-events-none absolute inset-x-0 top-6 h-[460px] opacity-75">
                 <div className="absolute left-1/2 top-0 h-[220px] w-[240px] -translate-x-[145%] rounded-full bg-[rgba(126,87,255,0.11)] blur-[95px]" />
                 <div className="absolute left-1/2 top-8 h-[260px] w-[320px] -translate-x-1/2 rounded-full bg-[rgba(76,126,255,0.09)] blur-[120px]" />
@@ -1882,7 +1882,7 @@ function MainContent() {
                       setSelectedCategory(cat.name);
                       navigate('/', { state: { scrollToGallery: true } });
                     }}
-                    className="group relative h-64 rounded-[3rem] overflow-hidden border border-white/10 hover:border-gold/40 transition-all"
+                    className="aura-frequency-card group relative h-64 rounded-[3rem] overflow-hidden border border-white/10 hover:border-gold/40 transition-all"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-gold/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
