@@ -17,7 +17,8 @@ import {
   ArrowRight,
   LogIn,
   ShieldCheck,
-  Loader2
+  Loader2,
+  Lock
 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import Masonry from 'react-masonry-css';
@@ -463,20 +464,26 @@ const MockupOverlay = ({
 
         <div className="aura-usage-grid">
           {/* Mockup Card 1: Canvas / Wall */}
-          <div className="aura-usage-card group/usage flex flex-col">
-            <div className="aura-usage-image h-48 sm:h-56">
+          <div className="aura-usage-card group/usage flex flex-col min-h-[400px]">
+            <div className="aura-usage-image w-full">
               {/* Wall Background */}
               <div className="absolute inset-0 bg-gradient-to-b from-charcoal to-deep-black rounded-xl opacity-30" />
               {/* Canvas Frame */}
-              <div className="relative w-32 aspect-[3/4] bg-charcoal shadow-[0_20px_40px_rgba(0,0,0,0.8)] border-[3px] border-[#2A2A2A] rounded-sm group-hover/usage:-translate-y-2 transition-transform duration-500 overflow-hidden">
+              <div className="relative w-[85%] max-w-[240px] aspect-[3/4] bg-charcoal shadow-[0_30px_60px_rgba(0,0,0,0.9)] border-[3px] border-[#2A2A2A] rounded-sm group-hover/usage:-translate-y-2 transition-transform duration-500 overflow-hidden mx-auto mt-4">
                 {/* Canvas Inner Image */}
                 {wallpaper.mockups?.space?.imageUrl ? (
                   <img src={wallpaper.mockups.space.imageUrl} className="absolute inset-0 w-full h-full object-cover" alt="Space Mockup" />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex flex-col items-center justify-center text-center p-2 border border-white/5">
-                     <span className="text-white/20 text-[8px] uppercase tracking-widest leading-relaxed">Canvas<br/>Mockup</span>
+                     <span className="text-white/20 text-[10px] uppercase tracking-widest leading-relaxed">Canvas<br/>Mockup</span>
                   </div>
                 )}
+                {/* Unified Lock Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-700">
+                  <div className="w-12 h-12 rounded-full border border-gold/30 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(219,198,126,0.3)]">
+                    <Lock className="w-5 h-5 text-gold" />
+                  </div>
+                </div>
                 {/* Ambient Light */}
                 <div className="absolute inset-x-0 -top-10 h-10 bg-gold/10 blur-xl rounded-full opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none" />
               </div>
@@ -488,25 +495,31 @@ const MockupOverlay = ({
           </div>
 
           {/* Mockup Card 2: Desktop / Monitor */}
-          <div className="aura-usage-card group/usage flex flex-col">
-            <div className="aura-usage-image h-48 sm:h-56">
+          <div className="aura-usage-card group/usage flex flex-col min-h-[400px]">
+            <div className="aura-usage-image w-full flex-col justify-end">
               {/* Desk Background */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl opacity-30" />
               {/* Monitor Frame */}
-              <div className="relative w-40 aspect-video bg-[#1A1A1A] rounded-[4px] border-2 border-[#333] shadow-[0_10px_30px_rgba(0,0,0,0.9)] flex flex-col group-hover/usage:-translate-y-2 transition-transform duration-500 mb-4">
+              <div className="relative w-full max-w-[280px] aspect-video bg-[#1A1A1A] rounded-md border-2 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col group-hover/usage:-translate-y-2 transition-transform duration-500 mb-6 mx-auto mt-auto z-10">
                 {/* Screen Content */}
-                <div className="flex-1 m-0.5 rounded-[2px] bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center border border-white/5 relative overflow-hidden">
+                <div className="flex-1 m-1 rounded-sm bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center border border-white/5 relative overflow-hidden">
                   {wallpaper.mockups?.focus?.imageUrl ? (
                     <img src={wallpaper.mockups.focus.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Focus Mockup" />
                   ) : (
-                    <span className="text-white/20 text-[8px] uppercase tracking-widest relative z-10">Desktop</span>
+                    <span className="text-white/20 text-[10px] uppercase tracking-widest relative z-10">Desktop</span>
                   )}
+                  {/* Unified Lock Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-700">
+                    <div className="w-12 h-12 rounded-full border border-gold/30 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(219,198,126,0.3)]">
+                      <Lock className="w-5 h-5 text-gold" />
+                    </div>
+                  </div>
                   {/* Screen Glow */}
                   <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none z-20" />
                 </div>
                 {/* Stand */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-2 h-4 bg-[#2A2A2A]" />
-                <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#3A3A3A] rounded-t-sm" />
+                <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-4 h-5 bg-[#2A2A2A]" />
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-20 h-1.5 bg-[#3A3A3A] rounded-t-sm" />
               </div>
             </div>
             <div className="aura-usage-content text-center mt-auto">
@@ -516,20 +529,26 @@ const MockupOverlay = ({
           </div>
 
           {/* Mockup Card 3: Talisman Card */}
-          <div className="aura-usage-card group/usage flex flex-col">
-            <div className="aura-usage-image h-48 sm:h-56 perspective-1000">
+          <div className="aura-usage-card group/usage flex flex-col min-h-[400px]">
+            <div className="aura-usage-image w-full perspective-1000">
               {/* Table Surface */}
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02),transparent)] rounded-xl" />
               {/* Physical Card */}
-              <div className="relative w-24 aspect-[2/3] bg-charcoal rounded-md border border-gold/20 shadow-[10px_10px_20px_rgba(0,0,0,0.6)] rotate-[15deg] group-hover/usage:rotate-6 group-hover/usage:-translate-y-2 group-hover/usage:shadow-[15px_15px_30px_rgba(0,0,0,0.7)] transition-all duration-500 overflow-hidden">
-                 <div className="absolute inset-1 border border-gold/10 rounded-sm pointer-events-none z-20" />
+              <div className="relative w-[70%] max-w-[200px] aspect-[2/3] bg-charcoal rounded-xl border border-gold/20 shadow-[15px_20px_40px_rgba(0,0,0,0.8)] rotate-[12deg] group-hover/usage:rotate-6 group-hover/usage:-translate-y-4 group-hover/usage:shadow-[20px_30px_50px_rgba(0,0,0,0.9)] transition-all duration-700 overflow-hidden mx-auto mt-8">
+                 <div className="absolute inset-1 border-[2px] border-gold/10 rounded-lg pointer-events-none z-20" />
                  {wallpaper.mockups?.pocket?.imageUrl ? (
                    <img src={wallpaper.mockups.pocket.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Pocket Mockup" />
                  ) : (
                    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent flex items-center justify-center z-10">
-                     <span className="text-gold/40 text-[8px] uppercase tracking-widest font-serif font-bold">Talisman</span>
+                     <span className="text-gold/40 text-[10px] uppercase tracking-widest font-serif font-bold">Talisman</span>
                    </div>
                  )}
+                 {/* Unified Lock Overlay */}
+                 <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-700">
+                   <div className="w-12 h-12 rounded-full border border-gold/30 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(219,198,126,0.3)]">
+                     <Lock className="w-5 h-5 text-gold" />
+                   </div>
+                 </div>
                  {/* Gold Foil reflection */}
                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover/usage:translate-x-full duration-1000 transition-transform pointer-events-none z-30" />
               </div>
