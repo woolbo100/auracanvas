@@ -160,11 +160,7 @@
   .aura-site-bg {
     position: relative;
     min-height: 100vh;
-    background:
-      radial-gradient(circle at 20% 12%, rgba(88, 54, 155, 0.10), transparent 28%),
-      radial-gradient(circle at 78% 24%, rgba(68, 118, 220, 0.08), transparent 30%),
-      radial-gradient(circle at 52% 68%, rgba(201, 169, 91, 0.05), transparent 34%),
-      linear-gradient(180deg, #08090d 0%, #040509 48%, #05060a 100%);
+    background: #05060a;
     color: var(--text-primary);
     overflow-x: hidden;
   }
@@ -181,24 +177,21 @@
 
   .aura-hero {
     position: relative;
-    padding-top: 160px;
-    padding-bottom: 180px;
-    background: #05060a;
+    padding-top: 140px;
+    padding-bottom: 80px;
+    background: transparent;
     --mx: 50%;
     --my: 50%;
     overflow: hidden;
   }
 
-  /* Vignette & Seamless Bottom Blend */
+  /* Bottom Blend only (Removed Top & Side Vignette for cleaner look) */
   .aura-hero::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: 5;
-    background: 
-      radial-gradient(circle at center, transparent 30%, rgba(5, 6, 10, 0.7) 100%),
-      linear-gradient(to bottom, transparent 60%, #05060a 100%),
-      linear-gradient(to top, transparent 80%, #05060a 100%);
+    background: linear-gradient(to bottom, transparent 60%, #05060a 100%);
     pointer-events: none;
   }
 
@@ -351,15 +344,12 @@
   .aura-gallery-section::before {
     content: "";
     position: absolute;
-    inset: -150px 0 auto 0;
-    height: 400px;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(140, 90, 255, 0.12), transparent 70%),
-      radial-gradient(circle at 30% 20%, rgba(255, 120, 200, 0.08), transparent 60%),
-      radial-gradient(circle at 70% 10%, rgba(68, 118, 220, 0.08), transparent 60%);
-    filter: blur(50px);
+    inset: -100px 0 auto 0;
+    height: 300px;
+    background: radial-gradient(circle at 50% 0%, rgba(140, 90, 255, 0.08), transparent 70%);
+    filter: blur(60px);
     pointer-events: none;
-    opacity: 0.8;
+    opacity: 0.6;
     z-index: 0;
   }
 
