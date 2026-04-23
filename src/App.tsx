@@ -164,16 +164,6 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
   const isAdmin = user?.email === ADMIN_EMAIL;
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const handlePrimaryNav = (tab: string) => {
-    if (tab === 'Frequencies') {
-      setActiveTab('Frequencies');
-    } else {
-      setActiveTab(tab);
-    }
-
-    if (isAdminView) onAdminToggle();
-  };
-
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -203,7 +193,7 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
           ].map((item) => (
             <button
               key={item.id}
-              onClick={() => handlePrimaryNav(item.id)}
+              onClick={() => { setActiveTab(item.id); if(isAdminView) onAdminToggle(); }}
               className={cn(
                 "text-xs uppercase tracking-[0.2em] font-medium transition-all hover:text-gold",
                 activeTab === item.id && !isAdminView ? "text-gold border-b border-gold pb-1" : "text-white/60"
@@ -251,7 +241,7 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
         ].map((item) => (
           <button
             key={item.id}
-            onClick={() => handlePrimaryNav(item.id)}
+            onClick={() => { setActiveTab(item.id); if(isAdminView) onAdminToggle(); }}
             className={cn(
               "relative flex flex-col items-center justify-center gap-1 w-full h-full min-h-[48px] transition-all duration-300",
               activeTab === item.id && !isAdminView ? "text-gold" : "text-white/40"
@@ -1578,14 +1568,6 @@ function MainContent() {
     e.currentTarget.style.setProperty("--my", `50%`);
   };
 
-  useEffect(() => {
-    if (activeTab === 'Frequencies') {
-      requestAnimationFrame(() => {
-        frequenciesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    }
-  }, [activeTab]);
-
   return (
     <PayPalScriptProvider options={{ 
       "clientId": import.meta.env.VITE_PAYPAL_CLIENT_ID || "ATNUPKM6CKGqJaD7mEkPXmHWoZf_TYIY1F8Md2gwbFWmRSHwyKAmIzjrVJ2MZt4DI5QzZSTrfGvpKMJf",
@@ -1603,7 +1585,7 @@ function MainContent() {
         />
 
         <main className="relative z-10 pb-32">
-          {(activeTab === 'Home' || activeTab === 'Frequencies') && (
+          {activeTab === 'Home' && (
             <div className="relative">
               <section className="aura-hero" onMouseMove={handleAuraMove} onMouseLeave={resetAuraMove}>
                 <div className="aura-hero-bg-flow" />
@@ -1816,6 +1798,33 @@ function MainContent() {
                 </Masonry>
                 </div>
               </section>
+            </div>
+          )}
+
+          {activeTab === 'Frequencies' && (
+            <div className="px-6 lg:px-16 max-w-7xl mx-auto pt-20">
+              <h2 className="text-4xl font-serif font-bold mb-12 text-gold">Explore Energies</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {categories.map(cat => (
+                  <button 
+                    key={cat.id}
+                    onClick={() => {
+                      setSelectedCategory(cat.name);
+                      setActiveTab('Home');
+                      requestAnimationFrame(() => {
+                        gallerySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      });
+                    }}
+                    className="group relative h-64 rounded-[3rem] overflow-hidden border border-white/10 hover:border-gold/40 transition-all"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-gold/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                      <span className="text-3xl font-serif font-bold text-white group-hover:text-gold transition-colors">{cat.name}</span>
+                      <span className="text-[10px] uppercase tracking-[0.4em] text-white/40">View Collection</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
