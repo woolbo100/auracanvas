@@ -527,11 +527,13 @@ const MockupOverlay = ({
                   )}
                 </div>
                 {/* Unified Lock Overlay */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-deep-black/20 backdrop-blur-[2px] group-hover/usage:opacity-0 transition-all duration-700 pointer-events-none">
-                  <div className="w-14 h-14 rounded-full bg-charcoal/90 backdrop-blur-md border border-gold/30 flex items-center justify-center mb-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                    <ShieldCheck className="w-6 h-6 text-gold" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none">
+                  {/* Lock Seal - Retreats on hover */}
+                  <div className="w-14 h-14 rounded-full bg-[rgba(20,16,24,0.58)] backdrop-blur-[12px] border border-[rgba(231,215,162,0.18)] flex items-center justify-center mb-5 shadow-[0_15px_35px_rgba(0,0,0,0.5)] group-hover/usage:opacity-[0.42] group-hover/usage:scale-[0.94] transition-all duration-500 ease-out">
+                    <ShieldCheck className="w-6 h-6 text-gold/80" />
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold/90 drop-shadow-lg">
+                  {/* Lock Text - Reveals on hover */}
+                  <span className="text-[11px] font-light uppercase tracking-[0.34em] text-[rgba(231,215,162,0.78)] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
                     Energy Locked
                   </span>
                 </div>
@@ -561,11 +563,13 @@ const MockupOverlay = ({
                     )}
                   </div>
                   {/* Unified Lock Overlay */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-deep-black/20 backdrop-blur-[2px] group-hover/usage:opacity-0 transition-all duration-700 pointer-events-none">
-                    <div className="w-14 h-14 rounded-full bg-charcoal/90 backdrop-blur-md border border-gold/30 flex items-center justify-center mb-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                      <ShieldCheck className="w-6 h-6 text-gold" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none">
+                    {/* Lock Seal - Retreats on hover */}
+                    <div className="w-14 h-14 rounded-full bg-[rgba(20,16,24,0.58)] backdrop-blur-[12px] border border-[rgba(231,215,162,0.18)] flex items-center justify-center mb-5 shadow-[0_15px_35px_rgba(0,0,0,0.5)] group-hover/usage:opacity-[0.42] group-hover/usage:scale-[0.94] transition-all duration-500 ease-out">
+                      <ShieldCheck className="w-6 h-6 text-gold/80" />
                     </div>
-                    <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold/90 drop-shadow-lg">
+                    {/* Lock Text - Reveals on hover */}
+                    <span className="text-[11px] font-light uppercase tracking-[0.34em] text-[rgba(231,215,162,0.78)] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
                       Energy Locked
                     </span>
                   </div>
@@ -602,11 +606,13 @@ const MockupOverlay = ({
                    )}
                  </div>
                  {/* Unified Lock Overlay */}
-                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-deep-black/20 backdrop-blur-[2px] group-hover/usage:opacity-0 transition-all duration-700 pointer-events-none">
-                   <div className="w-14 h-14 rounded-full bg-charcoal/90 backdrop-blur-md border border-gold/30 flex items-center justify-center mb-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                     <ShieldCheck className="w-6 h-6 text-gold" />
+                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none">
+                   {/* Lock Seal - Retreats on hover */}
+                   <div className="w-14 h-14 rounded-full bg-[rgba(20,16,24,0.58)] backdrop-blur-[12px] border border-[rgba(231,215,162,0.18)] flex items-center justify-center mb-5 shadow-[0_15px_35px_rgba(0,0,0,0.5)] group-hover/usage:opacity-[0.42] group-hover/usage:scale-[0.94] transition-all duration-500 ease-out">
+                     <ShieldCheck className="w-6 h-6 text-gold/80" />
                    </div>
-                   <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold/90 drop-shadow-lg">
+                   {/* Lock Text - Reveals on hover */}
+                   <span className="text-[11px] font-light uppercase tracking-[0.34em] text-[rgba(231,215,162,0.78)] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
                      Energy Locked
                    </span>
                  </div>
