@@ -1644,7 +1644,7 @@ function MainContent() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.75 }}
-                    className="mt-24 flex items-center justify-center gap-4 overflow-x-auto pb-2 no-scrollbar"
+                    className="mt-32 flex items-center justify-center gap-4 overflow-x-auto pb-2 no-scrollbar"
                   >
                     <button
                       onClick={() => {
@@ -1831,11 +1831,17 @@ function MainContent() {
           {activeTab === 'About' && (
             <div className="px-6 lg:px-16 max-w-4xl mx-auto pt-32 pb-24 text-center">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
+                <p className="mb-5 text-[12px] font-bold uppercase tracking-[0.45em] text-gold/72">
+                  ABOUT AURA
+                </p>
+                <h1 className="mb-8 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
+                  ABOUT AURA
+                </h1>
                 <ShieldCheck className="w-8 h-8 text-gold mx-auto mb-6 opacity-80" />
-                <h2 className="text-xl md:text-2xl font-serif font-bold text-white mb-2 leading-relaxed">We believe reality begins within.</h2>
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-white mb-2 leading-relaxed">We believe reality begins within.</h2>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="space-y-12 text-white/60 font-light leading-relaxed text-sm md:text-base">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="space-y-12 text-white/60 font-light leading-relaxed text-base md:text-lg">
                 <p>
                   There are moments in life when everything feels uncertain—<br/>
                   love, money, direction, timing.
@@ -1844,7 +1850,7 @@ function MainContent() {
                   But beneath all of it, there is something deeper.<br/>
                   A quiet force that shapes everything you experience.
                 </p>
-                <p className="font-serif text-white/80 text-lg">
+                <p className="font-serif text-white/80 text-xl md:text-2xl">
                   Your awareness.<br/>
                   Your energy.<br/>
                   Your inner state.
@@ -1894,7 +1900,7 @@ function MainContent() {
                   And when your inner world shifts,<br/>
                   your outer world has no choice but to follow.
                 </p>
-                <p className="font-serif text-white/90 text-lg my-12">
+                <p className="font-serif text-white/90 text-xl md:text-2xl my-12">
                   <strong>This is not about magic.<br/>It is about direction.</strong>
                 </p>
                 <p>
@@ -1907,7 +1913,7 @@ function MainContent() {
                   Not by force,<br/>
                   but by alignment.
                 </p>
-                <p className="font-serif text-gold text-lg my-12">
+                <p className="font-serif text-gold text-xl md:text-2xl my-12">
                   <strong>If you found this,<br/>you’re already in the flow.</strong>
                 </p>
                 <p>
