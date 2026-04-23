@@ -226,26 +226,26 @@
 
   .aura-hero-aurora::before {
     background:
-      radial-gradient(circle at 28% 24%, rgba(135, 84, 255, 0.22), transparent 30%),
-      radial-gradient(circle at 72% 28%, rgba(76, 132, 255, 0.18), transparent 34%),
-      radial-gradient(circle at 48% 58%, rgba(201, 169, 91, 0.10), transparent 30%);
+      radial-gradient(circle at 28% 24%, rgba(135, 84, 255, 0.45), transparent 40%),
+      radial-gradient(circle at 72% 28%, rgba(76, 132, 255, 0.35), transparent 44%),
+      radial-gradient(circle at 48% 58%, rgba(201, 169, 91, 0.20), transparent 40%);
     animation: auraDrift 16s ease-in-out infinite alternate;
   }
 
   .aura-hero-aurora::after {
     background:
-      radial-gradient(circle at 38% 42%, rgba(118, 76, 255, 0.10), transparent 24%),
-      radial-gradient(circle at 66% 52%, rgba(63, 116, 232, 0.08), transparent 26%),
-      radial-gradient(circle at 52% 68%, rgba(201, 169, 91, 0.05), transparent 22%);
+      radial-gradient(circle at 38% 42%, rgba(118, 76, 255, 0.35), transparent 34%),
+      radial-gradient(circle at 66% 52%, rgba(63, 116, 232, 0.25), transparent 36%),
+      radial-gradient(circle at 52% 68%, rgba(201, 169, 91, 0.15), transparent 32%);
     animation: auraWave 12s ease-in-out infinite alternate;
-    opacity: 0.88;
+    opacity: 0.95;
   }
 
   .aura-hero-ripple {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.42;
+    opacity: 0.8;
     mix-blend-mode: soft-light;
   }
 
@@ -259,13 +259,13 @@
     background:
       repeating-radial-gradient(
         circle at center,
-        rgba(255,255,255,0.06) 0px,
-        rgba(255,255,255,0.03) 2px,
+        rgba(255,255,255,0.15) 0px,
+        rgba(255,255,255,0.08) 2px,
         transparent 10px,
         transparent 18px
       );
-    filter: blur(10px);
-    opacity: 0.28;
+    filter: blur(8px);
+    opacity: 0.6;
     transition:
       left 180ms ease-out,
       top 180ms ease-out,
@@ -275,7 +275,7 @@
   }
 
   .aura-hero:hover .aura-hero-ripple::before {
-    opacity: 0.42;
+    opacity: 1;
     transform: scale(1.04);
   }
 
@@ -295,11 +295,11 @@
     top: calc(var(--my) - 120px);
     background:
       radial-gradient(circle at center,
-        rgba(231, 215, 162, 0.16) 0%,
-        rgba(201, 169, 91, 0.08) 28%,
+        rgba(231, 215, 162, 0.4) 0%,
+        rgba(201, 169, 91, 0.2) 28%,
         transparent 68%);
-    filter: blur(18px);
-    opacity: 0.22;
+    filter: blur(14px);
+    opacity: 0.5;
     transition:
       left 180ms ease-out,
       top 180ms ease-out,
@@ -308,7 +308,7 @@
   }
 
   .aura-hero:hover .aura-hero-gold-trace::before {
-    opacity: 0.34;
+    opacity: 0.9;
     transform: scale(1.06);
   }
 
