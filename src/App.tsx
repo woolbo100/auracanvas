@@ -448,53 +448,53 @@ const MockupOverlay = ({
             ))}
           </div>
         </div>
-        
-        {/* Usage Mockup Section */}
-        <section className="aura-usage-section mt-12 lg:mt-24">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-center text-white mb-16">Where This Energy Lives</h2>
+      </div>
 
-          <div className="aura-usage-grid">
-            {/* Mockup Card 1 */}
-            <div className="aura-usage-card group/usage">
-              <div className="aura-usage-image">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
-                  Image Coming Soon
-                </div>
-              </div>
-              <div className="aura-usage-content text-center">
-                <h3>Space Activation</h3>
-                <p>Transform your space into a field of aligned energy.</p>
+      {/* Usage Mockup Section */}
+      <section className="aura-usage-section w-full max-w-7xl mx-auto px-6 mt-24 lg:mt-32 mb-20">
+        <h2 className="text-3xl md:text-4xl font-serif font-bold text-center text-white mb-16">Where This Energy Lives</h2>
+
+        <div className="aura-usage-grid">
+          {/* Mockup Card 1 */}
+          <div className="aura-usage-card group/usage">
+            <div className="aura-usage-image">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
+                Image Coming Soon
               </div>
             </div>
-
-            {/* Mockup Card 2 */}
-            <div className="aura-usage-card group/usage">
-              <div className="aura-usage-image">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
-                  Image Coming Soon
-                </div>
-              </div>
-              <div className="aura-usage-content text-center">
-                <h3>Focus Alignment</h3>
-                <p>Keep the frequency close while you work and create.</p>
-              </div>
-            </div>
-
-            {/* Mockup Card 3 */}
-            <div className="aura-usage-card group/usage">
-              <div className="aura-usage-image">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
-                  Image Coming Soon
-                </div>
-              </div>
-              <div className="aura-usage-content text-center">
-                <h3>Pocket Ritual</h3>
-                <p>Carry the energy with you as a personal talisman.</p>
-              </div>
+            <div className="aura-usage-content text-center">
+              <h3>Space Activation</h3>
+              <p>Transform your space into a field of aligned energy.</p>
             </div>
           </div>
-        </section>
-      </div>
+
+          {/* Mockup Card 2 */}
+          <div className="aura-usage-card group/usage">
+            <div className="aura-usage-image">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
+                Image Coming Soon
+              </div>
+            </div>
+            <div className="aura-usage-content text-center">
+              <h3>Focus Alignment</h3>
+              <p>Keep the frequency close while you work and create.</p>
+            </div>
+          </div>
+
+          {/* Mockup Card 3 */}
+          <div className="aura-usage-card group/usage">
+            <div className="aura-usage-image">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
+                Image Coming Soon
+              </div>
+            </div>
+            <div className="aura-usage-content text-center">
+              <h3>Pocket Ritual</h3>
+              <p>Carry the energy with you as a personal talisman.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Floating Action Bar (Glassmorphism) */}
       <div className="fixed bottom-0 left-0 right-0 z-[120] p-6 lg:p-10 bg-gradient-to-t from-deep-black via-deep-black/80 to-transparent">
