@@ -631,20 +631,20 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
 
             <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Product Name (EN)</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">상품명 (영문)</label>
                 <input required type="text" value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} placeholder="e.g. 888 Abundance Activation" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">상품명 (KO)</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">상품명 (한글)</label>
                 <input required type="text" value={formData.title_ko} onChange={(e) => setFormData({ ...formData, title_ko: e.target.value })} placeholder="예: 888 풍요 활성화" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 font-sans text-white outline-none transition-all focus:border-gold/50" />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Badge</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">뱃지 (예: 888)</label>
                 <input type="text" value={formData.badge} onChange={(e) => setFormData({ ...formData, badge: e.target.value })} placeholder="e.g. 888" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Slug</label>
-                <input type="text" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder="auto-generated if left blank" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white/70 outline-none transition-all focus:border-gold/50" />
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">슬러그 (URL 식별자)</label>
+                <input type="text" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder="비워두면 자동 생성됩니다" className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white/70 outline-none transition-all focus:border-gold/50" />
               </div>
             </div>
           </div>
@@ -654,18 +654,18 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
 
             <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Short Description (EN)</label>
-                <textarea required rows={4} value={formData.description_en} onChange={(e) => setFormData({ ...formData, description_en: e.target.value })} placeholder="A concise premium description for the product card." className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 p-6 text-white/80 outline-none transition-all focus:border-gold/50" />
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">설명 (영문)</label>
+                <textarea required rows={4} value={formData.description_en} onChange={(e) => setFormData({ ...formData, description_en: e.target.value })} placeholder="상품 카드에 표시될 영문 설명을 입력하세요." className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 p-6 text-white/80 outline-none transition-all focus:border-gold/50" />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">짧은 설명 (KO)</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">설명 (한글)</label>
                 <textarea required rows={4} value={formData.description_ko} onChange={(e) => setFormData({ ...formData, description_ko: e.target.value })} placeholder="상품 카드에 표시될 짧은 한국어 설명을 입력하세요." className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 p-6 font-sans text-white/80 outline-none transition-all focus:border-gold/50" />
               </div>
             </div>
 
             <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Category</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">카테고리</label>
                 <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="h-14 w-full appearance-none rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50">
                   {manifestCategories.map((cat) => (
                     <option key={cat.value} value={cat.value} className="bg-charcoal">
@@ -675,11 +675,11 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
                 </select>
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Price (USD)</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">가격 (USD)</label>
                 <input required type="number" step="0.01" min="0" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Sort Order</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">정렬 순서</label>
                 <input type="number" value={formData.sortOrder} onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })} className="h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none transition-all focus:border-gold/50" />
               </div>
             </div>
@@ -761,7 +761,8 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
             
             <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
               <div className="space-y-4">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">Space Activation</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">공간 연출 이미지 (Space)</label>
+                <p className="text-center text-[9px] text-white/40 mb-2">(벽 액자 / 캔버스 용)</p>
                 <button type="button" onClick={() => document.getElementById('manifest-space-upload')?.click()} className="group relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
                   {spacePreview ? (
                     <>
@@ -773,8 +774,7 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
                       <UploadCloud className="h-6 w-6 text-white/40" />
-                      <p className="text-[9px] uppercase tracking-[0.1em] text-white/30">Wall / Canvas</p>
-                      <p className="text-[9px] font-bold text-white/50">3:4 or 4:5</p>
+                      <p className="text-[9px] font-bold text-white/50">비율 3:4 or 4:5</p>
                     </div>
                   )}
                 </button>
@@ -782,7 +782,8 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">Focus Alignment</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">작업 화면 이미지 (Focus)</label>
+                <p className="text-center text-[9px] text-white/40 mb-2">(모니터 / 데스크 용)</p>
                 <button type="button" onClick={() => document.getElementById('manifest-focus-upload')?.click()} className="group relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
                   {focusPreview ? (
                     <>
@@ -794,8 +795,7 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
                       <UploadCloud className="h-6 w-6 text-white/40" />
-                      <p className="text-[9px] uppercase tracking-[0.1em] text-white/30">Desk / Monitor</p>
-                      <p className="text-[9px] font-bold text-white/50">16:9 or 4:3</p>
+                      <p className="text-[9px] font-bold text-white/50">비율 16:9 or 4:3</p>
                     </div>
                   )}
                 </button>
@@ -803,7 +803,8 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">Pocket Ritual</label>
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">부적 이미지 (Pocket)</label>
+                <p className="text-center text-[9px] text-white/40 mb-2">(카드 / 부적 용)</p>
                 <button type="button" onClick={() => document.getElementById('manifest-pocket-upload')?.click()} className="group relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
                   {pocketPreview ? (
                     <>
@@ -815,8 +816,7 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
                       <UploadCloud className="h-6 w-6 text-white/40" />
-                      <p className="text-[9px] uppercase tracking-[0.1em] text-white/30">Card / Talisman</p>
-                      <p className="text-[9px] font-bold text-white/50">2:3</p>
+                      <p className="text-[9px] font-bold text-white/50">비율 2:3</p>
                     </div>
                   )}
                 </button>
@@ -1148,7 +1148,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
         <form onSubmit={handleSave} className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Title (EN)</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">상품명 (영문)</label>
               <input 
                 required
                 type="text" 
@@ -1171,7 +1171,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Slug</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">슬러그 (URL 식별자)</label>
               <input 
                 type="text" 
                 value={formData.slug}
@@ -1180,7 +1180,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Artist</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">아티스트</label>
               <input 
                 type="text" 
                 value={formData.artist}
@@ -1192,7 +1192,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
 
           <div className="grid grid-cols-3 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Category</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">카테고리</label>
               <select 
                 value={formData.category}
                 onChange={e => setFormData({...formData, category: e.target.value})}
@@ -1204,7 +1204,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Price ($)</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">가격 (USD)</label>
               <input 
                 required
                 type="number" 
@@ -1215,7 +1215,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Sort Order</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">정렬 순서</label>
               <input 
                 type="number" 
                 value={formData.sortOrder}
@@ -1226,7 +1226,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Description (EN)</label>
+            <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">설명 (영문)</label>
             <textarea 
               rows={2}
               value={formData.description_en}
@@ -1272,7 +1272,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
             <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Usage Mockups</p>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">Space (Canvas)</label>
+                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">공간 연출 이미지 (Space)</label>
                 <button type="button" onClick={() => document.getElementById('edit-space-upload')?.click()} className="group relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
                   {spacePreview ? (
                     <>
@@ -1284,7 +1284,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center">
                       <UploadCloud className="h-5 w-5 text-white/40" />
-                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">Wall</p>
+                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">벽 액자 / 캔버스</p>
                     </div>
                   )}
                 </button>
@@ -1292,7 +1292,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
               </div>
 
               <div className="space-y-2">
-                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">Focus (Desk)</label>
+                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">작업 화면 이미지 (Focus)</label>
                 <button type="button" onClick={() => document.getElementById('edit-focus-upload')?.click()} className="group relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
                   {focusPreview ? (
                     <>
@@ -1304,7 +1304,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center">
                       <UploadCloud className="h-5 w-5 text-white/40" />
-                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">Desk</p>
+                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">모니터 / 데스크</p>
                     </div>
                   )}
                 </button>
@@ -1312,7 +1312,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
               </div>
 
               <div className="space-y-2">
-                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">Pocket (Card)</label>
+                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">부적 이미지 (Pocket)</label>
                 <button type="button" onClick={() => document.getElementById('edit-pocket-upload')?.click()} className="group relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
                   {pocketPreview ? (
                     <>
@@ -1324,7 +1324,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center">
                       <UploadCloud className="h-5 w-5 text-white/40" />
-                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">Card</p>
+                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">카드 / 부적</p>
                     </div>
                   )}
                 </button>
