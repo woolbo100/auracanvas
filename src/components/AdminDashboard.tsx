@@ -407,6 +407,14 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
   const [thumbFile, setThumbFile] = useState<File | null>(null);
   const [mainPreview, setMainPreview] = useState<string | null>(null);
   const [thumbPreview, setThumbPreview] = useState<string | null>(null);
+  
+  const [spaceMockupFile, setSpaceMockupFile] = useState<File | null>(null);
+  const [focusMockupFile, setFocusMockupFile] = useState<File | null>(null);
+  const [pocketMockupFile, setPocketMockupFile] = useState<File | null>(null);
+  
+  const [spacePreview, setSpacePreview] = useState<string | null>(null);
+  const [focusPreview, setFocusPreview] = useState<string | null>(null);
+  const [pocketPreview, setPocketPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [success, setSuccess] = useState(false);
@@ -460,6 +468,27 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
     }
   };
 
+  const handleSpaceFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setSpaceMockupFile, setSpacePreview);
+    }
+  };
+
+  const handleFocusFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setFocusMockupFile, setFocusPreview);
+    }
+  };
+
+  const handlePocketFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setPocketMockupFile, setPocketPreview);
+    }
+  };
+
   const buildSlug = () =>
     (formData.slug || formData.title_en || formData.title_ko)
       .trim()
@@ -490,6 +519,30 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
       const imageUrl = await getDownloadURL(imageSnapshot.ref);
       const thumbnailUrl = await getDownloadURL(thumbnailSnapshot.ref);
 
+      let spaceUrl = '';
+      if (spaceMockupFile) {
+        const spaceRef = ref(storage, `products/${timestamp}_space_${spaceMockupFile.name}`);
+        const spaceSnap = await uploadBytes(spaceRef, spaceMockupFile);
+        spaceUrl = await getDownloadURL(spaceSnap.ref);
+      }
+      let focusUrl = '';
+      if (focusMockupFile) {
+        const focusRef = ref(storage, `products/${timestamp}_focus_${focusMockupFile.name}`);
+        const focusSnap = await uploadBytes(focusRef, focusMockupFile);
+        focusUrl = await getDownloadURL(focusSnap.ref);
+      }
+      let pocketUrl = '';
+      if (pocketMockupFile) {
+        const pocketRef = ref(storage, `products/${timestamp}_pocket_${pocketMockupFile.name}`);
+        const pocketSnap = await uploadBytes(pocketRef, pocketMockupFile);
+        pocketUrl = await getDownloadURL(pocketSnap.ref);
+      }
+
+      const mockups: any = {};
+      if (spaceUrl) mockups.space = { imageUrl: spaceUrl };
+      if (focusUrl) mockups.focus = { imageUrl: focusUrl };
+      if (pocketUrl) mockups.pocket = { imageUrl: pocketUrl };
+
       await addDoc(collection(db, 'products'), {
         slug: buildSlug(),
         title_ko: formData.title_ko,
@@ -501,6 +554,7 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
         description_en: formData.description_en,
         thumbnailUrl,
         imageUrl,
+        ...(Object.keys(mockups).length > 0 ? { mockups } : {}),
         locked: formData.locked,
         featured: formData.featured,
         isActive: formData.isActive,
@@ -513,8 +567,14 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
       setSuccess(true);
       setMainFile(null);
       setThumbFile(null);
+      setSpaceMockupFile(null);
+      setFocusMockupFile(null);
+      setPocketMockupFile(null);
       setMainPreview(null);
       setThumbPreview(null);
+      setSpacePreview(null);
+      setFocusPreview(null);
+      setPocketPreview(null);
       setFormData({
         slug: '',
         title_ko: '',
@@ -691,6 +751,76 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
                   )}
                 </button>
                 <input id="manifest-thumb-upload" type="file" accept="image/*" onChange={handleThumbFileChange} className="hidden" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-8">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">Usage Mockups</p>
+            <p className="mt-2 text-[11px] text-white/40">These images appear in the "Where This Energy Lives" section of the product detail page.</p>
+            
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">Space Activation</label>
+                <button type="button" onClick={() => document.getElementById('manifest-space-upload')?.click()} className="group relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
+                  {spacePreview ? (
+                    <>
+                      <img src={spacePreview} alt="Space preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-[9px] uppercase tracking-[0.3em] text-gold">Change</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
+                      <UploadCloud className="h-6 w-6 text-white/40" />
+                      <p className="text-[9px] uppercase tracking-[0.1em] text-white/30">Wall / Canvas</p>
+                      <p className="text-[9px] font-bold text-white/50">3:4 or 4:5</p>
+                    </div>
+                  )}
+                </button>
+                <input id="manifest-space-upload" type="file" accept="image/*" onChange={handleSpaceFileChange} className="hidden" />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">Focus Alignment</label>
+                <button type="button" onClick={() => document.getElementById('manifest-focus-upload')?.click()} className="group relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
+                  {focusPreview ? (
+                    <>
+                      <img src={focusPreview} alt="Focus preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-[9px] uppercase tracking-[0.3em] text-gold">Change</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
+                      <UploadCloud className="h-6 w-6 text-white/40" />
+                      <p className="text-[9px] uppercase tracking-[0.1em] text-white/30">Desk / Monitor</p>
+                      <p className="text-[9px] font-bold text-white/50">16:9 or 4:3</p>
+                    </div>
+                  )}
+                </button>
+                <input id="manifest-focus-upload" type="file" accept="image/*" onChange={handleFocusFileChange} className="hidden" />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold text-center block">Pocket Ritual</label>
+                <button type="button" onClick={() => document.getElementById('manifest-pocket-upload')?.click()} className="group relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
+                  {pocketPreview ? (
+                    <>
+                      <img src={pocketPreview} alt="Pocket preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-[9px] uppercase tracking-[0.3em] text-gold">Change</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
+                      <UploadCloud className="h-6 w-6 text-white/40" />
+                      <p className="text-[9px] uppercase tracking-[0.1em] text-white/30">Card / Talisman</p>
+                      <p className="text-[9px] font-bold text-white/50">2:3</p>
+                    </div>
+                  )}
+                </button>
+                <input id="manifest-pocket-upload" type="file" accept="image/*" onChange={handlePocketFileChange} className="hidden" />
               </div>
             </div>
           </div>
@@ -910,10 +1040,74 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
   });
   const [saving, setSaving] = useState(false);
 
+  const [spaceMockupFile, setSpaceMockupFile] = useState<File | null>(null);
+  const [focusMockupFile, setFocusMockupFile] = useState<File | null>(null);
+  const [pocketMockupFile, setPocketMockupFile] = useState<File | null>(null);
+  
+  const [spacePreview, setSpacePreview] = useState<string | null>(wallpaper.mockups?.space?.imageUrl || null);
+  const [focusPreview, setFocusPreview] = useState<string | null>(wallpaper.mockups?.focus?.imageUrl || null);
+  const [pocketPreview, setPocketPreview] = useState<string | null>(wallpaper.mockups?.pocket?.imageUrl || null);
+
+  const setPreviewFromFile = (
+    file: File,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setPreview: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    setFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleSpaceFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setSpaceMockupFile, setSpacePreview);
+    }
+  };
+
+  const handleFocusFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setFocusMockupFile, setFocusPreview);
+    }
+  };
+
+  const handlePocketFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected?.type.startsWith('image/')) {
+      setPreviewFromFile(selected, setPocketMockupFile, setPocketPreview);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
+      let mockups: any = { ...wallpaper.mockups };
+      const timestamp = Date.now();
+      
+      if (spaceMockupFile) {
+        const spaceRef = ref(storage, `products/${timestamp}_space_${spaceMockupFile.name}`);
+        const spaceSnap = await uploadBytes(spaceRef, spaceMockupFile);
+        mockups.space = { imageUrl: await getDownloadURL(spaceSnap.ref) };
+      }
+      if (focusMockupFile) {
+        const focusRef = ref(storage, `products/${timestamp}_focus_${focusMockupFile.name}`);
+        const focusSnap = await uploadBytes(focusRef, focusMockupFile);
+        mockups.focus = { imageUrl: await getDownloadURL(focusSnap.ref) };
+      }
+      if (pocketMockupFile) {
+        const pocketRef = ref(storage, `products/${timestamp}_pocket_${pocketMockupFile.name}`);
+        const pocketSnap = await uploadBytes(pocketRef, pocketMockupFile);
+        mockups.pocket = { imageUrl: await getDownloadURL(pocketSnap.ref) };
+      }
+
+      // clean up empty mockups
+      if (!mockups.space?.imageUrl) delete mockups.space;
+      if (!mockups.focus?.imageUrl) delete mockups.focus;
+      if (!mockups.pocket?.imageUrl) delete mockups.pocket;
+
       await updateDoc(doc(db, 'products', wallpaper.id), {
         slug: formData.slug,
         title_ko: formData.title_ko,
@@ -925,7 +1119,8 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
         locked: formData.locked,
         featured: formData.featured,
         sortOrder: parseInt(formData.sortOrder),
-        artist: formData.artist
+        artist: formData.artist,
+        ...(Object.keys(mockups).length > 0 ? { mockups } : {})
       });
       onClose();
     } catch (error) {
@@ -1071,6 +1266,71 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
             >
               FEATURED: {formData.featured ? 'YES' : 'NO'}
             </button>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Usage Mockups</p>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">Space (Canvas)</label>
+                <button type="button" onClick={() => document.getElementById('edit-space-upload')?.click()} className="group relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
+                  {spacePreview ? (
+                    <>
+                      <img src={spacePreview} alt="Space preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[8px] uppercase tracking-[0.2em] text-gold">Change</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center">
+                      <UploadCloud className="h-5 w-5 text-white/40" />
+                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">Wall</p>
+                    </div>
+                  )}
+                </button>
+                <input id="edit-space-upload" type="file" accept="image/*" onChange={handleSpaceFileChange} className="hidden" />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">Focus (Desk)</label>
+                <button type="button" onClick={() => document.getElementById('edit-focus-upload')?.click()} className="group relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
+                  {focusPreview ? (
+                    <>
+                      <img src={focusPreview} alt="Focus preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[8px] uppercase tracking-[0.2em] text-gold">Change</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center">
+                      <UploadCloud className="h-5 w-5 text-white/40" />
+                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">Desk</p>
+                    </div>
+                  )}
+                </button>
+                <input id="edit-focus-upload" type="file" accept="image/*" onChange={handleFocusFileChange} className="hidden" />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[8px] uppercase tracking-[0.2em] text-white/60 text-center block">Pocket (Card)</label>
+                <button type="button" onClick={() => document.getElementById('edit-pocket-upload')?.click()} className="group relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03]">
+                  {pocketPreview ? (
+                    <>
+                      <img src={pocketPreview} alt="Pocket preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-deep-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[8px] uppercase tracking-[0.2em] text-gold">Change</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center">
+                      <UploadCloud className="h-5 w-5 text-white/40" />
+                      <p className="text-[8px] uppercase tracking-[0.1em] text-white/30">Card</p>
+                    </div>
+                  )}
+                </button>
+                <input id="edit-pocket-upload" type="file" accept="image/*" onChange={handlePocketFileChange} className="hidden" />
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-4 pt-6">

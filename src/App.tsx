@@ -291,7 +291,14 @@ const MockupOverlay = ({
   setIsPurchasing: (v: boolean) => void,
   handlePurchaseSuccess: (wp: Wallpaper) => void,
   currentLang: string,
-  isUnlocked: boolean
+  isUnlocked: boolean,
+  description?: string;
+  ritual_steps?: string[];
+  mockups?: {
+    space?: { imageUrl: string };
+    focus?: { imageUrl: string };
+    pocket?: { imageUrl: string };
+  };
 }) => {
   const handleReturnToGallery = () => {
     if (window.history.state?.auraMockupOpen) {
@@ -461,11 +468,15 @@ const MockupOverlay = ({
               {/* Wall Background */}
               <div className="absolute inset-0 bg-gradient-to-b from-charcoal to-deep-black rounded-xl opacity-30" />
               {/* Canvas Frame */}
-              <div className="relative w-32 aspect-[3/4] bg-charcoal shadow-[0_20px_40px_rgba(0,0,0,0.8)] border-[3px] border-[#2A2A2A] rounded-sm group-hover/usage:-translate-y-2 transition-transform duration-500">
+              <div className="relative w-32 aspect-[3/4] bg-charcoal shadow-[0_20px_40px_rgba(0,0,0,0.8)] border-[3px] border-[#2A2A2A] rounded-sm group-hover/usage:-translate-y-2 transition-transform duration-500 overflow-hidden">
                 {/* Canvas Inner Image */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex flex-col items-center justify-center text-center p-2 border border-white/5">
-                   <span className="text-white/20 text-[8px] uppercase tracking-widest leading-relaxed">Canvas<br/>Mockup</span>
-                </div>
+                {wallpaper.mockups?.space?.imageUrl ? (
+                  <img src={wallpaper.mockups.space.imageUrl} className="absolute inset-0 w-full h-full object-cover" alt="Space Mockup" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex flex-col items-center justify-center text-center p-2 border border-white/5">
+                     <span className="text-white/20 text-[8px] uppercase tracking-widest leading-relaxed">Canvas<br/>Mockup</span>
+                  </div>
+                )}
                 {/* Ambient Light */}
                 <div className="absolute inset-x-0 -top-10 h-10 bg-gold/10 blur-xl rounded-full opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none" />
               </div>
@@ -485,9 +496,13 @@ const MockupOverlay = ({
               <div className="relative w-40 aspect-video bg-[#1A1A1A] rounded-[4px] border-2 border-[#333] shadow-[0_10px_30px_rgba(0,0,0,0.9)] flex flex-col group-hover/usage:-translate-y-2 transition-transform duration-500 mb-4">
                 {/* Screen Content */}
                 <div className="flex-1 m-0.5 rounded-[2px] bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center border border-white/5 relative overflow-hidden">
-                  <span className="text-white/20 text-[8px] uppercase tracking-widest relative z-10">Desktop</span>
+                  {wallpaper.mockups?.focus?.imageUrl ? (
+                    <img src={wallpaper.mockups.focus.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Focus Mockup" />
+                  ) : (
+                    <span className="text-white/20 text-[8px] uppercase tracking-widest relative z-10">Desktop</span>
+                  )}
                   {/* Screen Glow */}
-                  <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none z-20" />
                 </div>
                 {/* Stand */}
                 <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-2 h-4 bg-[#2A2A2A]" />
@@ -507,12 +522,16 @@ const MockupOverlay = ({
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02),transparent)] rounded-xl" />
               {/* Physical Card */}
               <div className="relative w-24 aspect-[2/3] bg-charcoal rounded-md border border-gold/20 shadow-[10px_10px_20px_rgba(0,0,0,0.6)] rotate-[15deg] group-hover/usage:rotate-6 group-hover/usage:-translate-y-2 group-hover/usage:shadow-[15px_15px_30px_rgba(0,0,0,0.7)] transition-all duration-500 overflow-hidden">
-                 <div className="absolute inset-1 border border-gold/10 rounded-sm pointer-events-none" />
-                 <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent flex items-center justify-center">
-                   <span className="text-gold/40 text-[8px] uppercase tracking-widest font-serif font-bold">Talisman</span>
-                 </div>
+                 <div className="absolute inset-1 border border-gold/10 rounded-sm pointer-events-none z-20" />
+                 {wallpaper.mockups?.pocket?.imageUrl ? (
+                   <img src={wallpaper.mockups.pocket.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Pocket Mockup" />
+                 ) : (
+                   <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent flex items-center justify-center z-10">
+                     <span className="text-gold/40 text-[8px] uppercase tracking-widest font-serif font-bold">Talisman</span>
+                   </div>
+                 )}
                  {/* Gold Foil reflection */}
-                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover/usage:translate-x-full duration-1000 transition-transform pointer-events-none" />
+                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover/usage:translate-x-full duration-1000 transition-transform pointer-events-none z-30" />
               </div>
             </div>
             <div className="aura-usage-content text-center mt-auto">
