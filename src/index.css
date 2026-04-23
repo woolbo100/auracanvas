@@ -137,16 +137,16 @@
   }
 
   @keyframes auraDrift {
-    0% { transform: translate3d(-5%, -5%, 0) scale(1) rotate(0deg); }
-    50% { transform: translate3d(5%, 8%, 0) scale(1.1) rotate(2deg); }
-    100% { transform: translate3d(-2%, -10%, 0) scale(1.15) rotate(-1deg); }
+    0% { transform: translate3d(-10%, -10%, 0) scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+    50% { transform: translate3d(10%, 15%, 0) scale(1.2) rotate(5deg); filter: hue-rotate(15deg); }
+    100% { transform: translate3d(-5%, -15%, 0) scale(1.3) rotate(-3deg); filter: hue-rotate(-10deg); }
   }
 
   @keyframes auraWave {
-    0% { transform: translate3d(0, 0, 0) scale(1) skew(0deg); opacity: 0.7; }
-    33% { transform: translate3d(2%, -4%, 0) scale(1.05) skew(1deg); opacity: 0.9; }
-    66% { transform: translate3d(-3%, 2%, 0) scale(1.02) skew(-1deg); opacity: 0.8; }
-    100% { transform: translate3d(0, 0, 0) scale(1.08) skew(0.5deg); opacity: 0.75; }
+    0% { transform: translate3d(0, 0, 0) scale(1) skew(0deg); opacity: 0.6; }
+    33% { transform: translate3d(5%, -8%, 0) scale(1.15) skew(3deg); opacity: 0.9; }
+    66% { transform: translate3d(-8%, 5%, 0) scale(1.1) skew(-3deg); opacity: 0.7; }
+    100% { transform: translate3d(0, 0, 0) scale(1.2) skew(1deg); opacity: 0.8; }
   }
 
   @keyframes lockRipple {
@@ -181,47 +181,54 @@
 
   .aura-hero {
     position: relative;
-    padding-top: 140px;
-    padding-bottom: 140px;
-    background:
-      radial-gradient(circle at 20% 30%, rgba(140, 90, 255, 0.28), transparent 50%),
-      radial-gradient(circle at 80% 40%, rgba(255, 100, 200, 0.2), transparent 50%),
-      radial-gradient(circle at 50% 10%, rgba(80, 180, 255, 0.18), transparent 60%),
-      radial-gradient(circle at 30% 70%, rgba(201, 169, 91, 0.1), transparent 45%),
-      linear-gradient(180deg, #05060a 0%, #08090d 40%, transparent 100%);
+    padding-top: 160px;
+    padding-bottom: 180px;
+    background: #05060a;
     --mx: 50%;
     --my: 50%;
-    overflow: clip;
+    overflow: hidden;
+  }
+
+  /* Vignette & Seamless Bottom Blend */
+  .aura-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: 
+      radial-gradient(circle at center, transparent 30%, rgba(5, 6, 10, 0.7) 100%),
+      linear-gradient(to bottom, transparent 60%, #05060a 100%),
+      linear-gradient(to top, transparent 80%, #05060a 100%);
+    pointer-events: none;
   }
 
   .aura-hero-bg-flow {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     background: linear-gradient(
       -45deg,
-      rgba(113, 68, 190, 0.22),
-      rgba(255, 100, 180, 0.12),
-      rgba(219, 185, 105, 0.08),
-      rgba(80, 160, 255, 0.15),
-      rgba(140, 58, 200, 0.18)
+      rgba(88, 54, 155, 0.25),
+      rgba(255, 80, 180, 0.18),
+      rgba(219, 185, 105, 0.1),
+      rgba(60, 140, 255, 0.2),
+      rgba(140, 58, 200, 0.25)
     );
     background-size: 400% 400%;
-    animation: heroBgFlow 24s ease infinite;
-    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    animation: heroBgFlow 30s ease infinite;
+    filter: blur(60px);
+    opacity: 0.8;
   }
 
   .aura-hero-aurora {
     position: absolute;
-    inset: -12%;
+    inset: -20%;
     pointer-events: none;
-    filter: blur(42px);
-    opacity: 1;
+    z-index: 2;
+    filter: blur(50px);
+    opacity: 0.9;
     mix-blend-mode: screen;
-    -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 95%);
-    mask-image: linear-gradient(to bottom, black 40%, transparent 95%);
   }
 
   .aura-hero-aurora::before,
