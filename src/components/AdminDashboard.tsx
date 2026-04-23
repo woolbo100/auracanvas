@@ -116,6 +116,7 @@ export const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
       setLoading(false);
     }, (error) => {
       console.error("Error fetching products:", error);
+      setLoading(false); // Stop loading even on error
     });
 
     const qSales = query(collection(db, 'sales'), orderBy('timestamp', 'desc'));
