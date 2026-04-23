@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+﻿import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -111,18 +111,18 @@ const LANGUAGES = {
   KO: {
     brand: "AuraCanvas",
     tagline: "의도가 깃든 디지털 성소",
-    heroTitle: "이건 단순한 이미지가 아닙니다. <br /> <span class='whitespace-nowrap'>당신이 <span class='aura-gold-text'>끌어당길 것</span>을 선택하세요.</span>",
+    heroTitle: "이건 단순한 이미지가 아닙니다. <br /> <span class='whitespace-nowrap'>당신의 <span class='aura-gold-text'>투사체를</span> 선택하세요.</span>",
     heroSubtitle: "당신의 의식을 풍요, 사랑, 에너지의 파동과 정렬하도록 설계된 프리미엄 디지털 의식 도구입니다.",
     enterGallery: "갤러리 입장하기",
     categoryAll: "모든 주파수",
     acquisition: "활성화",
     acquirePiece: "의식 시작하기",
     investment: "에너지 교환",
-    downloadArt: "주파수 활성화",
+    downloadArt: "주파수 완성",
     successTitle: "정렬이 완료되었습니다",
-    successSubtitle: "작품이 당신의 의도와 동기화되었습니다. 아래에서 활성화 방식을 선택하세요.",
-    footerText: "의식 있는 영혼을 위한 프리미엄 디지털 아트. 모든 픽셀은 기도이며, 모든 화면은 제단입니다.",
-    copyright: "© 2026 AuraCanvas. 의지로 구현됨.",
+    successSubtitle: "작품이 당신의 의도와 동기화되었습니다. 아래에서 완성 방식을 선택하세요.",
+    footerText: "의식 있는 영혼을 위한 프리미엄 디지털 아트. 모든 점은 기도이며, 모든 선은 정렬입니다.",
+    copyright: "© 2026 AuraCanvas. 현실로 구현.",
     adminPanel: "갤러리 관리",
     signIn: "영혼 연결",
     signOut: "연결 해제",
@@ -410,7 +410,7 @@ const MockupOverlay = ({
 
           <div className="aura-unlock-flash" />
           <div className="aura-unlock-message">
-            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
+            {currentLang === 'EN' ? 'Activation complete' : '?쒖꽦???꾨즺'}
           </div>
 
           {wallpaper.locked && (
@@ -551,9 +551,7 @@ const MockupOverlay = ({
                   {wallpaper.mockups?.space?.imageUrl ? (
                     <img src={wallpaper.mockups.space.imageUrl} className="absolute inset-0 w-full h-full object-cover" alt="Space Mockup" />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex flex-col items-center justify-center text-center p-2 border border-white/5">
-                       <span className="text-white/20 text-[10px] uppercase tracking-widest leading-relaxed">Canvas<br/>Mockup</span>
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent flex items-center justify-center" />
                   )}
                 </div>
                 {/* Unified Lock Overlay */}
@@ -589,7 +587,7 @@ const MockupOverlay = ({
                     {wallpaper.mockups?.focus?.imageUrl ? (
                       <img src={wallpaper.mockups.focus.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Focus Mockup" />
                     ) : (
-                      <span className="text-white/20 text-[10px] uppercase tracking-widest relative z-10 flex h-full items-center justify-center">Desktop</span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent" />
                     )}
                   </div>
                   {/* Unified Lock Overlay */}
@@ -629,10 +627,8 @@ const MockupOverlay = ({
                    {wallpaper.mockups?.pocket?.imageUrl ? (
                      <img src={wallpaper.mockups.pocket.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Pocket Mockup" />
                    ) : (
-                     <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent flex items-center justify-center z-10">
-                       <span className="text-gold/40 text-[10px] uppercase tracking-widest font-serif font-bold">Talisman</span>
-                     </div>
-                   )}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.03] to-transparent z-10" />
+                    )}
                  </div>
                  {/* Unified Lock Overlay */}
                  <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none">
@@ -666,7 +662,7 @@ const MockupOverlay = ({
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-serif font-bold gold-metal-heading">${wallpaper.price}</span>
               </div>
-              <span className="text-[11px] mt-2 font-bold uppercase tracking-widest gold-metal-text">One-time purchase • All formats included</span>
+              <span className="text-[11px] mt-2 font-bold uppercase tracking-widest gold-metal-text">One-time purchase ??All formats included</span>
             </div>
             
             <div className="w-full md:w-auto min-w-[240px] flex flex-col gap-2">
@@ -978,8 +974,7 @@ const Footer = ({ lang, currentLang, setLang, setActiveTab }: { lang: any, curre
               currentLang === 'KO' ? "bg-gold text-deep-black" : "text-white/40 hover:text-white"
             )}
           >
-            한국어
-          </button>
+            ?쒓뎅??          </button>
         </div>
 
         <div className="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-white/30">
@@ -1021,7 +1016,7 @@ const ContactSection = () => {
           <p className="mx-auto max-w-xl text-base font-light leading-8 text-white/72 md:text-lg">
             For all inquiries, please contact us via email.
             <br />
-            We typically respond within 24–48 hours.
+            We typically respond within 24??8 hours.
           </p>
 
           <a
@@ -1860,7 +1855,7 @@ function MainContent() {
 
                           <div className="aura-unlock-flash" />
                           <div className="aura-unlock-message">
-                            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
+                            {currentLang === 'EN' ? 'Activation complete' : '?쒖꽦???꾨즺'}
                           </div>
 
                           {/* Golden Aura Mist Layer */}
@@ -1901,7 +1896,7 @@ function MainContent() {
                               {currentLang === 'EN' ? wp.title_en : wp.title_ko}
                             </h3>
                             <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-medium">
-                              {currentLang === 'EN' ? 'Activation Art' : '의식 활성화 도구'}
+                              {currentLang === 'EN' ? 'Activation Art' : '?섏떇 ?쒖꽦???꾧뎄'}
                             </p>
                           </div>
 
@@ -1953,7 +1948,7 @@ function MainContent() {
 
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="space-y-12 text-white/60 font-light leading-relaxed text-base md:text-lg">
                 <p>
-                  There are moments in life when everything feels uncertain—<br/>
+                  There are moments in life when everything feels uncertain<br/>
                   love, money, direction, timing.
                 </p>
                 <p>
@@ -1972,7 +1967,7 @@ function MainContent() {
                   When your level of consciousness shifts,<br/>
                   your decisions change.<br/>
                   Your perception changes.<br/>
-                  And eventually—your life follows.
+                  And eventually?봸our life follows.
                 </p>
                 <p>
                   Not because something outside has changed,<br/>
@@ -1980,11 +1975,11 @@ function MainContent() {
                 </p>
                 <div className="w-12 h-[1px] bg-gold/20 mx-auto my-16" />
                 <p>
-                  AURACANVAS was created to make the invisible… visible.
+                  AURACANVAS was created to make the invisible??visible.
                 </p>
                 <p>
-                  We transform abstract inner states—<br/>
-                  energy, intention, emotional frequency—<br/>
+                  We transform abstract inner states<br/>
+                  energy, intention, emotional frequency<br/>
                   into visual forms you can see, feel, and connect with.
                 </p>
                 <p>
@@ -2003,7 +1998,7 @@ function MainContent() {
                 <p>
                   Because when you choose to focus your mind,<br/>
                   to hold an intention,<br/>
-                  to believe in a possibility—<br/>
+                  to believe in a possibility<br/>
                   your subconscious begins to move.
                 </p>
                 <p>
@@ -2024,11 +2019,11 @@ function MainContent() {
                   but by alignment.
                 </p>
                 <p className="font-serif text-gold text-xl md:text-2xl my-12">
-                  <strong>If you found this,<br/>you’re already in the flow.</strong>
+                  <strong>If you found this,<br/>you're already in the flow.</strong>
                 </p>
                 <p>
                   Not everyone will understand this space.<br/>
-                  And that’s okay.<br/><br/>
+                  And that's okay.<br/><br/>
                   It is meant for those<br/>
                   who feel it.
                 </p>
