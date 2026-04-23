@@ -828,16 +828,13 @@ function MainContent() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const moveX = ((x / rect.width) - 0.5) * 24;
-    const moveY = ((y / rect.height) - 0.5) * 18;
-
-    e.currentTarget.style.setProperty("--mx", `${moveX}px`);
-    e.currentTarget.style.setProperty("--my", `${moveY}px`);
+    e.currentTarget.style.setProperty("--mx", `${x}px`);
+    e.currentTarget.style.setProperty("--my", `${y}px`);
   };
 
   const resetAuraMove = (e: React.MouseEvent<HTMLElement>) => {
-    e.currentTarget.style.setProperty("--mx", `0px`);
-    e.currentTarget.style.setProperty("--my", `0px`);
+    e.currentTarget.style.setProperty("--mx", `50%`);
+    e.currentTarget.style.setProperty("--my", `50%`);
   };
 
   return (
@@ -861,6 +858,8 @@ function MainContent() {
             <div className="relative">
               <section className="aura-hero" onMouseMove={handleAuraMove} onMouseLeave={resetAuraMove}>
                 <div className="aura-hero-aurora" />
+                <div className="aura-hero-ripple" />
+                <div className="aura-hero-gold-trace" />
                 <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 lg:pt-32 text-center lg:px-16">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}

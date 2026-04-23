@@ -200,9 +200,12 @@
 
   .aura-hero {
     position: relative;
+    overflow: hidden;
     padding-top: 120px;
     padding-bottom: 80px;
     background: transparent;
+    --mx: 50%;
+    --my: 50%;
   }
 
   .aura-hero-aurora {
@@ -210,10 +213,8 @@
     inset: -12%;
     pointer-events: none;
     filter: blur(42px);
-    opacity: 0.95;
+    opacity: 0.92;
     mix-blend-mode: screen;
-    transform: translate3d(var(--mx, 0px), var(--my, 0px), 0) scale(1);
-    transition: transform 220ms ease-out;
   }
 
   .aura-hero-aurora::before,
@@ -234,11 +235,82 @@
 
   .aura-hero-aurora::after {
     background:
-      radial-gradient(circle at 38% 42%, rgba(118, 76, 255, 0.12), transparent 24%),
-      radial-gradient(circle at 66% 52%, rgba(63, 116, 232, 0.10), transparent 26%),
-      radial-gradient(circle at 52% 68%, rgba(201, 169, 91, 0.06), transparent 24%);
-    animation: auraWave 11s ease-in-out infinite alternate;
-    opacity: 0.9;
+      radial-gradient(circle at 38% 42%, rgba(118, 76, 255, 0.10), transparent 24%),
+      radial-gradient(circle at 66% 52%, rgba(63, 116, 232, 0.08), transparent 26%),
+      radial-gradient(circle at 52% 68%, rgba(201, 169, 91, 0.05), transparent 22%);
+    animation: auraWave 12s ease-in-out infinite alternate;
+    opacity: 0.88;
+  }
+
+  .aura-hero-ripple {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.42;
+    mix-blend-mode: soft-light;
+  }
+
+  .aura-hero-ripple::before {
+    content: "";
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    left: calc(var(--mx) - 260px);
+    top: calc(var(--my) - 260px);
+    background:
+      repeating-radial-gradient(
+        circle at center,
+        rgba(255,255,255,0.06) 0px,
+        rgba(255,255,255,0.03) 2px,
+        transparent 10px,
+        transparent 18px
+      );
+    filter: blur(10px);
+    opacity: 0.28;
+    transition:
+      left 180ms ease-out,
+      top 180ms ease-out,
+      opacity 220ms ease-out,
+      transform 220ms ease-out;
+    transform: scale(1);
+  }
+
+  .aura-hero:hover .aura-hero-ripple::before {
+    opacity: 0.42;
+    transform: scale(1.04);
+  }
+
+  .aura-hero-gold-trace {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  .aura-hero-gold-trace::before {
+    content: "";
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    left: calc(var(--mx) - 120px);
+    top: calc(var(--my) - 120px);
+    background:
+      radial-gradient(circle at center,
+        rgba(231, 215, 162, 0.16) 0%,
+        rgba(201, 169, 91, 0.08) 28%,
+        transparent 68%);
+    filter: blur(18px);
+    opacity: 0.22;
+    transition:
+      left 180ms ease-out,
+      top 180ms ease-out,
+      opacity 220ms ease-out,
+      transform 220ms ease-out;
+  }
+
+  .aura-hero:hover .aura-hero-gold-trace::before {
+    opacity: 0.34;
+    transform: scale(1.06);
   }
 
   .aura-gallery-section {
