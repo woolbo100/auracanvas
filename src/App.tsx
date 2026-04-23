@@ -66,7 +66,7 @@ const LANGUAGES = {
     downloadArt: "Activate Frequency",
     successTitle: "The Alignment is Complete",
     successSubtitle: "Your ritual art is now synchronized with your intent. Choose your mode of activation below.",
-    footerText: "Premium digital art for the intentional soul. Every pixel is a prayer, every screen an altar.",
+    footerText: "Premium digital art designed to align your space,\nyour focus, and your energy.",
     copyright: "© 2026 AuraCanvas. Manifested with Intent.",
     adminPanel: "Gallery Control",
     signIn: "Connect Soul",
@@ -836,7 +836,7 @@ const Footer = ({ lang, currentLang, setLang, setActiveTab }: { lang: any, curre
             </div>
             <span className="font-serif font-bold text-3xl tracking-tight text-white">{lang.brand}</span>
           </div>
-          <p className="text-white/60 font-light leading-relaxed max-w-sm mb-10">
+          <p className="max-w-sm whitespace-pre-line text-[15px] font-light leading-relaxed text-white/60 mb-10">
             {lang.footerText}
           </p>
           <div className="flex gap-6 text-white/40">
@@ -1644,7 +1644,7 @@ function MainContent() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.75 }}
-                    className="mt-20 flex items-center justify-center gap-4 overflow-x-auto pb-2 no-scrollbar"
+                    className="mt-24 flex items-center justify-center gap-4 overflow-x-auto pb-2 no-scrollbar"
                   >
                     <button
                       onClick={() => {
