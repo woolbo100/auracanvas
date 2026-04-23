@@ -159,11 +159,23 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
   lang: any
 }) => {
   const isAdmin = user?.email === ADMIN_EMAIL;
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
       {/* Desktop Top Nav */}
-      <nav className="hidden lg:flex fixed top-0 left-0 right-0 h-20 bg-deep-black/80 backdrop-blur-md border-b border-gold/10 z-50 items-center justify-between px-12">
+      <nav className={cn(
+        "hidden lg:flex fixed top-0 left-0 right-0 h-20 bg-deep-black/80 backdrop-blur-md z-50 items-center justify-between px-12 transition-all duration-700",
+        isScrolled 
+          ? "border-b border-gold/20 shadow-[0_15px_40px_-10px_rgba(201,169,91,0.2)]" 
+          : "border-b border-gold/5 shadow-none"
+      )}>
         <div className="flex items-center gap-3 cursor-pointer group/logo" onClick={() => { setActiveTab('Home'); if(isAdminView) onAdminToggle(); }}>
           <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center border border-gold/30 animate-pulse-gold group-hover/logo:shadow-[0_0_20px_rgba(219,198,126,0.4)] transition-all duration-500">
             <ShieldCheck className="text-gold w-5 h-5" />
