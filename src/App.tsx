@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -582,9 +582,9 @@ const MockupOverlay = ({
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl opacity-30" />
               
               {/* Computer Assembly (Monitor + Stand) */}
-              <div className="relative mb-14 mx-auto mt-auto group-hover/usage:-translate-y-3 transition-transform duration-500 z-10 flex flex-col items-center">
+              <div className="relative w-full mb-14 mx-auto mt-auto group-hover/usage:-translate-y-3 transition-transform duration-500 z-10 flex flex-col items-center">
                 {/* Monitor Frame */}
-                <div className="relative w-full max-w-[280px] aspect-video bg-[#1A1A1A] rounded-md border-2 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col">
+                <div className="relative w-[90%] max-w-[280px] aspect-video bg-[#1A1A1A] rounded-md border-2 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col">
                   <div className="absolute inset-0 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 blur-[4px] group-hover/usage:blur-0">
                     {wallpaper.mockups?.focus?.imageUrl ? (
                       <img src={wallpaper.mockups.focus.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Focus Mockup" />
