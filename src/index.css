@@ -975,6 +975,44 @@
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
   }
 
+  .gold-metal-text {
+    background: linear-gradient(
+      135deg,
+      #f2e4b8 0%,
+      #e0c987 18%,
+      #c9a95b 42%,
+      #a9823a 72%,
+      #f0deb0 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-shadow:
+      0 1px 0 rgba(255,255,255,0.04),
+      0 0 10px rgba(201,169,91,0.08);
+    display: inline-block;
+  }
+
+  .gold-metal-heading {
+    background: linear-gradient(
+      135deg,
+      #f3e8c4 0%,
+      #ddc37c 20%,
+      #c9a95b 45%,
+      #987432 78%,
+      #e9d4a3 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-shadow:
+      0 1px 0 rgba(255,255,255,0.03),
+      0 0 14px rgba(201,169,91,0.12);
+    display: inline-block;
+  }
+
   .aura-usage-card:hover {
     box-shadow: 0 10px 40px rgba(201, 169, 91, 0.05);
     border-color: rgba(231, 215, 162, 0.15);

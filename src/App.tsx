@@ -634,9 +634,9 @@ const MockupOverlay = ({
             <div className="flex flex-col items-center md:items-start gap-1">
               <span className="text-[10px] text-white/40 uppercase tracking-[0.3em] font-medium">Energy Exchange</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-serif font-bold text-gold">${wallpaper.price}</span>
+                <span className="text-4xl font-serif font-bold gold-metal-heading">${wallpaper.price}</span>
               </div>
-              <span className="text-[11px] text-gold mt-2 font-bold uppercase tracking-widest">One-time purchase • All formats included</span>
+              <span className="text-[11px] mt-2 font-bold uppercase tracking-widest gold-metal-text">One-time purchase • All formats included</span>
             </div>
             
             <div className="w-full md:w-auto min-w-[240px] flex flex-col gap-2">
@@ -893,7 +893,9 @@ const Footer = ({ lang, currentLang, setLang, setActiveTab }: { lang: any, curre
         </div>
         
         <div>
-          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold mb-8">Frequencies</h5>
+          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold mb-8">
+            <span className="gold-metal-text">Frequencies</span>
+          </h5>
           <ul className="flex flex-col gap-4 text-xs font-light text-white/60">
             {['Abundance', 'Love', 'Energy', 'Healing'].map(item => (
               <li key={item}><a href="#" className="hover:text-gold transition-colors">{item}</a></li>
@@ -902,7 +904,9 @@ const Footer = ({ lang, currentLang, setLang, setActiveTab }: { lang: any, curre
         </div>
 
         <div>
-          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold mb-8">The Gallery</h5>
+          <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold mb-8">
+            <span className="gold-metal-text">The Gallery</span>
+          </h5>
           <ul className="flex flex-col gap-4 text-xs font-light text-white/60">
             {['About', 'FAQ', 'Privacy', 'Terms', 'Contact'].map(item => (
               <li key={item}>
@@ -970,11 +974,11 @@ const ContactSection = () => {
           <ShieldCheck className="h-6 w-6 text-gold" />
         </div>
 
-        <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em] text-gold/70">
-          AuraCanvas Support
+        <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em]">
+          <span className="gold-metal-text">AuraCanvas Support</span>
         </p>
-        <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
-          Contact
+        <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight md:text-6xl">
+          <span className="gold-metal-heading">Contact</span>
         </h1>
         <p className="mx-auto mb-12 max-w-2xl text-lg font-light leading-relaxed text-white/62 md:text-xl">
           We are here to support your journey.
@@ -1075,11 +1079,11 @@ const FAQSection = () => {
           <div className="mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-full border border-gold/25 bg-gold/8 shadow-[0_0_40px_rgba(201,169,91,0.08)]">
             <ShieldCheck className="h-6 w-6 text-gold" />
           </div>
-          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em] text-gold/70">
-            AuraCanvas Guide
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em]">
+            <span className="gold-metal-text">AuraCanvas Guide</span>
           </p>
-          <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
-            FAQ
+          <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight md:text-6xl">
+            <span className="gold-metal-heading">FAQ</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg font-light leading-relaxed text-white/62 md:text-xl">
             Clear answers for a calm and confident purchase experience.
@@ -1680,9 +1684,9 @@ function MainContent() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-10"
                   >
-                    <span className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-6 py-2 text-[10px] font-bold uppercase tracking-[0.6em] text-gold shadow-[0_0_20px_rgba(219,198,126,0.08)] backdrop-blur-xl">
+                    <span className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-6 py-2 text-[10px] font-bold uppercase tracking-[0.6em] shadow-[0_0_20px_rgba(219,198,126,0.08)] backdrop-blur-xl">
                       <span className="h-2 w-2 rounded-full bg-gold/80" />
-                      {lang.tagline}
+                      <span className="gold-metal-text">{lang.tagline}</span>
                     </span>
                   </motion.div>
 
