@@ -18,7 +18,9 @@ import {
   LogIn,
   ShieldCheck,
   Loader2,
-  Lock
+  Lock,
+  Frame,
+  Gem
 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import Masonry from 'react-masonry-css';
@@ -474,28 +476,56 @@ const MockupOverlay = ({
             </ul>
           </div>
 
-          <div className="py-8 border-y border-white/10 space-y-6">
-            <div>
-              <h3 className="text-[11px] uppercase tracking-[0.4em] font-bold text-gold mb-2">Included in this activation</h3>
+          <div className="py-12 border-y border-white/10 space-y-10">
+            <div className="text-center lg:text-left">
+              <h3 className="text-[11px] uppercase tracking-[0.4em] font-bold gold-metal-text mb-3">Included in this activation</h3>
               <p className="text-sm font-light text-white/50">This activation includes all available formats for one complete experience.</p>
             </div>
-            <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-              {[
-                { icon: Smartphone, label: "Phone Ritual" },
-                { icon: Monitor, label: "Space Activation" },
-                { icon: Library, label: "Focus Mode" },
-                { icon: ShieldCheck, label: "Pocket Ritual" }
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold">
-                    <item.icon className="w-4 h-4" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-white">{item.label}</span>
-                    <span className="text-[9px] text-gold/60 uppercase tracking-widest">Included Format</span>
-                  </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-10">
+              {/* Phone */}
+              <div className="flex flex-col items-center lg:items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center">
+                  <Smartphone className="w-4 h-4 text-gold/60" />
                 </div>
-              ))}
+                <div className="space-y-1">
+                  <span className="block text-[10px] font-bold uppercase tracking-widest gold-metal-text">Phone</span>
+                  <span className="block text-[8px] uppercase tracking-wider text-white/30 font-medium">Included Format</span>
+                </div>
+              </div>
+
+              {/* Desktop */}
+              <div className="flex flex-col items-center lg:items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center">
+                  <Monitor className="w-4 h-4 text-gold/60" />
+                </div>
+                <div className="space-y-1">
+                  <span className="block text-[10px] font-bold uppercase tracking-widest gold-metal-text">Desktop</span>
+                  <span className="block text-[8px] uppercase tracking-wider text-white/30 font-medium">Included Format</span>
+                </div>
+              </div>
+
+              {/* Canvas */}
+              <div className="flex flex-col items-center lg:items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center">
+                  <Frame className="w-4 h-4 text-gold/60" />
+                </div>
+                <div className="space-y-1">
+                  <span className="block text-[10px] font-bold uppercase tracking-widest gold-metal-text">Canvas</span>
+                  <span className="block text-[8px] uppercase tracking-wider text-white/30 font-medium">Included Format</span>
+                </div>
+              </div>
+
+              {/* Talisman */}
+              <div className="flex flex-col items-center lg:items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center">
+                  <Gem className="w-4 h-4 text-gold/60" />
+                </div>
+                <div className="space-y-1">
+                  <span className="block text-[10px] font-bold uppercase tracking-widest gold-metal-text">Talisman</span>
+                  <span className="block text-[8px] uppercase tracking-wider text-white/30 font-medium">Included Format</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
