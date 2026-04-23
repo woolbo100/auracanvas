@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+﻿import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -410,7 +410,7 @@ const MockupOverlay = ({
 
           <div className="aura-unlock-flash" />
           <div className="aura-unlock-message">
-            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
+            {currentLang === 'EN' ? 'Activation complete' : '?쒖꽦???꾨즺'}
           </div>
 
           {wallpaper.locked && (
@@ -580,11 +580,9 @@ const MockupOverlay = ({
             <div className="aura-usage-image w-full flex-col justify-end">
               {/* Desk Background */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl opacity-30" />
-              
-              {/* Computer Assembly (Monitor + Stand) */}
-              <div className="relative w-full mb-14 mx-auto mt-auto group-hover/usage:-translate-y-3 transition-transform duration-500 z-10 flex flex-col items-center">
-                {/* Monitor Frame */}
-                <div className="relative w-[90%] max-w-[280px] aspect-video bg-[#1A1A1A] rounded-md border-2 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col">
+              {/* Monitor Frame */}
+              <div className="relative w-full max-w-[280px] aspect-video bg-[#1A1A1A] rounded-md border-2 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col group-hover/usage:-translate-y-2 transition-transform duration-500 mb-6 mx-auto mt-auto z-10">
+                  {/* Screen Content Image */}
                   <div className="absolute inset-0 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 blur-[4px] group-hover/usage:blur-0">
                     {wallpaper.mockups?.focus?.imageUrl ? (
                       <img src={wallpaper.mockups.focus.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Focus Mockup" />
@@ -592,21 +590,24 @@ const MockupOverlay = ({
                       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent" />
                     )}
                   </div>
+                  {/* Unified Lock Overlay */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none">
+                    {/* Lock Seal - Retreats on hover */}
                     <div className="w-14 h-14 rounded-full bg-[rgba(20,16,24,0.58)] backdrop-blur-[12px] border border-[rgba(231,215,162,0.18)] flex items-center justify-center mb-5 shadow-[0_15px_35px_rgba(0,0,0,0.5)] group-hover/usage:opacity-[0.42] group-hover/usage:scale-[0.94] transition-all duration-500 ease-out">
                       <ShieldCheck className="w-6 h-6 text-gold/80" />
                     </div>
+                    {/* Lock Text - Reveals on hover */}
                     <span className="text-[11px] font-light uppercase tracking-[0.34em] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
                       <span className="gold-metal-text">Desktop</span>
                     </span>
                   </div>
+                  {/* Screen Glow */}
                   <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none z-20" />
                 </div>
-                {/* Stand Neck & Base */}
-                <div className="w-4 h-5 bg-[#2A2A2A] -mt-[2px]" />
-                <div className="w-20 h-1.5 bg-[#3A3A3A] rounded-t-sm" />
+                {/* Stand */}
+                <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-4 h-5 bg-[#2A2A2A]" />
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-20 h-1.5 bg-[#3A3A3A] rounded-t-sm" />
               </div>
-            </div>
             <div className="aura-usage-content text-center mt-auto">
               <h3>Focus Alignment</h3>
               <p>Stay connected to the frequency, even in your daily flow.</p>
@@ -661,7 +662,7 @@ const MockupOverlay = ({
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-serif font-bold gold-metal-heading">${wallpaper.price}</span>
               </div>
-              <span className="text-[11px] mt-2 font-bold uppercase tracking-widest gold-metal-text">One-time purchase / All formats included</span>
+              <span className="text-[11px] mt-2 font-bold uppercase tracking-widest gold-metal-text">One-time purchase ??All formats included</span>
             </div>
             
             <div className="w-full md:w-auto min-w-[240px] flex flex-col gap-2">
@@ -973,9 +974,9 @@ const Footer = ({ lang, currentLang, setLang, setActiveTab }: { lang: any, curre
               currentLang === 'KO' ? "bg-gold text-deep-black" : "text-white/40 hover:text-white"
             )}
           >
-            한국어
-          </button>
+            ?쒓뎅??          </button>
         </div>
+
         <div className="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-white/30">
           <span>Digital Soul</span>
           <span>Global Energy</span>
@@ -1015,7 +1016,7 @@ const ContactSection = () => {
           <p className="mx-auto max-w-xl text-base font-light leading-8 text-white/72 md:text-lg">
             For all inquiries, please contact us via email.
             <br />
-            We typically respond within 24-48 hours.
+            We typically respond within 24??8 hours.
           </p>
 
           <a
@@ -1854,7 +1855,7 @@ function MainContent() {
 
                           <div className="aura-unlock-flash" />
                           <div className="aura-unlock-message">
-                            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
+                            {currentLang === 'EN' ? 'Activation complete' : '?쒖꽦???꾨즺'}
                           </div>
 
                           {/* Golden Aura Mist Layer */}
@@ -1895,7 +1896,7 @@ function MainContent() {
                               {currentLang === 'EN' ? wp.title_en : wp.title_ko}
                             </h3>
                             <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-medium">
-                              {currentLang === 'EN' ? 'Activation Art' : '의식 활성화 도구'}
+                              {currentLang === 'EN' ? 'Activation Art' : '?섏떇 ?쒖꽦???꾧뎄'}
                             </p>
                           </div>
 
@@ -1974,7 +1975,7 @@ function MainContent() {
                 </p>
                 <div className="w-12 h-[1px] bg-gold/20 mx-auto my-16" />
                 <p>
-                  AURACANVAS was created to make the invisible - visible.
+                  AURACANVAS was created to make the invisible??visible.
                 </p>
                 <p>
                   We transform abstract inner states<br/>
