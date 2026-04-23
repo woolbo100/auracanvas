@@ -517,19 +517,21 @@ const MockupOverlay = ({
               {/* Canvas Frame */}
               <div className="relative w-[85%] max-w-[240px] aspect-[3/4] bg-charcoal shadow-[0_30px_60px_rgba(0,0,0,0.9)] border-[3px] border-[#2A2A2A] rounded-sm group-hover/usage:-translate-y-2 transition-transform duration-500 overflow-hidden mx-auto mt-4">
                 {/* Canvas Inner Image */}
-                {wallpaper.mockups?.space?.imageUrl ? (
-                  <img src={wallpaper.mockups.space.imageUrl} className="absolute inset-0 w-full h-full object-cover" alt="Space Mockup" />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex flex-col items-center justify-center text-center p-2 border border-white/5">
-                     <span className="text-white/20 text-[10px] uppercase tracking-widest leading-relaxed">Canvas<br/>Mockup</span>
-                  </div>
-                )}
+                <div className="absolute inset-0 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 blur-[4px] group-hover/usage:blur-0">
+                  {wallpaper.mockups?.space?.imageUrl ? (
+                    <img src={wallpaper.mockups.space.imageUrl} className="absolute inset-0 w-full h-full object-cover" alt="Space Mockup" />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex flex-col items-center justify-center text-center p-2 border border-white/5">
+                       <span className="text-white/20 text-[10px] uppercase tracking-widest leading-relaxed">Canvas<br/>Mockup</span>
+                    </div>
+                  )}
+                </div>
                 {/* Unified Lock Overlay */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-500">
-                  <div className="w-14 h-14 rounded-full bg-[#4b3366]/60 backdrop-blur-sm border border-[#D4AF37]/30 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
-                    <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-deep-black/20 backdrop-blur-[2px] group-hover/usage:opacity-0 transition-all duration-700 pointer-events-none">
+                  <div className="w-14 h-14 rounded-full bg-charcoal/90 backdrop-blur-md border border-gold/30 flex items-center justify-center mb-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                    <ShieldCheck className="w-6 h-6 text-gold" />
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#D4AF37]">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold/90 drop-shadow-lg">
                     Energy Locked
                   </span>
                 </div>
@@ -550,19 +552,20 @@ const MockupOverlay = ({
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl opacity-30" />
               {/* Monitor Frame */}
               <div className="relative w-full max-w-[280px] aspect-video bg-[#1A1A1A] rounded-md border-2 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col group-hover/usage:-translate-y-2 transition-transform duration-500 mb-6 mx-auto mt-auto z-10">
-                {/* Screen Content */}
-                <div className="flex-1 m-1 rounded-sm bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center border border-white/5 relative overflow-hidden">
-                  {wallpaper.mockups?.focus?.imageUrl ? (
-                    <img src={wallpaper.mockups.focus.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Focus Mockup" />
-                  ) : (
-                    <span className="text-white/20 text-[10px] uppercase tracking-widest relative z-10">Desktop</span>
-                  )}
+                  {/* Screen Content Image */}
+                  <div className="absolute inset-0 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 blur-[4px] group-hover/usage:blur-0">
+                    {wallpaper.mockups?.focus?.imageUrl ? (
+                      <img src={wallpaper.mockups.focus.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Focus Mockup" />
+                    ) : (
+                      <span className="text-white/20 text-[10px] uppercase tracking-widest relative z-10 flex h-full items-center justify-center">Desktop</span>
+                    )}
+                  </div>
                   {/* Unified Lock Overlay */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-500">
-                    <div className="w-14 h-14 rounded-full bg-[#4b3366]/60 backdrop-blur-sm border border-[#D4AF37]/30 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
-                      <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-deep-black/20 backdrop-blur-[2px] group-hover/usage:opacity-0 transition-all duration-700 pointer-events-none">
+                    <div className="w-14 h-14 rounded-full bg-charcoal/90 backdrop-blur-md border border-gold/30 flex items-center justify-center mb-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                      <ShieldCheck className="w-6 h-6 text-gold" />
                     </div>
-                    <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#D4AF37]">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold/90 drop-shadow-lg">
                       Energy Locked
                     </span>
                   </div>
@@ -588,19 +591,22 @@ const MockupOverlay = ({
               {/* Physical Card */}
               <div className="relative w-[70%] max-w-[200px] aspect-[2/3] bg-charcoal rounded-xl border border-gold/20 shadow-[15px_20px_40px_rgba(0,0,0,0.8)] rotate-[12deg] group-hover/usage:rotate-6 group-hover/usage:-translate-y-4 group-hover/usage:shadow-[20px_30px_50px_rgba(0,0,0,0.9)] transition-all duration-700 overflow-hidden mx-auto mt-8">
                  <div className="absolute inset-1 border-[2px] border-gold/10 rounded-lg pointer-events-none z-20" />
-                 {wallpaper.mockups?.pocket?.imageUrl ? (
-                   <img src={wallpaper.mockups.pocket.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Pocket Mockup" />
-                 ) : (
-                   <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent flex items-center justify-center z-10">
-                     <span className="text-gold/40 text-[10px] uppercase tracking-widest font-serif font-bold">Talisman</span>
-                   </div>
-                 )}
+                 {/* Physical Card Content Image */}
+                 <div className="absolute inset-0 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 blur-[4px] group-hover/usage:blur-0">
+                   {wallpaper.mockups?.pocket?.imageUrl ? (
+                     <img src={wallpaper.mockups.pocket.imageUrl} className="absolute inset-0 w-full h-full object-cover z-10" alt="Pocket Mockup" />
+                   ) : (
+                     <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent flex items-center justify-center z-10">
+                       <span className="text-gold/40 text-[10px] uppercase tracking-widest font-serif font-bold">Talisman</span>
+                     </div>
+                   )}
+                 </div>
                  {/* Unified Lock Overlay */}
-                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-500">
-                   <div className="w-14 h-14 rounded-full bg-[#4b3366]/60 backdrop-blur-sm border border-[#D4AF37]/30 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
-                     <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
+                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-deep-black/20 backdrop-blur-[2px] group-hover/usage:opacity-0 transition-all duration-700 pointer-events-none">
+                   <div className="w-14 h-14 rounded-full bg-charcoal/90 backdrop-blur-md border border-gold/30 flex items-center justify-center mb-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                     <ShieldCheck className="w-6 h-6 text-gold" />
                    </div>
-                   <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#D4AF37]">
+                   <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold/90 drop-shadow-lg">
                      Energy Locked
                    </span>
                  </div>
