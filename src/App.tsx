@@ -925,7 +925,7 @@ function MainContent() {
                 </AnimatePresence>
 
                 {/* Category Filter */}
-                <div className="flex items-center justify-center gap-4 overflow-x-auto pb-12 no-scrollbar">
+                <div className="flex items-center justify-center gap-4 overflow-x-auto pt-10 md:pt-16 pb-12 no-scrollbar">
                   <button
                     onClick={() => setSelectedCategory('All')}
                     className={cn(
