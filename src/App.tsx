@@ -1871,14 +1871,8 @@ function MainContent() {
           )}
 
           {activeTab === 'Frequencies' && (
-            <div className="relative overflow-hidden px-6 lg:px-16 max-w-7xl mx-auto pt-36 pb-6">
-              <div className="pointer-events-none absolute inset-x-0 top-6 h-[460px] opacity-75">
-                <div className="absolute left-1/2 top-0 h-[220px] w-[240px] -translate-x-[145%] rounded-full bg-[rgba(126,87,255,0.11)] blur-[95px]" />
-                <div className="absolute left-1/2 top-8 h-[260px] w-[320px] -translate-x-1/2 rounded-full bg-[rgba(76,126,255,0.09)] blur-[120px]" />
-                <div className="absolute left-1/2 top-24 h-[220px] w-[240px] translate-x-[55%] rounded-full bg-[rgba(201,169,91,0.08)] blur-[110px]" />
-                <div className="absolute inset-x-24 top-44 h-24 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.045),transparent_72%)] blur-3xl" />
-              </div>
-              <div className="pointer-events-none absolute inset-x-10 bottom-12 h-32 bg-[radial-gradient(ellipse_at_center,rgba(88,54,155,0.06),transparent_72%)] blur-3xl" />
+            <div className="relative overflow-hidden px-6 lg:px-16 max-w-7xl mx-auto pt-36 pb-12">
+              <div className="aura-page-aurora" />
               <h2 className="relative text-4xl font-serif font-bold mb-12 text-gold">Explore Energies</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {categories.map(cat => (
@@ -1903,13 +1897,7 @@ function MainContent() {
 
           {activeTab === 'About' && (
             <div className="relative overflow-hidden px-6 lg:px-16 max-w-4xl mx-auto pt-40 pb-24 text-center">
-              <div className="pointer-events-none absolute inset-x-0 top-16 h-[520px] opacity-70">
-                <div className="absolute left-1/2 top-0 h-[240px] w-[240px] -translate-x-[130%] rounded-full bg-[rgba(126,87,255,0.12)] blur-[90px]" />
-                <div className="absolute left-1/2 top-10 h-[260px] w-[300px] -translate-x-1/2 rounded-full bg-[rgba(76,126,255,0.10)] blur-[110px]" />
-                <div className="absolute left-1/2 top-24 h-[220px] w-[220px] translate-x-[38%] rounded-full bg-[rgba(201,169,91,0.09)] blur-[100px]" />
-                <div className="absolute inset-x-12 top-44 h-28 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05),transparent_70%)] blur-3xl" />
-              </div>
-              <div className="pointer-events-none absolute inset-x-10 bottom-20 h-40 bg-[radial-gradient(ellipse_at_center,rgba(88,54,155,0.08),transparent_72%)] blur-3xl" />
+              <div className="aura-page-aurora" />
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
                 <h1 className="mb-10 font-serif text-5xl font-bold tracking-tight text-gold md:text-6xl">
                   ABOUT AURA
