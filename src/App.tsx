@@ -533,8 +533,8 @@ const MockupOverlay = ({
                     <ShieldCheck className="w-6 h-6 text-gold/80" />
                   </div>
                   {/* Lock Text - Reveals on hover */}
-                  <span className="text-[11px] font-light uppercase tracking-[0.34em] text-[rgba(231,215,162,0.78)] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
-                    Energy Locked
+                  <span className="text-[11px] font-light uppercase tracking-[0.34em] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
+                    <span className="gold-metal-text">Canvas</span>
                   </span>
                 </div>
                 {/* Ambient Light */}
@@ -569,8 +569,8 @@ const MockupOverlay = ({
                       <ShieldCheck className="w-6 h-6 text-gold/80" />
                     </div>
                     {/* Lock Text - Reveals on hover */}
-                    <span className="text-[11px] font-light uppercase tracking-[0.34em] text-[rgba(231,215,162,0.78)] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
-                      Energy Locked
+                    <span className="text-[11px] font-light uppercase tracking-[0.34em] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
+                      <span className="gold-metal-text">Desktop</span>
                     </span>
                   </div>
                   {/* Screen Glow */}
@@ -611,8 +611,8 @@ const MockupOverlay = ({
                      <ShieldCheck className="w-6 h-6 text-gold/80" />
                    </div>
                    {/* Lock Text - Reveals on hover */}
-                   <span className="text-[11px] font-light uppercase tracking-[0.34em] text-[rgba(231,215,162,0.78)] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
-                     Energy Locked
+                   <span className="text-[11px] font-light uppercase tracking-[0.34em] opacity-0 group-hover/usage:opacity-100 translate-y-2 group-hover/usage:translate-y-0 transition-all duration-500 ease-out">
+                     <span className="gold-metal-text">Talisman</span>
                    </span>
                  </div>
                  {/* Gold Foil reflection */}
