@@ -861,11 +861,11 @@ function MainContent() {
             <div className="relative">
               <section className="aura-hero" onMouseMove={handleAuraMove} onMouseLeave={resetAuraMove}>
                 <div className="aura-hero-aurora" />
-                <div className="relative z-10 mx-auto max-w-6xl px-6 pt-12 text-center lg:px-16">
+                <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 lg:pt-32 text-center lg:px-16">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-8"
+                    className="mb-10"
                   >
                     <span className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-6 py-2 text-[10px] font-bold uppercase tracking-[0.6em] text-gold shadow-[0_0_20px_rgba(219,198,126,0.08)] backdrop-blur-xl">
                       <span className="h-2 w-2 rounded-full bg-gold/80" />
