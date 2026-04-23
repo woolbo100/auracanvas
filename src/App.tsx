@@ -415,30 +415,27 @@ const MockupOverlay = ({
               {currentLang === 'EN' ? wallpaper.title_en : (wallpaper.title_ko || wallpaper.title_en)}
             </h2>
             <p className="text-white/50 leading-relaxed font-light text-xl italic max-w-md">
-              "{wallpaper.meaning}"
+              This is not decoration. It is alignment.
             </p>
           </div>
 
-          {wallpaper.description && (
-            <div className="space-y-4">
-              <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold/60">The Intent</h4>
-              <p className="text-white/70 font-light leading-relaxed">{wallpaper.description}</p>
-            </div>
-          )}
-
-          {wallpaper.ritual_steps && (
-            <div className="space-y-4">
-              <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold/60">Ritual Guide</h4>
-              <ul className="space-y-3">
-                {wallpaper.ritual_steps.map((step, idx) => (
-                  <li key={idx} className="flex gap-4 text-sm font-light text-white/50 text-left">
-                    <span className="text-gold font-serif italic">{idx + 1}.</span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div className="space-y-4">
+            <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold/60">Ritual Guide</h4>
+            <ul className="space-y-3">
+              <li className="flex gap-4 text-sm font-light text-white/50 text-left">
+                <span className="text-gold font-serif italic">1.</span>
+                <span>Set it as your background or place it in your space.</span>
+              </li>
+              <li className="flex gap-4 text-sm font-light text-white/50 text-left">
+                <span className="text-gold font-serif italic">2.</span>
+                <span>Pause for a moment.</span>
+              </li>
+              <li className="flex gap-4 text-sm font-light text-white/50 text-left">
+                <span className="text-gold font-serif italic">3.</span>
+                <span>Let the frequency settle into your awareness.</span>
+              </li>
+            </ul>
+          </div>
 
           <div className="grid grid-cols-3 gap-6 py-8 border-y border-white/5">
             {[
@@ -460,7 +457,10 @@ const MockupOverlay = ({
 
       {/* Usage Mockup Section */}
       <section className="aura-usage-section w-full max-w-7xl mx-auto px-6 mt-24 lg:mt-32 mb-20">
-        <h2 className="text-3xl md:text-4xl font-serif font-bold text-center text-white mb-16">Where This Energy Lives</h2>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4">Where This Energy Lives</h2>
+          <p className="text-gold/60 uppercase tracking-[0.3em] text-[10px]">One activation. Multiple realities.</p>
+        </div>
 
         <div className="aura-usage-grid">
           {/* Mockup Card 1: Canvas / Wall */}
@@ -490,7 +490,7 @@ const MockupOverlay = ({
             </div>
             <div className="aura-usage-content text-center mt-auto">
               <h3>Space Activation</h3>
-              <p>Transform your space into a field of aligned energy.</p>
+              <p>Let your space quietly reflect the energy you are calling in.</p>
             </div>
           </div>
 
@@ -524,7 +524,7 @@ const MockupOverlay = ({
             </div>
             <div className="aura-usage-content text-center mt-auto">
               <h3>Focus Alignment</h3>
-              <p>Keep the frequency close while you work and create.</p>
+              <p>Stay connected to the frequency, even in your daily flow.</p>
             </div>
           </div>
 
@@ -555,7 +555,7 @@ const MockupOverlay = ({
             </div>
             <div className="aura-usage-content text-center mt-auto">
               <h3>Pocket Ritual</h3>
-              <p>Carry the energy with you as a personal talisman.</p>
+              <p>Carry the energy with you, wherever you go.</p>
             </div>
           </div>
         </div>
@@ -570,9 +570,11 @@ const MockupOverlay = ({
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-serif font-bold text-gold">${wallpaper.price}</span>
               </div>
+              <span className="text-[9px] text-gold/60 mt-1 uppercase tracking-widest">One-time access • All formats included</span>
             </div>
             
-            <div className="w-full md:w-auto min-w-[240px]">
+            <div className="w-full md:w-auto min-w-[240px] flex flex-col gap-2">
+              <p className="text-center md:text-right text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">If it resonates, you already know.</p>
               {!isPurchasing ? (
                 <button
                   onClick={() => setIsPurchasing(true)}
