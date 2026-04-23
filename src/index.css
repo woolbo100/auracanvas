@@ -137,9 +137,9 @@
   }
 
   @keyframes auraDrift {
-    0% { transform: translate3d(-10%, -10%, 0) scale(1) rotate(0deg); filter: hue-rotate(0deg); }
-    50% { transform: translate3d(10%, 15%, 0) scale(1.2) rotate(5deg); filter: hue-rotate(15deg); }
-    100% { transform: translate3d(-5%, -15%, 0) scale(1.3) rotate(-3deg); filter: hue-rotate(-10deg); }
+    0% { transform: translate3d(-10%, -5%, 0) rotate(0deg) scale(1.1); }
+    50% { transform: translate3d(5%, 10%, 0) rotate(2deg) scale(1.2); }
+    100% { transform: translate3d(-10%, -5%, 0) rotate(0deg) scale(1.1); }
   }
 
   @keyframes auraWave {
@@ -201,15 +201,14 @@
     pointer-events: none;
     z-index: 1;
     background: linear-gradient(
-      -45deg,
-      rgba(88, 54, 155, 0.25),
-      rgba(140, 90, 255, 0.18),
-      rgba(219, 185, 105, 0.1),
-      rgba(60, 140, 255, 0.2),
-      rgba(113, 68, 190, 0.25)
+      135deg,
+      rgba(88, 54, 155, 0.35) 0%,
+      rgba(140, 90, 255, 0.2) 25%,
+      rgba(219, 185, 105, 0.15) 75%,
+      rgba(113, 68, 190, 0.3) 100%
     );
-    background-size: 400% 400%;
-    animation: heroBgFlow 30s ease infinite;
+    background-size: 200% 200%;
+    animation: heroBgFlow 25s ease infinite;
     filter: blur(60px);
     opacity: 0.8;
   }
@@ -234,21 +233,18 @@
 
   .aura-hero-aurora::before {
     background:
-      radial-gradient(circle at 20% 20%, rgba(150, 80, 255, 0.25), transparent 50%),
-      radial-gradient(circle at 80% 30%, rgba(113, 68, 190, 0.2), transparent 40%),
-      radial-gradient(circle at 50% 50%, rgba(219, 185, 105, 0.15), transparent 50%),
-      radial-gradient(circle at 10% 80%, rgba(80, 180, 255, 0.12), transparent 45%);
-    animation: auraDrift 20s ease-in-out infinite alternate;
+      radial-gradient(circle at 15% 30%, rgba(150, 80, 255, 0.35), transparent 60%),
+      radial-gradient(circle at 85% 70%, rgba(219, 185, 105, 0.2), transparent 50%);
+    animation: auraDrift 25s ease-in-out infinite alternate;
   }
 
   .aura-hero-aurora::after {
     background:
-      radial-gradient(circle at 40% 40%, rgba(160, 100, 255, 0.18), transparent 45%),
-      radial-gradient(circle at 70% 60%, rgba(140, 90, 255, 0.15), transparent 35%),
-      radial-gradient(circle at 20% 10%, rgba(100, 200, 255, 0.12), transparent 40%),
-      radial-gradient(circle at 85% 85%, rgba(219, 185, 105, 0.12), transparent 30%);
-    animation: auraWave 15s ease-in-out infinite alternate-reverse;
+      radial-gradient(circle at 80% 20%, rgba(113, 68, 190, 0.25), transparent 55%),
+      radial-gradient(circle at 25% 80%, rgba(80, 180, 255, 0.15), transparent 50%);
+    animation: auraWave 18s ease-in-out infinite alternate-reverse;
     mix-blend-mode: screen;
+    opacity: 0.7;
   }
 
   /* Reusable Aurora for Content Pages */
