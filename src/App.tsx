@@ -448,6 +448,52 @@ const MockupOverlay = ({
             ))}
           </div>
         </div>
+        
+        {/* Usage Mockup Section */}
+        <section className="aura-usage-section mt-12 lg:mt-24">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-center text-white mb-16">Where This Energy Lives</h2>
+
+          <div className="aura-usage-grid">
+            {/* Mockup Card 1 */}
+            <div className="aura-usage-card group/usage">
+              <div className="aura-usage-image">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
+                  Image Coming Soon
+                </div>
+              </div>
+              <div className="aura-usage-content text-center">
+                <h3>Space Activation</h3>
+                <p>Transform your space into a field of aligned energy.</p>
+              </div>
+            </div>
+
+            {/* Mockup Card 2 */}
+            <div className="aura-usage-card group/usage">
+              <div className="aura-usage-image">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
+                  Image Coming Soon
+                </div>
+              </div>
+              <div className="aura-usage-content text-center">
+                <h3>Focus Alignment</h3>
+                <p>Keep the frequency close while you work and create.</p>
+              </div>
+            </div>
+
+            {/* Mockup Card 3 */}
+            <div className="aura-usage-card group/usage">
+              <div className="aura-usage-image">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center text-white/20 text-[10px] uppercase tracking-widest border border-gold/10 rounded-2xl group-hover/usage:border-gold/30 transition-colors">
+                  Image Coming Soon
+                </div>
+              </div>
+              <div className="aura-usage-content text-center">
+                <h3>Pocket Ritual</h3>
+                <p>Carry the energy with you as a personal talisman.</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       {/* Floating Action Bar (Glassmorphism) */}
