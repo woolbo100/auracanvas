@@ -267,7 +267,8 @@ const MockupOverlay = ({
   isPurchasing,
   setIsPurchasing,
   handlePurchaseSuccess,
-  currentLang
+  currentLang,
+  isUnlocked
 }: { 
   wallpaper: Wallpaper, 
   onClose: () => void,
@@ -277,7 +278,8 @@ const MockupOverlay = ({
   isPurchasing: boolean,
   setIsPurchasing: (v: boolean) => void,
   handlePurchaseSuccess: (wp: Wallpaper) => void,
-  currentLang: string
+  currentLang: string,
+  isUnlocked: boolean
 }) => {
   const handleReturnToGallery = () => {
     if (window.history.state?.auraMockupOpen) {
@@ -323,12 +325,15 @@ const MockupOverlay = ({
         <X className="w-6 h-6" />
       </button>
 
-      <div className="relative flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-32 w-full max-w-7xl px-6">
+        <div className="relative flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-32 w-full max-w-7xl px-6">
         {/* Radiating Aura Background */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square bg-gold/5 rounded-full blur-[150px] animate-pulse-gold pointer-events-none" />
 
         {/* Phone Mockup - iPhone 15 Pro style */}
-        <div className="relative w-full max-w-[340px] aspect-[9/19.5] bg-charcoal rounded-[3.5rem] border-[12px] border-charcoal shadow-[0_60px_120px_rgba(0,0,0,0.9),0_0_60px_rgba(219,198,126,0.15)] overflow-hidden shrink-0 outline outline-1 outline-white/10 group/mockup hover:shadow-[0_60px_140px_rgba(0,0,0,1),0_0_100px_rgba(219,198,126,0.3)] transition-all duration-700">
+        <div className={cn(
+          "aura-piece relative w-full max-w-[340px] aspect-[9/19.5] bg-charcoal rounded-[3.5rem] border-[12px] border-charcoal shadow-[0_60px_120px_rgba(0,0,0,0.9),0_0_60px_rgba(219,198,126,0.15)] overflow-hidden shrink-0 outline outline-1 outline-white/10 group/mockup hover:shadow-[0_60px_140px_rgba(0,0,0,1),0_0_100px_rgba(219,198,126,0.3)] transition-all duration-700",
+          isUnlocked ? "is-unlocked" : "is-locked"
+        )}>
           {/* Enhanced Aura Glow */}
           <div className="absolute inset-0 bg-gold/20 blur-[60px] rounded-[3rem] opacity-0 group-hover/mockup:opacity-100 transition-opacity duration-1000 animate-aura-float" />
           
@@ -340,9 +345,25 @@ const MockupOverlay = ({
           <img 
             src={wallpaper.thumbnailUrl} 
             alt="Mockup"
-            className="w-full h-full object-cover"
+            className="aura-card-image w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
+
+          <div className="aura-unlock-flash" />
+          <div className="aura-unlock-message">
+            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
+          </div>
+
+          {wallpaper.locked && (
+            <div className="aura-lock-overlay">
+              <div className="aura-lock-seal">
+                <ShieldCheck className="aura-lock-icon" />
+              </div>
+              <span className="relative z-10 text-[9px] font-bold uppercase tracking-[0.5em] text-gold/60">
+                Energy Locked
+              </span>
+            </div>
+          )}
           
           {/* Phone UI Overlay (Clock & Icons) */}
           <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-between py-20 px-8 z-20">
@@ -636,6 +657,13 @@ function MainContent() {
   );
   const [loading, setLoading] = useState(false);
   const [myLibrary, setMyLibrary] = useState<Wallpaper[]>([]);
+  const [recentlyUnlockedIds, setRecentlyUnlockedIds] = useState<string[]>([]);
+
+  const isWallpaperUnlocked = useCallback((wp: Wallpaper) => {
+    if (!wp.locked) return true;
+    if (recentlyUnlockedIds.includes(wp.id)) return true;
+    return myLibrary.some((owned) => owned.id === wp.id);
+  }, [myLibrary, recentlyUnlockedIds]);
 
   const handlePurchaseSuccess = async (wp: Wallpaper) => {
     if (!user) {
@@ -670,8 +698,16 @@ function MainContent() {
         document.body.removeChild(link);
       }
 
-      setIsSuccess(true);
       setIsPurchasing(false);
+      setRecentlyUnlockedIds((prev) => prev.includes(wp.id) ? prev : [...prev, wp.id]);
+
+      setTimeout(() => {
+        setIsSuccess(true);
+      }, 950);
+
+      setTimeout(() => {
+        setRecentlyUnlockedIds((prev) => prev.filter((id) => id !== wp.id));
+      }, 2600);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'orders');
     }
@@ -787,6 +823,23 @@ function MainContent() {
     };
   }, [refreshing, handlePullToRefresh]);
 
+  const handleAuraMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const moveX = ((x / rect.width) - 0.5) * 24;
+    const moveY = ((y / rect.height) - 0.5) * 18;
+
+    e.currentTarget.style.setProperty("--mx", `${moveX}px`);
+    e.currentTarget.style.setProperty("--my", `${moveY}px`);
+  };
+
+  const resetAuraMove = (e: React.MouseEvent<HTMLElement>) => {
+    e.currentTarget.style.setProperty("--mx", `0px`);
+    e.currentTarget.style.setProperty("--my", `0px`);
+  };
+
   return (
     <PayPalScriptProvider options={{ 
       "clientId": import.meta.env.VITE_PAYPAL_CLIENT_ID || "ATNUPKM6CKGqJaD7mEkPXmHWoZf_TYIY1F8Md2gwbFWmRSHwyKAmIzjrVJ2MZt4DI5QzZSTrfGvpKMJf",
@@ -806,7 +859,8 @@ function MainContent() {
         <main className="relative z-10 pb-32">
           {activeTab === 'Home' && (
             <div className="relative">
-              <section className="aura-hero">
+              <section className="aura-hero" onMouseMove={handleAuraMove} onMouseLeave={resetAuraMove}>
+                <div className="aura-hero-aurora" />
                 <div className="relative z-10 mx-auto max-w-6xl px-6 pt-12 text-center lg:px-16">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -930,7 +984,10 @@ function MainContent() {
                         className="group relative flex flex-col gap-4 cursor-pointer mb-10"
                       >
                         {/* Premium Ritual Card Container */}
-                        <div className="aura-card aspect-[9/16] overflow-hidden">
+                        <div className={cn(
+                          "aura-card aspect-[9/16] overflow-hidden",
+                          isWallpaperUnlocked(wp) ? "is-unlocked" : "is-locked"
+                        )}>
                           
                           {/* Artwork Image */}
                           <div className="aura-card-media w-full h-full">
@@ -940,6 +997,11 @@ function MainContent() {
                               className="aura-card-image"
                               referrerPolicy="no-referrer"
                             />
+                          </div>
+
+                          <div className="aura-unlock-flash" />
+                          <div className="aura-unlock-message">
+                            {currentLang === 'EN' ? 'Activation complete' : '활성화 완료'}
                           </div>
                           
                           {/* Premium Lock Overlay */}
@@ -1067,6 +1129,7 @@ function MainContent() {
               setIsPurchasing={setIsPurchasing}
               handlePurchaseSuccess={handlePurchaseSuccess}
               currentLang={currentLang}
+              isUnlocked={isWallpaperUnlocked(selectedWallpaper)}
             />
           )}
         </AnimatePresence>
