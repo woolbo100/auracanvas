@@ -255,7 +255,11 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
               <button onClick={() => signOut(auth)} className="text-[10px] uppercase tracking-widest text-white/40 hover:text-gold">{lang.signOut}</button>
             </div>
           ) : (
-            <button onClick={onLogin} className="flex items-center gap-2 bg-gold text-deep-black px-6 py-2.5 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-white transition-all">
+            <button 
+              type="button"
+              onClick={onLogin} 
+              className="flex items-center gap-2 bg-gold text-deep-black px-6 py-2.5 rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-white transition-all"
+            >
               <LogIn className="w-3 h-3" />
               {lang.signIn}
             </button>
@@ -1543,7 +1547,9 @@ function MainContent() {
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e?: React.MouseEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
+
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
@@ -2139,6 +2145,7 @@ function AdminPage() {
         <h1 className="text-4xl font-serif font-bold mb-4 text-white">Gallery Control</h1>
         <p className="text-white/40 mb-12 max-w-md font-light italic">Only the Guardian of the Gallery may enter this space.</p>
         <button 
+          type="button"
           onClick={handleLogin}
           className="bg-gold text-deep-black px-12 py-5 rounded-full text-xs uppercase tracking-[0.4em] font-bold hover:bg-white transition-all shadow-[0_0_30px_rgba(219,198,126,0.4)]"
         >

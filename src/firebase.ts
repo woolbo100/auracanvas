@@ -19,6 +19,10 @@ export const db = getFirestore(app, import.meta.env.VITE_FIREBASE_FIRESTORE_DATA
 export const auth = getAuth(app);
 export const storage = getStorage(app, import.meta.env.VITE_FIREBASE_STORAGE_BUCKET);
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 
 // Validate connection to Firestore
 async function testConnection() {
