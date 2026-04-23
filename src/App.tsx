@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -164,6 +164,16 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
   const isAdmin = user?.email === ADMIN_EMAIL;
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const handlePrimaryNav = (tab: string) => {
+    if (tab === 'Frequencies') {
+      setActiveTab('Frequencies');
+    } else {
+      setActiveTab(tab);
+    }
+
+    if (isAdminView) onAdminToggle();
+  };
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -188,13 +198,12 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
         <div className="flex items-center gap-10">
           {[
             { id: 'Home', label: "HOME" },
-            { id: 'About', label: "ABOUT AURA" },
-            { id: 'Gallery', label: "GALLERY" },
-            { id: 'Frequencies', label: "FREQUENCIES" }
+            { id: 'Frequencies', label: "FREQUENCIES" },
+            { id: 'About', label: "ABOUT AURA" }
           ].map((item) => (
             <button
               key={item.id}
-              onClick={() => { setActiveTab(item.id); if(isAdminView) onAdminToggle(); }}
+              onClick={() => handlePrimaryNav(item.id)}
               className={cn(
                 "text-xs uppercase tracking-[0.2em] font-medium transition-all hover:text-gold",
                 activeTab === item.id && !isAdminView ? "text-gold border-b border-gold pb-1" : "text-white/60"
@@ -237,13 +246,12 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-deep-black border-t border-gold/10 z-50 flex items-center justify-around px-2 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
         {[
           { id: 'Home', icon: Home, label: "HOME" },
-          { id: 'About', icon: Heart, label: "ABOUT AURA" },
-          { id: 'Gallery', icon: Grid, label: "GALLERY" },
-          { id: 'Frequencies', icon: Library, label: "FREQUENCIES" }
+          { id: 'Frequencies', icon: Grid, label: "FREQUENCIES" },
+          { id: 'About', icon: Heart, label: "ABOUT AURA" }
         ].map((item) => (
           <button
             key={item.id}
-            onClick={() => { setActiveTab(item.id); if(isAdminView) onAdminToggle(); }}
+            onClick={() => handlePrimaryNav(item.id)}
             className={cn(
               "relative flex flex-col items-center justify-center gap-1 w-full h-full min-h-[48px] transition-all duration-300",
               activeTab === item.id && !isAdminView ? "text-gold" : "text-white/40"
@@ -1389,6 +1397,8 @@ function MainContent() {
   const [loading, setLoading] = useState(false);
   const [myLibrary, setMyLibrary] = useState<Wallpaper[]>([]);
   const [recentlyUnlockedIds, setRecentlyUnlockedIds] = useState<string[]>([]);
+  const frequenciesSectionRef = useRef<HTMLElement | null>(null);
+  const gallerySectionRef = useRef<HTMLElement | null>(null);
 
   const isWallpaperUnlocked = useCallback((wp: Wallpaper) => {
     if (!wp.locked) return true;
@@ -1568,6 +1578,14 @@ function MainContent() {
     e.currentTarget.style.setProperty("--my", `50%`);
   };
 
+  useEffect(() => {
+    if (activeTab === 'Frequencies') {
+      requestAnimationFrame(() => {
+        frequenciesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }, [activeTab]);
+
   return (
     <PayPalScriptProvider options={{ 
       "clientId": import.meta.env.VITE_PAYPAL_CLIENT_ID || "ATNUPKM6CKGqJaD7mEkPXmHWoZf_TYIY1F8Md2gwbFWmRSHwyKAmIzjrVJ2MZt4DI5QzZSTrfGvpKMJf",
@@ -1585,7 +1603,7 @@ function MainContent() {
         />
 
         <main className="relative z-10 pb-32">
-          {activeTab === 'Home' && (
+          {(activeTab === 'Home' || activeTab === 'Frequencies') && (
             <div className="relative">
               <section className="aura-hero" onMouseMove={handleAuraMove} onMouseLeave={resetAuraMove}>
                 <div className="aura-hero-bg-flow" />
@@ -1593,14 +1611,24 @@ function MainContent() {
                 <div className="aura-hero-ripple" />
                 <div className="aura-hero-gold-trace" />
                 <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 lg:pt-32 text-center lg:px-16">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-10"
+                  >
+                    <span className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-6 py-2 text-[10px] font-bold uppercase tracking-[0.6em] text-gold shadow-[0_0_20px_rgba(219,198,126,0.08)] backdrop-blur-xl">
+                      <span className="h-2 w-2 rounded-full bg-gold/80" />
+                      {lang.tagline}
+                    </span>
+                  </motion.div>
+
                   <motion.h1
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                     className="mx-auto mb-10 max-w-5xl text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-[1.06] tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)] break-keep"
-                  >
-                    We visualize what you feel.
-                  </motion.h1>
+                    dangerouslySetInnerHTML={{ __html: lang.heroTitle }}
+                  />
 
                   <motion.p
                     initial={{ opacity: 0, y: 30 }}
@@ -1608,29 +1636,66 @@ function MainContent() {
                     transition={{ delay: 0.4 }}
                     className="mx-auto mb-14 max-w-3xl text-lg font-light leading-relaxed text-white/62 lg:text-2xl"
                   >
-                    Energy, consciousness, and the subtle flow of the universe.<br className="hidden md:block"/> Let your inner state manifest into reality.
+                    {lang.heroSubtitle}
                   </motion.p>
 
                   <motion.button
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 }}
-                    onClick={() => setActiveTab('Gallery')}
+                    onClick={() => {
+                      setActiveTab('Home');
+                      requestAnimationFrame(() => {
+                        gallerySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      });
+                    }}
                     className="aura-gold-btn group mx-auto"
                   >
                     <span className="relative z-10 flex items-center gap-4">
-                      Explore Gallery
+                      {lang.enterGallery}
                       <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" />
                     </span>
                   </motion.button>
+
+                  <motion.div
+                    ref={frequenciesSectionRef}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.75 }}
+                    className="mt-20 flex items-center justify-center gap-4 overflow-x-auto pb-2 no-scrollbar"
+                  >
+                    <button
+                      onClick={() => {
+                        setSelectedCategory('All');
+                        setActiveTab('Home');
+                      }}
+                      className={cn(
+                        "aura-ghost-btn whitespace-nowrap",
+                        selectedCategory === 'All' && "active"
+                      )}
+                    >
+                      {lang.categoryAll}
+                    </button>
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setSelectedCategory(cat.name);
+                          setActiveTab('Home');
+                        }}
+                        className={cn(
+                          "aura-ghost-btn whitespace-nowrap",
+                          selectedCategory === cat.name && "active"
+                        )}
+                      >
+                        {cat.name}
+                      </button>
+                    ))}
+                  </motion.div>
                 </div>
               </section>
-            </div>
-          )}
 
-          {activeTab === 'Gallery' && (
-            <div className="relative">
-              <section id="gallery-start" className="aura-gallery-section">
+              <section id="gallery-start" ref={gallerySectionRef} className="aura-gallery-section">
                 <div className="mx-auto max-w-[2000px] px-6 lg:px-16">
                 {/* Pull to refresh indicator */}
                 <AnimatePresence>
@@ -1647,30 +1712,6 @@ function MainContent() {
                 </AnimatePresence>
 
                 {/* Category Filter */}
-                <div className="flex items-center justify-center gap-4 overflow-x-auto pt-10 md:pt-16 pb-12 no-scrollbar">
-                  <button
-                    onClick={() => setSelectedCategory('All')}
-                    className={cn(
-                      "aura-ghost-btn whitespace-nowrap",
-                      selectedCategory === 'All' && "active"
-                    )}
-                  >
-                    {lang.categoryAll}
-                  </button>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.name)}
-                      className={cn(
-                        "aura-ghost-btn whitespace-nowrap",
-                        selectedCategory === cat.name && "active"
-                      )}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
-
                 {/* Adaptive Masonry Grid */}
                 <Masonry
                   breakpointCols={{
@@ -1778,27 +1819,6 @@ function MainContent() {
             </div>
           )}
 
-          {activeTab === 'Frequencies' && (
-            <div className="px-6 lg:px-16 max-w-7xl mx-auto pt-20">
-              <h2 className="text-4xl font-serif font-bold mb-12 text-gold">Explore Frequencies</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {categories.map(cat => (
-                  <button 
-                    key={cat.id}
-                    onClick={() => { setSelectedCategory(cat.name); setActiveTab('Gallery'); }}
-                    className="group relative h-64 rounded-[3rem] overflow-hidden border border-white/10 hover:border-gold/40 transition-all"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-gold/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                      <span className="text-3xl font-serif font-bold text-white group-hover:text-gold transition-colors">{cat.name}</span>
-                      <span className="text-[10px] uppercase tracking-[0.4em] text-white/40">View Collection</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {activeTab === 'About' && (
             <div className="px-6 lg:px-16 max-w-4xl mx-auto pt-32 pb-24 text-center">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
@@ -1893,7 +1913,12 @@ function MainContent() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
-                onClick={() => setActiveTab('Gallery')}
+                onClick={() => {
+                  setActiveTab('Home');
+                  requestAnimationFrame(() => {
+                    gallerySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  });
+                }}
                 className="mt-20 aura-gold-btn group mx-auto"
               >
                 <span className="relative z-10 flex items-center gap-4">
