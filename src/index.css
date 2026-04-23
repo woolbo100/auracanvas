@@ -495,20 +495,29 @@
   .aura-lock-overlay::before {
     content: "";
     position: absolute;
-    inset: 0;
-    background:
-      repeating-radial-gradient(
-        circle at center,
-        rgba(255,255,255,0.05) 0px,
-        rgba(255,255,255,0.03) 2px,
-        transparent 8px,
-        transparent 14px
-      );
+    inset: -100%;
+    background: linear-gradient(
+      135deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.05) 45%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.05) 55%,
+      transparent 70%
+    );
     mix-blend-mode: overlay;
-    opacity: 0.28;
+    opacity: 0;
     z-index: 0;
     pointer-events: none;
-    transition: opacity 0.35s ease, transform 0.45s ease, filter 0.45s ease;
+    transition: opacity 0.5s ease;
+  }
+
+  @keyframes sweepingWave {
+    0% {
+      transform: translate(-30%, -30%);
+    }
+    100% {
+      transform: translate(30%, 30%);
+    }
   }
 
   .aura-lock-overlay::after {
@@ -529,9 +538,8 @@
   }
 
   .aura-card:hover .aura-lock-overlay::before {
-    opacity: 0.48;
-    transform: scale(1.02);
-    filter: saturate(1.05);
+    opacity: 1;
+    animation: sweepingWave 5s ease-in-out infinite alternate;
   }
 
   .aura-lock-seal {
