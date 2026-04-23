@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import Masonry from 'react-masonry-css';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { WALLPAPERS, Wallpaper, CATEGORIES } from './constants';
 import { cn } from './lib/utils';
 import { 
@@ -185,9 +187,10 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
         </div>
         <div className="flex items-center gap-10">
           {[
-            { id: 'Home', label: lang.home },
-            { id: 'Categories', label: lang.categories },
-            { id: 'My Library', label: lang.myLibrary }
+            { id: 'Home', label: "HOME" },
+            { id: 'About', label: "ABOUT AURA" },
+            { id: 'Gallery', label: "GALLERY" },
+            { id: 'Frequencies', label: "FREQUENCIES" }
           ].map((item) => (
             <button
               key={item.id}
@@ -233,9 +236,10 @@ const Navbar = ({ activeTab, setActiveTab, user, onLogin, onAdminToggle, isAdmin
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-deep-black border-t border-gold/10 z-50 flex items-center justify-around px-2 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
         {[
-          { id: 'Home', icon: Home, label: lang.home },
-          { id: 'Categories', icon: Grid, label: lang.categories },
-          { id: 'My Library', icon: Library, label: lang.myLibrary }
+          { id: 'Home', icon: Home, label: "HOME" },
+          { id: 'About', icon: Heart, label: "ABOUT AURA" },
+          { id: 'Gallery', icon: Grid, label: "GALLERY" },
+          { id: 'Frequencies', icon: Library, label: "FREQUENCIES" }
         ].map((item) => (
           <button
             key={item.id}
@@ -437,20 +441,29 @@ const MockupOverlay = ({
             </ul>
           </div>
 
-          <div className="grid grid-cols-3 gap-6 py-8 border-y border-white/5">
-            {[
-              { icon: Smartphone, label: "Phone Ritual" },
-              { icon: Library, label: "Focus Mode" },
-              { icon: Monitor, label: "Space Activation" }
-            ].map((item, idx) => (
-              <div key={idx} className="flex flex-col gap-2 items-center lg:items-start">
-                <div className="flex items-center gap-3 text-gold">
-                  <item.icon className="w-4 h-4" />
-                  <span className="text-[10px] uppercase tracking-widest font-bold">{item.label}</span>
+          <div className="py-8 border-y border-white/10 space-y-6">
+            <div>
+              <h3 className="text-[11px] uppercase tracking-[0.4em] font-bold text-gold mb-2">Included in this activation</h3>
+              <p className="text-sm font-light text-white/50">This activation includes all available formats for one complete experience.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+              {[
+                { icon: Smartphone, label: "Phone Ritual" },
+                { icon: Monitor, label: "Space Activation" },
+                { icon: Library, label: "Focus Mode" },
+                { icon: ShieldCheck, label: "Pocket Ritual" }
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold">
+                    <item.icon className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-white">{item.label}</span>
+                    <span className="text-[9px] text-gold/60 uppercase tracking-widest">Included Format</span>
+                  </div>
                 </div>
-                <p className="text-[9px] text-white/30 uppercase tracking-widest">Included</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -459,7 +472,7 @@ const MockupOverlay = ({
       <section className="aura-usage-section w-full max-w-7xl mx-auto px-6 mt-24 lg:mt-32 mb-20">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4">Where This Energy Lives</h2>
-          <p className="text-gold/60 uppercase tracking-[0.3em] text-[10px]">One activation. Multiple realities.</p>
+          <p className="text-gold/60 uppercase tracking-[0.3em] text-[10px]">The same energy, delivered across all included formats.</p>
         </div>
 
         <div className="aura-usage-grid">
@@ -479,10 +492,13 @@ const MockupOverlay = ({
                   </div>
                 )}
                 {/* Unified Lock Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-700">
-                  <div className="w-12 h-12 rounded-full border border-gold/30 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(219,198,126,0.3)]">
-                    <Lock className="w-5 h-5 text-gold" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-500">
+                  <div className="w-14 h-14 rounded-full bg-[#4b3366]/60 backdrop-blur-sm border border-[#D4AF37]/30 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                    <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
                   </div>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#D4AF37]">
+                    Energy Locked
+                  </span>
                 </div>
                 {/* Ambient Light */}
                 <div className="absolute inset-x-0 -top-10 h-10 bg-gold/10 blur-xl rounded-full opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -509,10 +525,13 @@ const MockupOverlay = ({
                     <span className="text-white/20 text-[10px] uppercase tracking-widest relative z-10">Desktop</span>
                   )}
                   {/* Unified Lock Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-700">
-                    <div className="w-12 h-12 rounded-full border border-gold/30 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(219,198,126,0.3)]">
-                      <Lock className="w-5 h-5 text-gold" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-500">
+                    <div className="w-14 h-14 rounded-full bg-[#4b3366]/60 backdrop-blur-sm border border-[#D4AF37]/30 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                      <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
                     </div>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#D4AF37]">
+                      Energy Locked
+                    </span>
                   </div>
                   {/* Screen Glow */}
                   <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover/usage:opacity-100 transition-opacity duration-700 pointer-events-none z-20" />
@@ -544,10 +563,13 @@ const MockupOverlay = ({
                    </div>
                  )}
                  {/* Unified Lock Overlay */}
-                 <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-700">
-                   <div className="w-12 h-12 rounded-full border border-gold/30 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(219,198,126,0.3)]">
-                     <Lock className="w-5 h-5 text-gold" />
+                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none group-hover/usage:opacity-0 transition-opacity duration-500">
+                   <div className="w-14 h-14 rounded-full bg-[#4b3366]/60 backdrop-blur-sm border border-[#D4AF37]/30 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                     <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
                    </div>
+                   <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#D4AF37]">
+                     Energy Locked
+                   </span>
                  </div>
                  {/* Gold Foil reflection */}
                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover/usage:translate-x-full duration-1000 transition-transform pointer-events-none z-30" />
@@ -570,11 +592,11 @@ const MockupOverlay = ({
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-serif font-bold text-gold">${wallpaper.price}</span>
               </div>
-              <span className="text-[9px] text-gold/60 mt-1 uppercase tracking-widest">One-time access • All formats included</span>
+              <span className="text-[11px] text-gold mt-2 font-bold uppercase tracking-widest">One-time purchase • All formats included</span>
             </div>
             
             <div className="w-full md:w-auto min-w-[240px] flex flex-col gap-2">
-              <p className="text-center md:text-right text-[9px] text-white/40 uppercase tracking-[0.2em] font-bold">If it resonates, you already know.</p>
+              <p className="text-center md:text-right text-[10px] text-white/60 uppercase tracking-[0.2em] font-bold">You already feel it. All formats are included.</p>
               {!isPurchasing ? (
                 <button
                   onClick={() => setIsPurchasing(true)}
@@ -624,16 +646,64 @@ const MockupOverlay = ({
 };
 
 const SuccessModal = ({ onClose, lang, wallpaper }: { onClose: () => void, lang: any, wallpaper: Wallpaper | null }) => {
-  const handleDownload = () => {
-    if (wallpaper?.imageUrl) {
+  const [isZipping, setIsZipping] = useState(false);
+
+  const handleDownloadSingle = (url: string, filename: string) => {
+    if (url) {
       const link = document.createElement('a');
-      link.href = wallpaper.imageUrl;
-      link.download = `${wallpaper.title_en.replace(/\s+/g, '_')}_AuraCanvas.jpg`;
+      link.href = url;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else {
-      alert("High-resolution file is being prepared. Please try again in a moment.");
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    if (!wallpaper) return;
+    setIsZipping(true);
+    try {
+      const zip = new JSZip();
+      const files = wallpaper.files || {
+        phone: wallpaper.imageUrl,
+        focus: wallpaper.imageUrl,
+        space: wallpaper.imageUrl,
+        pocket: wallpaper.imageUrl,
+      };
+
+      const fetchFile = async (url: string, name: string) => {
+        if (!url) return;
+        try {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          zip.file(name, blob);
+        } catch (e) {
+          console.warn("Could not fetch " + url + " for ZIP, falling back to direct download.");
+          handleDownloadSingle(url, name);
+        }
+      };
+
+      await Promise.all([
+        fetchFile(files.phone || wallpaper.imageUrl, `${wallpaper.slug}_Phone.jpg`),
+        fetchFile(files.focus || wallpaper.imageUrl, `${wallpaper.slug}_Focus.jpg`),
+        fetchFile(files.space || wallpaper.imageUrl, `${wallpaper.slug}_Space.jpg`),
+        fetchFile(files.pocket || wallpaper.imageUrl, `${wallpaper.slug}_Pocket.jpg`),
+      ]);
+
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `${wallpaper.slug}_Complete_Set.zip`);
+    } catch (error) {
+      console.error("ZIP Generation failed", error);
+      alert("Failed to generate ZIP. Files will be downloaded individually.");
+      const files = wallpaper.files || {
+        phone: wallpaper.imageUrl, focus: wallpaper.imageUrl, space: wallpaper.imageUrl, pocket: wallpaper.imageUrl
+      };
+      handleDownloadSingle(files.phone || wallpaper.imageUrl, `${wallpaper.slug}_Phone.jpg`);
+      handleDownloadSingle(files.focus || wallpaper.imageUrl, `${wallpaper.slug}_Focus.jpg`);
+      handleDownloadSingle(files.space || wallpaper.imageUrl, `${wallpaper.slug}_Space.jpg`);
+      handleDownloadSingle(files.pocket || wallpaper.imageUrl, `${wallpaper.slug}_Pocket.jpg`);
+    } finally {
+      setIsZipping(false);
     }
   };
 
@@ -642,51 +712,122 @@ const SuccessModal = ({ onClose, lang, wallpaper }: { onClose: () => void, lang:
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[200] bg-deep-black/80 backdrop-blur-md flex items-center justify-center p-6"
+      className="fixed inset-0 z-[200] bg-deep-black/95 backdrop-blur-2xl flex items-center justify-center p-6 overflow-y-auto"
     >
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,169,91,0.08),transparent_50%)] pointer-events-none" />
+      
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="relative bg-charcoal rounded-[3rem] p-10 max-w-sm w-full text-center shadow-[0_40px_80px_rgba(0,0,0,0.6)] border border-gold/20 overflow-hidden"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.8, ease: "easeOut" }}
+        className="relative max-w-2xl w-full py-16"
       >
-        {/* Radiating Aura */}
-        <div className="absolute -top-1/2 -left-1/2 w-[200%] aspect-square bg-gold/5 rounded-full blur-[100px] animate-pulse-gold pointer-events-none" />
-        
-        <div className="relative z-10">
-          <div className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse-gold">
-            <CheckCircle2 className="w-12 h-12 text-gold" />
+        <div className="text-center mb-12 relative z-10">
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-gold/20 shadow-[0_0_40px_rgba(219,198,126,0.15)]"
+          >
+            <ShieldCheck className="w-8 h-8 text-gold drop-shadow-[0_0_10px_rgba(219,198,126,0.5)]" />
+          </motion.div>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">Activation Complete</h2>
+          <p className="text-gold/80 uppercase tracking-[0.3em] text-[11px] font-bold">The energy is now yours.</p>
+        </div>
+
+        <div className="bg-charcoal/80 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50 pointer-events-none" />
+          
+          <div className="relative z-10 text-center mb-10">
+            <h3 className="text-xl font-serif text-white mb-2">Your full set is ready.</h3>
+            <p className="text-white/50 text-[11px] uppercase tracking-[0.2em]">All formats are included in your activation.</p>
           </div>
-          <h3 className="text-3xl font-serif font-bold mb-3 text-white">{lang.successTitle}</h3>
-          <p className="text-white/50 font-light mb-10 leading-relaxed">{lang.successSubtitle}</p>
-          <div className="grid grid-cols-1 gap-4">
+
+          <button
+            onClick={handleDownloadAll}
+            disabled={isZipping}
+            className="w-full bg-gold text-deep-black h-16 rounded-2xl font-bold uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-3 hover:bg-white transition-all shadow-[0_0_30px_rgba(219,198,126,0.3)] mb-10 relative overflow-hidden group/btn"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full -translate-x-full group-hover/btn:animate-shimmer pointer-events-none" />
+            {isZipping ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5 relative z-10" />}
+            <span className="relative z-10">{isZipping ? "Preparing Zip..." : "Download Complete Set (ZIP)"}</span>
+          </button>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
             {[
-              { label: "Phone Ritual", icon: Smartphone },
-              { label: "Focus Mode", icon: Library },
-              { label: "Space Activation", icon: Monitor }
-            ].map((btn, idx) => (
-              <button 
-                key={idx}
-                className="w-full bg-white/5 hover:bg-gold/20 text-white h-16 rounded-2xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 transition-all border border-white/10"
-                onClick={handleDownload}
-              >
-                <btn.icon className="w-4 h-4 text-gold" />
-                {btn.label}
-              </button>
+              { label: "Phone Ritual", desc: "Set as your daily background.", icon: Smartphone, key: "phone" },
+              { label: "Focus Mode", desc: "Keep the frequency in your workspace.", icon: Monitor, key: "focus" },
+              { label: "Space Activation", desc: "Print and place in your environment.", icon: Library, key: "space" },
+              { label: "Pocket Ritual", desc: "Carry it with you.", icon: ShieldCheck, key: "pocket" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between bg-white/5 border border-white/5 p-4 rounded-2xl hover:bg-white/10 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center text-gold/80 border border-gold/10">
+                    <item.icon className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-white mb-1">{item.label}</h4>
+                    <p className="text-[9px] text-white/40 tracking-wider">{item.desc}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => handleDownloadSingle(wallpaper?.files?.[item.key as keyof typeof wallpaper.files] || wallpaper?.imageUrl || '', `${wallpaper?.slug}_${item.label.replace(/\s+/g, '_')}.jpg`)}
+                  className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-gold hover:bg-gold/10 transition-colors"
+                >
+                  <Download className="w-3 h-3" />
+                </button>
+              </div>
             ))}
-            <button 
-              className="mt-4 text-white/40 uppercase tracking-widest text-[9px] hover:text-gold transition-colors"
-              onClick={onClose}
-            >
-              Return to Gallery
-            </button>
           </div>
+
+          <div className="border-t border-white/10 pt-8 mt-4 text-center">
+            <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold/80 mb-6">How to use this activation</h4>
+            <ul className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
+              {[
+                { step: "1", text: "Choose where you want to place it." },
+                { step: "2", text: "Take a brief moment to pause." },
+                { step: "3", text: "Let the energy settle." }
+              ].map((item, idx) => (
+                <li key={idx} className="flex flex-col items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-gold/10 text-gold font-serif italic flex items-center justify-center text-xs">{item.step}</span>
+                  <span className="text-[10px] text-white/50 tracking-wide font-light max-w-[120px]">{item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-12 text-center">
+          <button 
+            onClick={onClose}
+            className="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 hover:text-gold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Continue your journey
+          </button>
         </div>
       </motion.div>
     </motion.div>
   );
 };
 
-const Footer = ({ lang, currentLang, setLang }: { lang: any, currentLang: string, setLang: (l: string) => void }) => {
+const Footer = ({ lang, currentLang, setLang, setActiveTab }: { lang: any, currentLang: string, setLang: (l: string) => void, setActiveTab: (tab: string) => void }) => {
+  const footerTabMap: Record<string, string> = {
+    About: 'About',
+    FAQ: 'FAQ',
+    Privacy: 'Privacy',
+    Terms: 'Terms',
+    Contact: 'Contact',
+  };
+
+  const handleFooterNavigate = (item: string) => {
+    const targetTab = footerTabMap[item];
+    if (!targetTab) return;
+
+    setActiveTab(targetTab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <footer className="bg-charcoal border-t border-gold/10 pt-24 pb-32 px-6 lg:px-16">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
@@ -720,7 +861,19 @@ const Footer = ({ lang, currentLang, setLang }: { lang: any, currentLang: string
           <h5 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gold mb-8">The Gallery</h5>
           <ul className="flex flex-col gap-4 text-xs font-light text-white/60">
             {['About', 'FAQ', 'Privacy', 'Terms', 'Contact'].map(item => (
-              <li key={item}><a href="#" className="hover:text-gold transition-colors">{item}</a></li>
+              <li key={item}>
+                {item === 'About' || item === 'FAQ' || item === 'Privacy' || item === 'Terms' || item === 'Contact' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleFooterNavigate(item)}
+                    className="hover:text-gold transition-colors"
+                  >
+                    {item}
+                  </button>
+                ) : (
+                  <a href="#" className="hover:text-gold transition-colors">{item}</a>
+                )}
+              </li>
             ))}
           </ul>
         </div>
@@ -757,6 +910,459 @@ const Footer = ({ lang, currentLang, setLang }: { lang: any, currentLang: string
         </div>
       </div>
     </footer>
+  );
+};
+
+const ContactSection = () => {
+  return (
+    <section className="px-6 pt-28 pb-24 lg:px-16 lg:pt-36 lg:pb-32">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="mx-auto max-w-4xl text-center"
+      >
+        <div className="mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-full border border-gold/25 bg-gold/8 shadow-[0_0_40px_rgba(201,169,91,0.08)]">
+          <ShieldCheck className="h-6 w-6 text-gold" />
+        </div>
+
+        <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em] text-gold/70">
+          AuraCanvas Support
+        </p>
+        <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
+          Contact
+        </h1>
+        <p className="mx-auto mb-12 max-w-2xl text-lg font-light leading-relaxed text-white/62 md:text-xl">
+          We are here to support your journey.
+        </p>
+
+        <div className="relative overflow-hidden rounded-[2rem] border border-gold/14 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-8 py-12 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent" />
+          <div className="pointer-events-none absolute left-1/2 top-0 h-28 w-28 -translate-x-1/2 rounded-full bg-gold/10 blur-3xl" />
+
+          <p className="mx-auto max-w-xl text-base font-light leading-8 text-white/72 md:text-lg">
+            For all inquiries, please contact us via email.
+            <br />
+            We typically respond within 24–48 hours.
+          </p>
+
+          <a
+            href="mailto:buzasun@gmail.com"
+            className="mx-auto mt-10 inline-flex items-center justify-center rounded-full border border-gold/30 bg-gold/12 px-8 py-4 font-medium text-gold transition-all duration-300 hover:border-gold/50 hover:bg-gold/18 hover:text-[#f7e6b7] hover:shadow-[0_0_30px_rgba(201,169,91,0.14)]"
+          >
+            buzasun@gmail.com
+          </a>
+
+          <p className="mx-auto mt-8 max-w-xl text-sm font-light leading-7 text-white/52">
+            Please include your order details if your inquiry is related to a purchase.
+          </p>
+        </div>
+
+        <div className="mx-auto mt-14 max-w-md border-t border-white/8 pt-10">
+          <p className="font-serif text-2xl text-white">AuraCanvas</p>
+          <p className="mt-2 text-[11px] uppercase tracking-[0.34em] text-gold/68">
+            The digital sanctuary of intent.
+          </p>
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+const FAQ_ITEMS = [
+  {
+    question: "What do I receive after purchase?",
+    answer: "You will receive a full digital set including:",
+    list: [
+      "Phone wallpaper (mobile)",
+      "Desktop version (focus mode)",
+      "Printable artwork (space activation)",
+      "Pocket talisman card"
+    ]
+  },
+  {
+    question: "Is this a physical product?",
+    answer: "No. All products are digital downloads.",
+    extra: "Nothing will be shipped."
+  },
+  {
+    question: "Can I use this on multiple devices?",
+    answer: "Yes. You can use the files across your personal devices."
+  },
+  {
+    question: "Can I print the artwork?",
+    answer: 'Yes. The "Space Activation" version is designed for printing.'
+  },
+  {
+    question: "Will I receive all formats with one purchase?",
+    answer: "Yes.",
+    extra: "One-time purchase includes all formats."
+  },
+  {
+    question: "Can I share the files?",
+    answer: "No.",
+    extra: "All files are for personal use only and may not be shared or resold."
+  },
+  {
+    question: "Do you offer refunds?",
+    answer: "Due to the nature of digital products, all sales are final."
+  },
+  {
+    question: "How do I download my files?",
+    answer: "After purchase, you will be redirected to a download page.",
+    extra: "You may also receive access via email."
+  },
+  {
+    question: "I lost my files. Can I download again?",
+    answer: "Yes. You can access your files again through your activation page or contact support."
+  }
+];
+
+const FAQSection = () => {
+  return (
+    <section className="px-6 pt-28 pb-24 lg:px-16 lg:pt-36 lg:pb-32">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="mx-auto max-w-5xl"
+      >
+        <div className="mb-14 text-center">
+          <div className="mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-full border border-gold/25 bg-gold/8 shadow-[0_0_40px_rgba(201,169,91,0.08)]">
+            <ShieldCheck className="h-6 w-6 text-gold" />
+          </div>
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em] text-gold/70">
+            AuraCanvas Guide
+          </p>
+          <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
+            FAQ
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg font-light leading-relaxed text-white/62 md:text-xl">
+            Clear answers for a calm and confident purchase experience.
+          </p>
+        </div>
+
+        <div className="space-y-5">
+          {FAQ_ITEMS.map((item, index) => (
+            <motion.article
+              key={item.question}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: index * 0.04 }}
+              className="relative overflow-hidden rounded-[1.75rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-7 py-7 shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
+            >
+              <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
+              <h2 className="mb-4 font-serif text-2xl text-white md:text-[1.85rem]">
+                {item.question}
+              </h2>
+              <p className="text-base font-light leading-8 text-white/72">
+                {item.answer}
+              </p>
+              {item.list && (
+                <ul className="mt-5 space-y-3 text-white/64">
+                  {item.list.map((listItem) => (
+                    <li key={listItem} className="flex items-start gap-3 text-sm leading-7 md:text-[15px]">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gold/80" />
+                      <span>{listItem}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {item.extra && (
+                <p className="mt-4 text-sm font-light leading-7 text-gold/72 md:text-[15px]">
+                  {item.extra}
+                </p>
+              )}
+            </motion.article>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="relative mt-8 overflow-hidden rounded-[1.9rem] border border-gold/14 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-8 py-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        >
+          <div className="pointer-events-none absolute left-1/2 top-0 h-24 w-24 -translate-x-1/2 rounded-full bg-gold/10 blur-3xl" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-gold/70">
+            Contact
+          </p>
+          <p className="mx-auto mt-4 max-w-xl text-base font-light leading-8 text-white/68">
+            For any questions, please contact:
+          </p>
+          <a
+            href="mailto:buzasun@gmail.com"
+            className="mx-auto mt-6 inline-flex items-center justify-center rounded-full border border-gold/30 bg-gold/12 px-8 py-4 font-medium text-gold transition-all duration-300 hover:border-gold/50 hover:bg-gold/18 hover:text-[#f7e6b7] hover:shadow-[0_0_30px_rgba(201,169,91,0.14)]"
+          >
+            buzasun@gmail.com
+          </a>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+};
+
+const PRIVACY_SECTIONS = [
+  {
+    title: "1. Information We Collect",
+    body: "We may collect:",
+    list: [
+      "Email address",
+      "Payment-related information (processed via PayPal or third-party services)"
+    ],
+    extra: "We do not store full payment details."
+  },
+  {
+    title: "2. How We Use Your Information",
+    body: "We use your information to:",
+    list: [
+      "Deliver purchased digital products",
+      "Provide customer support",
+      "Improve our services"
+    ]
+  },
+  {
+    title: "3. Third-Party Services",
+    body: "Payments are processed securely through third-party providers (e.g., PayPal).",
+    extra: "We do not control how these services handle your data."
+  },
+  {
+    title: "4. Data Protection",
+    body: "We take reasonable measures to protect your information.",
+    extra: "However, no method of transmission over the internet is 100% secure."
+  },
+  {
+    title: "5. Cookies",
+    body: "We may use cookies to improve your browsing experience."
+  }
+];
+
+const PrivacySection = () => {
+  return (
+    <section className="px-6 pt-28 pb-24 lg:px-16 lg:pt-36 lg:pb-32">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="mx-auto max-w-5xl"
+      >
+        <div className="mb-14 text-center">
+          <div className="mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-full border border-gold/25 bg-gold/8 shadow-[0_0_40px_rgba(201,169,91,0.08)]">
+            <ShieldCheck className="h-6 w-6 text-gold" />
+          </div>
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em] text-gold/70">
+            AuraCanvas Policy
+          </p>
+          <h1 className="mb-5 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
+            Privacy Policy
+          </h1>
+          <p className="text-[11px] uppercase tracking-[0.32em] text-white/38">
+            Last updated: April 23, 2026
+          </p>
+          <p className="mx-auto mt-8 max-w-2xl text-lg font-light leading-relaxed text-white/62 md:text-xl">
+            At AuraCanvas, your privacy is important to us.
+          </p>
+        </div>
+
+        <div className="space-y-5">
+          {PRIVACY_SECTIONS.map((section, index) => (
+            <motion.article
+              key={section.title}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: index * 0.04 }}
+              className="relative overflow-hidden rounded-[1.75rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-7 py-7 shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
+            >
+              <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
+              <h2 className="mb-4 font-serif text-2xl text-white md:text-[1.85rem]">
+                {section.title}
+              </h2>
+              <p className="text-base font-light leading-8 text-white/72">
+                {section.body}
+              </p>
+              {section.list && (
+                <ul className="mt-5 space-y-3 text-white/64">
+                  {section.list.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm leading-7 md:text-[15px]">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gold/80" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {section.extra && (
+                <p className="mt-4 text-sm font-light leading-7 text-gold/72 md:text-[15px]">
+                  {section.extra}
+                </p>
+              )}
+            </motion.article>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="relative mt-8 overflow-hidden rounded-[1.9rem] border border-gold/14 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-8 py-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        >
+          <div className="pointer-events-none absolute left-1/2 top-0 h-24 w-24 -translate-x-1/2 rounded-full bg-gold/10 blur-3xl" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-gold/70">
+            6. Contact
+          </p>
+          <p className="mx-auto mt-4 max-w-xl text-base font-light leading-8 text-white/68">
+            If you have any questions about this policy, contact us at:
+          </p>
+          <a
+            href="mailto:buzasun@gmail.com"
+            className="mx-auto mt-6 inline-flex items-center justify-center rounded-full border border-gold/30 bg-gold/12 px-8 py-4 font-medium text-gold transition-all duration-300 hover:border-gold/50 hover:bg-gold/18 hover:text-[#f7e6b7] hover:shadow-[0_0_30px_rgba(201,169,91,0.14)]"
+          >
+            buzasun@gmail.com
+          </a>
+        </motion.div>
+
+        <div className="mx-auto mt-14 max-w-md border-t border-white/8 pt-10 text-center">
+          <p className="font-serif text-2xl text-white">AuraCanvas</p>
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+const TERMS_SECTIONS = [
+  {
+    title: "1. Digital Products",
+    body: "All products sold on this site are digital downloads. No physical items will be shipped."
+  },
+  {
+    title: "2. Personal Use Only",
+    body: "All purchases are for personal use only.",
+    list: [
+      "Resell, redistribute, or share the files",
+      "Use the products for commercial resale",
+      "Upload the files to any public platform"
+    ],
+    listIntro: "You may not:"
+  },
+  {
+    title: "3. No Refund Policy",
+    body: "Due to the nature of digital products, all sales are final.",
+    extra: "Once a product has been accessed or downloaded, we do not offer refunds or exchanges."
+  },
+  {
+    title: "4. No Guarantees",
+    body: "Our products are designed as creative and inspirational tools.",
+    extra: "We do not guarantee specific outcomes, results, or changes."
+  },
+  {
+    title: "5. Intellectual Property",
+    body: "All content, designs, and images are owned by AuraCanvas.",
+    extra: "Unauthorized use, duplication, or distribution is strictly prohibited."
+  },
+  {
+    title: "6. Limitation of Liability",
+    body: "AuraCanvas is not responsible for any direct or indirect damages resulting from the use of our products."
+  }
+];
+
+const TermsSection = () => {
+  return (
+    <section className="px-6 pt-28 pb-24 lg:px-16 lg:pt-36 lg:pb-32">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="mx-auto max-w-5xl"
+      >
+        <div className="mb-14 text-center">
+          <div className="mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-full border border-gold/25 bg-gold/8 shadow-[0_0_40px_rgba(201,169,91,0.08)]">
+            <ShieldCheck className="h-6 w-6 text-gold" />
+          </div>
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.45em] text-gold/70">
+            AuraCanvas Terms
+          </p>
+          <h1 className="mb-5 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
+            Terms
+          </h1>
+          <p className="text-[11px] uppercase tracking-[0.32em] text-white/38">
+            Last updated: April 23, 2026
+          </p>
+          <p className="mx-auto mt-8 max-w-2xl text-lg font-light leading-relaxed text-white/62 md:text-xl">
+            Welcome to AuraCanvas.
+          </p>
+          <p className="mx-auto mt-4 max-w-3xl text-base font-light leading-8 text-white/56 md:text-lg">
+            By purchasing or accessing our products, you agree to the following terms.
+          </p>
+        </div>
+
+        <div className="space-y-5">
+          {TERMS_SECTIONS.map((section, index) => (
+            <motion.article
+              key={section.title}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: index * 0.04 }}
+              className="relative overflow-hidden rounded-[1.75rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-7 py-7 shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
+            >
+              <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
+              <h2 className="mb-4 font-serif text-2xl text-white md:text-[1.85rem]">
+                {section.title}
+              </h2>
+              <p className="text-base font-light leading-8 text-white/72">
+                {section.body}
+              </p>
+              {section.listIntro && (
+                <p className="mt-4 text-sm font-light leading-7 text-white/62 md:text-[15px]">
+                  {section.listIntro}
+                </p>
+              )}
+              {section.list && (
+                <ul className="mt-4 space-y-3 text-white/64">
+                  {section.list.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm leading-7 md:text-[15px]">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gold/80" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {section.extra && (
+                <p className="mt-4 text-sm font-light leading-7 text-gold/72 md:text-[15px]">
+                  {section.extra}
+                </p>
+              )}
+            </motion.article>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="relative mt-8 overflow-hidden rounded-[1.9rem] border border-gold/14 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-8 py-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        >
+          <div className="pointer-events-none absolute left-1/2 top-0 h-24 w-24 -translate-x-1/2 rounded-full bg-gold/10 blur-3xl" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-gold/70">
+            7. Contact
+          </p>
+          <p className="mx-auto mt-4 max-w-xl text-base font-light leading-8 text-white/68">
+            If you have any questions, please contact us at:
+          </p>
+          <a
+            href="mailto:buzasun@gmail.com"
+            className="mx-auto mt-6 inline-flex items-center justify-center rounded-full border border-gold/30 bg-gold/12 px-8 py-4 font-medium text-gold transition-all duration-300 hover:border-gold/50 hover:bg-gold/18 hover:text-[#f7e6b7] hover:shadow-[0_0_30px_rgba(201,169,91,0.14)]"
+          >
+            buzasun@gmail.com
+          </a>
+        </motion.div>
+
+        <div className="mx-auto mt-14 max-w-md border-t border-white/8 pt-10 text-center">
+          <p className="font-serif text-2xl text-white">AuraCanvas</p>
+          <p className="mt-2 text-[11px] uppercase tracking-[0.34em] text-gold/68">
+            "The digital sanctuary of intent."
+          </p>
+        </div>
+      </motion.div>
+    </section>
   );
 };
 
@@ -987,24 +1593,14 @@ function MainContent() {
                 <div className="aura-hero-ripple" />
                 <div className="aura-hero-gold-trace" />
                 <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 lg:pt-32 text-center lg:px-16">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-10"
-                  >
-                    <span className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-6 py-2 text-[10px] font-bold uppercase tracking-[0.6em] text-gold shadow-[0_0_20px_rgba(219,198,126,0.08)] backdrop-blur-xl">
-                      <span className="h-2 w-2 rounded-full bg-gold/80" />
-                      {lang.tagline}
-                    </span>
-                  </motion.div>
-
                   <motion.h1
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                     className="mx-auto mb-10 max-w-5xl text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-[1.06] tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)] break-keep"
-                    dangerouslySetInnerHTML={{ __html: lang.heroTitle }}
-                  />
+                  >
+                    We visualize what you feel.
+                  </motion.h1>
 
                   <motion.p
                     initial={{ opacity: 0, y: 30 }}
@@ -1012,27 +1608,28 @@ function MainContent() {
                     transition={{ delay: 0.4 }}
                     className="mx-auto mb-14 max-w-3xl text-lg font-light leading-relaxed text-white/62 lg:text-2xl"
                   >
-                    {lang.heroSubtitle}
+                    Energy, consciousness, and the subtle flow of the universe.<br className="hidden md:block"/> Let your inner state manifest into reality.
                   </motion.p>
 
                   <motion.button
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 }}
-                    onClick={() => {
-                      const gallery = document.getElementById('gallery-start');
-                      gallery?.scrollIntoView({ behavior: 'smooth' });
-                    }}
+                    onClick={() => setActiveTab('Gallery')}
                     className="aura-gold-btn group mx-auto"
                   >
                     <span className="relative z-10 flex items-center gap-4">
-                      {lang.enterGallery}
+                      Explore Gallery
                       <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" />
                     </span>
                   </motion.button>
                 </div>
               </section>
+            </div>
+          )}
 
+          {activeTab === 'Gallery' && (
+            <div className="relative">
               <section id="gallery-start" className="aura-gallery-section">
                 <div className="mx-auto max-w-[2000px] px-6 lg:px-16">
                 {/* Pull to refresh indicator */}
@@ -1181,14 +1778,14 @@ function MainContent() {
             </div>
           )}
 
-          {activeTab === 'Categories' && (
+          {activeTab === 'Frequencies' && (
             <div className="px-6 lg:px-16 max-w-7xl mx-auto pt-20">
-              <h2 className="text-4xl font-serif font-bold mb-12 text-gold">Explore Energies</h2>
+              <h2 className="text-4xl font-serif font-bold mb-12 text-gold">Explore Frequencies</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {categories.map(cat => (
                   <button 
                     key={cat.id}
-                    onClick={() => { setSelectedCategory(cat.name); setActiveTab('Home'); }}
+                    onClick={() => { setSelectedCategory(cat.name); setActiveTab('Gallery'); }}
                     className="group relative h-64 rounded-[3rem] overflow-hidden border border-white/10 hover:border-gold/40 transition-all"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-gold/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -1201,6 +1798,119 @@ function MainContent() {
               </div>
             </div>
           )}
+
+          {activeTab === 'About' && (
+            <div className="px-6 lg:px-16 max-w-4xl mx-auto pt-32 pb-24 text-center">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
+                <ShieldCheck className="w-8 h-8 text-gold mx-auto mb-6 opacity-80" />
+                <h2 className="text-xl md:text-2xl font-serif font-bold text-white mb-2 leading-relaxed">We believe reality begins within.</h2>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="space-y-12 text-white/60 font-light leading-relaxed text-sm md:text-base">
+                <p>
+                  There are moments in life when everything feels uncertain—<br/>
+                  love, money, direction, timing.
+                </p>
+                <p>
+                  But beneath all of it, there is something deeper.<br/>
+                  A quiet force that shapes everything you experience.
+                </p>
+                <p className="font-serif text-white/80 text-lg">
+                  Your awareness.<br/>
+                  Your energy.<br/>
+                  Your inner state.
+                </p>
+                <p>
+                  Raising your awareness changes your reality.
+                </p>
+                <p>
+                  When your level of consciousness shifts,<br/>
+                  your decisions change.<br/>
+                  Your perception changes.<br/>
+                  And eventually—your life follows.
+                </p>
+                <p>
+                  Not because something outside has changed,<br/>
+                  but because you have.
+                </p>
+                <div className="w-12 h-[1px] bg-gold/20 mx-auto my-16" />
+                <p>
+                  AURACANVAS was created to make the invisible… visible.
+                </p>
+                <p>
+                  We transform abstract inner states—<br/>
+                  energy, intention, emotional frequency—<br/>
+                  into visual forms you can see, feel, and connect with.
+                </p>
+                <p>
+                  Each image is more than just art.<br/>
+                  It is a symbol.<br/>
+                  A focus point.<br/>
+                  A tool for alignment.
+                </p>
+                <p>
+                  A tool for your mind, your focus, your intention.
+                </p>
+                <p>
+                  Some call it a placebo.<br/>
+                  We call it a conscious trigger.
+                </p>
+                <p>
+                  Because when you choose to focus your mind,<br/>
+                  to hold an intention,<br/>
+                  to believe in a possibility—<br/>
+                  your subconscious begins to move.
+                </p>
+                <p>
+                  And when your inner world shifts,<br/>
+                  your outer world has no choice but to follow.
+                </p>
+                <p className="font-serif text-white/90 text-lg my-12">
+                  <strong>This is not about magic.<br/>It is about direction.</strong>
+                </p>
+                <p>
+                  AURACANVAS is designed for those who are ready to:<br/><br/>
+                  shift their inner state<br/>
+                  release limiting patterns<br/>
+                  reconnect with their desired reality
+                </p>
+                <p>
+                  Not by force,<br/>
+                  but by alignment.
+                </p>
+                <p className="font-serif text-gold text-lg my-12">
+                  <strong>If you found this,<br/>you’re already in the flow.</strong>
+                </p>
+                <p>
+                  Not everyone will understand this space.<br/>
+                  And that’s okay.<br/><br/>
+                  It is meant for those<br/>
+                  who feel it.
+                </p>
+              </motion.div>
+
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+                onClick={() => setActiveTab('Gallery')}
+                className="mt-20 aura-gold-btn group mx-auto"
+              >
+                <span className="relative z-10 flex items-center gap-4">
+                  Explore your energy
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" />
+                </span>
+              </motion.button>
+            </div>
+          )}
+
+          {activeTab === 'FAQ' && <FAQSection />}
+
+          {activeTab === 'Privacy' && <PrivacySection />}
+
+          {activeTab === 'Terms' && <TermsSection />}
+
+          {activeTab === 'Contact' && <ContactSection />}
 
           {activeTab === 'My Library' && (
             <div className="px-6 lg:px-16 max-w-7xl mx-auto pt-20">
@@ -1242,7 +1952,7 @@ function MainContent() {
           )}
         </main>
 
-        <Footer lang={lang} currentLang={currentLang} setLang={setCurrentLang} />
+        <Footer lang={lang} currentLang={currentLang} setLang={setCurrentLang} setActiveTab={setActiveTab} />
 
         {/* Overlays */}
         <AnimatePresence>

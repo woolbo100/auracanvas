@@ -14,6 +14,17 @@ export interface Wallpaper {
   meaning?: string;
   description?: string;
   ritual_steps?: string[];
+  mockups?: {
+    space?: { imageUrl: string };
+    focus?: { imageUrl: string };
+    pocket?: { imageUrl: string };
+  };
+  files?: {
+    phone?: string;
+    focus?: string;
+    space?: string;
+    pocket?: string;
+  };
 }
 
 export const CATEGORIES = ["Abundance", "Love", "Energy", "Healing"];
