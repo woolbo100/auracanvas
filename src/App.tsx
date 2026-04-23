@@ -580,7 +580,6 @@ const MockupOverlay = ({
                 <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-4 h-5 bg-[#2A2A2A]" />
                 <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-20 h-1.5 bg-[#3A3A3A] rounded-t-sm" />
               </div>
-            </div>
             <div className="aura-usage-content text-center mt-auto">
               <h3>Focus Alignment</h3>
               <p>Stay connected to the frequency, even in your daily flow.</p>
