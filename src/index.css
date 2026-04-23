@@ -294,7 +294,8 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.42;
+    z-index: 6;
+    opacity: 0.45;
     mix-blend-mode: soft-light;
   }
 
@@ -332,6 +333,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
+    z-index: 7;
     mix-blend-mode: screen;
   }
 
