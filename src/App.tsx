@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, 
@@ -51,6 +51,37 @@ import { AdminDashboard } from './components/AdminDashboard';
 // --- Types & Constants ---
 
 const ADMIN_EMAIL = "buzasun@gmail.com";
+const TAB_PATHS: Record<string, string> = {
+  Home: '/',
+  Frequencies: '/frequencies',
+  About: '/about',
+  FAQ: '/faq',
+  Privacy: '/privacy',
+  Terms: '/terms',
+  Contact: '/contact',
+  'My Library': '/library',
+};
+
+const getTabFromPath = (pathname: string) => {
+  switch (pathname) {
+    case '/frequencies':
+      return 'Frequencies';
+    case '/about':
+      return 'About';
+    case '/faq':
+      return 'FAQ';
+    case '/privacy':
+      return 'Privacy';
+    case '/terms':
+      return 'Terms';
+    case '/contact':
+      return 'Contact';
+    case '/library':
+      return 'My Library';
+    default:
+      return 'Home';
+  }
+};
 
 const LANGUAGES = {
   EN: {
@@ -1367,10 +1398,12 @@ const TermsSection = () => {
 // --- Main App ---
 
 function MainContent() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { slug } = useParams();
   const [currentLang, setCurrentLang] = useState('EN');
   const lang = LANGUAGES[currentLang as keyof typeof LANGUAGES];
   
-  const [activeTab, setActiveTab] = useState('Home');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedWallpaper, setSelectedWallpaper] = useState<Wallpaper | null>(null);
   const [showMockup, setShowMockup] = useState(false);
@@ -1384,11 +1417,18 @@ function MainContent() {
   const [categories, setCategories] = useState<{id: string, name: string}[]>(
     CATEGORIES.map((name, i) => ({ id: `cat-${i}`, name }))
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [myLibrary, setMyLibrary] = useState<Wallpaper[]>([]);
   const [recentlyUnlockedIds, setRecentlyUnlockedIds] = useState<string[]>([]);
   const frequenciesSectionRef = useRef<HTMLElement | null>(null);
   const gallerySectionRef = useRef<HTMLElement | null>(null);
+  const currentPath = location.pathname.startsWith('/art/')
+    ? (((location.state as { backgroundPath?: string } | null)?.backgroundPath) || '/')
+    : location.pathname;
+  const activeTab = getTabFromPath(currentPath);
+  const setActiveTab = useCallback((tab: string) => {
+    navigate(TAB_PATHS[tab] || '/', { state: null });
+  }, [navigate]);
 
   const isWallpaperUnlocked = useCallback((wp: Wallpaper) => {
     if (!wp.locked) return true;
@@ -1520,23 +1560,11 @@ function MainContent() {
     setShowMockup(false);
     setIsPurchasing(false);
     setSelectedWallpaper(null);
-  }, []);
-
-  useEffect(() => {
-    if (!showMockup || !selectedWallpaper) return;
-
-    const state = { auraMockupOpen: true };
-    window.history.pushState(state, '', window.location.href);
-
-    const handlePopState = () => {
-      closeMockupOverlay();
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [showMockup, selectedWallpaper, closeMockupOverlay]);
+    if (slug) {
+      const backgroundPath = (location.state as { backgroundPath?: string } | null)?.backgroundPath || '/';
+      navigate(backgroundPath, { replace: true, state: null });
+    }
+  }, [slug, location.state, navigate]);
 
   useEffect(() => {
     let startY = 0;
@@ -1567,6 +1595,43 @@ function MainContent() {
     e.currentTarget.style.setProperty("--mx", `50%`);
     e.currentTarget.style.setProperty("--my", `50%`);
   };
+
+  const openWallpaperDetail = useCallback((wp: Wallpaper) => {
+    navigate(`/art/${wp.slug}`, {
+      state: {
+        backgroundPath: location.pathname,
+      }
+    });
+  }, [navigate, location.pathname]);
+
+  useEffect(() => {
+    if (location.pathname === '/' && (location.state as { scrollToGallery?: boolean } | null)?.scrollToGallery) {
+      requestAnimationFrame(() => {
+        gallerySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      navigate('/', { replace: true, state: null });
+    }
+  }, [location.pathname, location.state, navigate]);
+
+  useEffect(() => {
+    if (!slug) {
+      setShowMockup(false);
+      setSelectedWallpaper(null);
+      setIsPurchasing(false);
+      return;
+    }
+
+    const wallpaper = wallpapers.find((wp) => wp.slug === slug);
+    if (wallpaper) {
+      setSelectedWallpaper(wallpaper);
+      setShowMockup(true);
+      return;
+    }
+
+    if (!loading) {
+      navigate('/', { replace: true });
+    }
+  }, [slug, wallpapers, loading, navigate]);
 
   return (
     <PayPalScriptProvider options={{ 
@@ -1626,7 +1691,6 @@ function MainContent() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 }}
                     onClick={() => {
-                      setActiveTab('Home');
                       requestAnimationFrame(() => {
                         gallerySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       });
@@ -1723,8 +1787,7 @@ function MainContent() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         onClick={() => {
-                          setSelectedWallpaper(wp);
-                          setShowMockup(true);
+                          openWallpaperDetail(wp);
                         }}
                         className="group relative flex flex-col gap-4 cursor-pointer mb-10"
                       >
@@ -1810,10 +1873,7 @@ function MainContent() {
                     key={cat.id}
                     onClick={() => {
                       setSelectedCategory(cat.name);
-                      setActiveTab('Home');
-                      requestAnimationFrame(() => {
-                        gallerySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      });
+                      navigate('/', { state: { scrollToGallery: true } });
                     }}
                     className="group relative h-64 rounded-[3rem] overflow-hidden border border-white/10 hover:border-gold/40 transition-all"
                   >
@@ -1829,12 +1889,9 @@ function MainContent() {
           )}
 
           {activeTab === 'About' && (
-            <div className="px-6 lg:px-16 max-w-4xl mx-auto pt-32 pb-24 text-center">
+            <div className="px-6 lg:px-16 max-w-4xl mx-auto pt-40 pb-24 text-center">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
-                <p className="mb-5 text-[12px] font-bold uppercase tracking-[0.45em] text-gold/72">
-                  ABOUT AURA
-                </p>
-                <h1 className="mb-8 font-serif text-5xl font-bold tracking-tight text-white md:text-6xl">
+                <h1 className="mb-10 font-serif text-5xl font-bold tracking-tight text-gold md:text-6xl">
                   ABOUT AURA
                 </h1>
                 <ShieldCheck className="w-8 h-8 text-gold mx-auto mb-6 opacity-80" />
@@ -1929,10 +1986,7 @@ function MainContent() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
                 onClick={() => {
-                  setActiveTab('Home');
-                  requestAnimationFrame(() => {
-                    gallerySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  });
+                  navigate('/', { state: { scrollToGallery: true } });
                 }}
                 className="mt-20 aura-gold-btn group mx-auto"
               >
@@ -1962,7 +2016,7 @@ function MainContent() {
                       <div className="relative aspect-[9/19] bg-charcoal rounded-[2.5rem] overflow-hidden border border-white/10">
                         <img src={wp.thumbnailUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         <div className="absolute inset-0 bg-deep-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                          <button 
+                            <button 
                             onClick={() => { setSelectedWallpaper(wp); setIsSuccess(true); }}
                             className="bg-gold text-deep-black px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest"
                           >
@@ -2089,6 +2143,14 @@ export default function App() {
       <Routes>
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/" element={<MainContent />} />
+        <Route path="/frequencies" element={<MainContent />} />
+        <Route path="/about" element={<MainContent />} />
+        <Route path="/faq" element={<MainContent />} />
+        <Route path="/privacy" element={<MainContent />} />
+        <Route path="/terms" element={<MainContent />} />
+        <Route path="/contact" element={<MainContent />} />
+        <Route path="/library" element={<MainContent />} />
+        <Route path="/art/:slug" element={<MainContent />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
