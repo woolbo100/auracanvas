@@ -137,15 +137,16 @@
   }
 
   @keyframes auraDrift {
-    0% { transform: translate3d(-5%, -5%, 0) rotate(0deg) scale(1); filter: hue-rotate(0deg); }
-    50% { transform: translate3d(5%, 8%, 0) rotate(3deg) scale(1.1); filter: hue-rotate(5deg); }
-    100% { transform: translate3d(-5%, -5%, 0) rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+    0% { transform: translate3d(-10%, -10%, 0) scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+    50% { transform: translate3d(10%, 15%, 0) scale(1.2) rotate(5deg); filter: hue-rotate(15deg); }
+    100% { transform: translate3d(-5%, -15%, 0) scale(1.3) rotate(-3deg); filter: hue-rotate(-10deg); }
   }
 
   @keyframes auraWave {
-    0% { transform: translate3d(2%, 2%, 0) skew(0deg) scale(1); opacity: 0.4; }
-    50% { transform: translate3d(-3%, -2%, 0) skew(2deg) scale(1.05); opacity: 0.6; }
-    100% { transform: translate3d(2%, 2%, 0) skew(0deg) scale(1); opacity: 0.4; }
+    0% { transform: translate3d(0, 0, 0) scale(1) skew(0deg); opacity: 0.6; }
+    33% { transform: translate3d(5%, -8%, 0) scale(1.15) skew(3deg); opacity: 0.9; }
+    66% { transform: translate3d(-8%, 5%, 0) scale(1.1) skew(-3deg); opacity: 0.7; }
+    100% { transform: translate3d(0, 0, 0) scale(1.2) skew(1deg); opacity: 0.8; }
   }
 
   @keyframes lockRipple {
@@ -233,20 +234,20 @@
 
   .aura-hero-aurora::before {
     background:
-      radial-gradient(circle at 15% 15%, rgba(140, 90, 255, 0.22), transparent 55%),
-      radial-gradient(circle at 85% 25%, rgba(113, 68, 190, 0.18), transparent 45%),
+      radial-gradient(circle at 20% 20%, rgba(150, 80, 255, 0.25), transparent 50%),
+      radial-gradient(circle at 80% 30%, rgba(113, 68, 190, 0.2), transparent 40%),
       radial-gradient(circle at 50% 50%, rgba(219, 185, 105, 0.15), transparent 50%),
-      radial-gradient(circle at 20% 85%, rgba(160, 100, 255, 0.15), transparent 45%);
-    animation: auraDrift 30s ease-in-out infinite;
+      radial-gradient(circle at 10% 80%, rgba(80, 180, 255, 0.12), transparent 45%);
+    animation: auraDrift 20s ease-in-out infinite alternate;
   }
 
   .aura-hero-aurora::after {
     background:
-      radial-gradient(circle at 45% 45%, rgba(88, 54, 155, 0.15), transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(140, 90, 255, 0.12), transparent 40%),
-      radial-gradient(circle at 15% 95%, rgba(219, 185, 105, 0.12), transparent 35%),
-      radial-gradient(circle at 90% 10%, rgba(113, 68, 190, 0.15), transparent 45%);
-    animation: auraWave 20s ease-in-out infinite alternate;
+      radial-gradient(circle at 40% 40%, rgba(160, 100, 255, 0.18), transparent 45%),
+      radial-gradient(circle at 70% 60%, rgba(140, 90, 255, 0.15), transparent 35%),
+      radial-gradient(circle at 20% 10%, rgba(100, 200, 255, 0.12), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(219, 185, 105, 0.12), transparent 30%);
+    animation: auraWave 15s ease-in-out infinite alternate-reverse;
     mix-blend-mode: screen;
   }
 
