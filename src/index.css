@@ -185,13 +185,13 @@
     overflow: hidden;
   }
 
-  /* Bottom Blend only (Removed Top & Side Vignette for cleaner look) */
+  /* Bottom Blend only - Made much smoother and longer to eliminate any faint lines */
   .aura-hero::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: 5;
-    background: linear-gradient(to bottom, transparent 60%, #05060a 100%);
+    background: linear-gradient(to bottom, transparent 20%, #05060a 95%, #05060a 100%);
     pointer-events: none;
   }
 
@@ -336,20 +336,21 @@
 
   .aura-gallery-section {
     position: relative;
-    padding-top: 20px;
+    padding-top: 0;
     padding-bottom: 80px;
     background: transparent;
+    margin-top: -1px; /* Subtle overlap to hide any rendering gaps */
   }
 
   .aura-gallery-section::before {
     content: "";
     position: absolute;
-    inset: -100px 0 auto 0;
+    inset: 0 0 auto 0;
     height: 300px;
-    background: radial-gradient(circle at 50% 0%, rgba(140, 90, 255, 0.08), transparent 70%);
+    background: radial-gradient(circle at 50% 0%, rgba(140, 90, 255, 0.05), transparent 70%);
     filter: blur(60px);
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 0.4;
     z-index: 0;
   }
 
