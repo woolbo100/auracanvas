@@ -25,6 +25,7 @@ export interface Wallpaper {
     space?: string;
     pocket?: string;
   };
+  downloadUrl?: string;
 }
 
 export const CATEGORIES = ["Abundance", "Love", "Energy", "Healing"];

@@ -82,6 +82,7 @@ interface Wallpaper {
   featured: boolean;
   sortOrder: number;
   artist?: string;
+  downloadUrl?: string;
 }
 
 interface Sale {
@@ -416,6 +417,7 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
   const [spacePreview, setSpacePreview] = useState<string | null>(null);
   const [focusPreview, setFocusPreview] = useState<string | null>(null);
   const [pocketPreview, setPocketPreview] = useState<string | null>(null);
+  const [downloadFile, setDownloadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [success, setSuccess] = useState(false);
@@ -490,6 +492,13 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
     }
   };
 
+  const handleDownloadFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setDownloadFile(selected);
+    }
+  };
+
   const buildSlug = () =>
     (formData.slug || formData.title_en || formData.title_ko)
       .trim()
@@ -539,6 +548,13 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
         pocketUrl = await getDownloadURL(pocketSnap.ref);
       }
 
+      let downloadUrl = '';
+      if (downloadFile) {
+        const downloadRef = ref(storage, `downloads/${timestamp}_${downloadFile.name}`);
+        const downloadSnap = await uploadBytes(downloadRef, downloadFile);
+        downloadUrl = await getDownloadURL(downloadSnap.ref);
+      }
+
       const mockups: any = {};
       if (spaceUrl) mockups.space = { imageUrl: spaceUrl };
       if (focusUrl) mockups.focus = { imageUrl: focusUrl };
@@ -555,6 +571,7 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
         description_en: formData.description_en,
         thumbnailUrl,
         imageUrl,
+        downloadUrl,
         ...(Object.keys(mockups).length > 0 ? { mockups } : {}),
         locked: formData.locked,
         featured: formData.featured,
@@ -566,11 +583,11 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
 
       setProgress(100);
       setSuccess(true);
-      setMainFile(null);
       setThumbFile(null);
       setSpaceMockupFile(null);
       setFocusMockupFile(null);
       setPocketMockupFile(null);
+      setDownloadFile(null);
       setMainPreview(null);
       setThumbPreview(null);
       setSpacePreview(null);
@@ -825,6 +842,35 @@ const UploadView = ({ categories }: { categories: Category[] }) => {
               </div>
             </div>
           </div>
+
+          <div className="rounded-[2.5rem] border border-gold/20 bg-gold/5 p-8 shadow-[0_0_30px_rgba(219,198,126,0.1)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold">Digital Asset (Download)</p>
+            <p className="mt-2 text-[11px] text-white/40">This is the actual file (ZIP, High-res) that will be provided after purchase.</p>
+            
+            <div className="mt-6 flex items-center gap-6">
+              <button 
+                type="button" 
+                onClick={() => document.getElementById('manifest-download-upload')?.click()}
+                className={cn(
+                  "flex items-center gap-3 px-8 py-4 rounded-2xl border transition-all font-bold text-[10px] uppercase tracking-widest",
+                  downloadFile ? "bg-gold text-deep-black border-gold" : "bg-white/5 border-white/10 text-white/60 hover:border-gold/30"
+                )}
+              >
+                <UploadCloud className="w-4 h-4" />
+                {downloadFile ? downloadFile.name : 'Choose Download File'}
+              </button>
+              {downloadFile && (
+                <button 
+                  type="button" 
+                  onClick={() => setDownloadFile(null)}
+                  className="p-2 text-white/40 hover:text-rose-500 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <input id="manifest-download-upload" type="file" onChange={handleDownloadFileChange} className="hidden" />
+          </div>
         </div>
 
         <div className="space-y-8 lg:col-span-5">
@@ -1037,9 +1083,11 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
     locked: wallpaper.locked,
     featured: wallpaper.featured,
     sortOrder: wallpaper.sortOrder.toString(),
-    artist: wallpaper.artist || ''
+    artist: wallpaper.artist || '',
+    downloadUrl: wallpaper.downloadUrl || ''
   });
   const [saving, setSaving] = useState(false);
+  const [downloadFile, setDownloadFile] = useState<File | null>(null);
 
   const [spaceMockupFile, setSpaceMockupFile] = useState<File | null>(null);
   const [focusMockupFile, setFocusMockupFile] = useState<File | null>(null);
@@ -1104,6 +1152,13 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
         mockups.pocket = { imageUrl: await getDownloadURL(pocketSnap.ref) };
       }
 
+      let finalDownloadUrl = formData.downloadUrl;
+      if (downloadFile) {
+        const downloadRef = ref(storage, `downloads/${timestamp}_${downloadFile.name}`);
+        const downloadSnap = await uploadBytes(downloadRef, downloadFile);
+        finalDownloadUrl = await getDownloadURL(downloadSnap.ref);
+      }
+
       // clean up empty mockups
       if (!mockups.space?.imageUrl) delete mockups.space;
       if (!mockups.focus?.imageUrl) delete mockups.focus;
@@ -1121,6 +1176,7 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
         featured: formData.featured,
         sortOrder: parseInt(formData.sortOrder),
         artist: formData.artist,
+        downloadUrl: finalDownloadUrl,
         ...(Object.keys(mockups).length > 0 ? { mockups } : {})
       });
       onClose();
@@ -1267,6 +1323,38 @@ const EditModal = ({ wallpaper, categories, onClose }: { wallpaper: Wallpaper, c
             >
               FEATURED: {formData.featured ? 'YES' : 'NO'}
             </button>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold">Digital Asset (Download)</p>
+            <div className="flex flex-col gap-4">
+              <input 
+                type="text" 
+                value={formData.downloadUrl}
+                onChange={e => setFormData({...formData, downloadUrl: e.target.value})}
+                placeholder="Direct download URL (or upload below)"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-6 text-white/60 focus:border-gold/50 outline-none transition-all text-xs"
+              />
+              <div className="flex items-center gap-4">
+                <button 
+                  type="button" 
+                  onClick={() => document.getElementById('edit-download-upload')?.click()}
+                  className={cn(
+                    "flex items-center gap-2 px-6 py-3 rounded-xl border transition-all font-bold text-[9px] uppercase tracking-widest",
+                    downloadFile ? "bg-gold text-deep-black border-gold" : "bg-white/5 border-white/10 text-white/40 hover:border-gold/30"
+                  )}
+                >
+                  <UploadCloud className="w-3 h-3" />
+                  {downloadFile ? downloadFile.name : 'Replace File'}
+                </button>
+                {downloadFile && (
+                  <button type="button" onClick={() => setDownloadFile(null)} className="text-white/20 hover:text-rose-500 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              <input id="edit-download-upload" type="file" onChange={(e) => setDownloadFile(e.target.files?.[0] || null)} className="hidden" />
+            </div>
           </div>
 
           <div className="space-y-4 pt-4 border-t border-white/10">

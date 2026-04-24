@@ -20,7 +20,8 @@ import {
   Loader2,
   Lock,
   Frame,
-  Gem
+  Gem,
+  AlertCircle
 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import Masonry from 'react-masonry-css';
@@ -1440,6 +1441,114 @@ const TermsSection = () => {
 
 // --- Main App ---
 
+const SuccessPage = () => {
+  const [searchParams] = new URLSearchParams(window.location.search);
+  const productSlug = searchParams.get('product');
+  const [product, setProduct] = useState<Wallpaper | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!productSlug) {
+      setLoading(false);
+      return;
+    }
+
+    const q = query(collection(db, 'products'), where('slug', '==', productSlug));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        setProduct({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Wallpaper);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [productSlug]);
+
+  const handleDownload = () => {
+    if (product?.downloadUrl) {
+      const link = document.createElement('a');
+      link.href = product.downloadUrl;
+      link.setAttribute('download', `${product.slug}_AuraCanvas.zip`);
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-deep-black flex flex-col items-center justify-center gap-6">
+        <div className="w-12 h-12 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+        <span className="text-[10px] uppercase tracking-[0.5em] text-gold animate-pulse">Aligning Sanctuary</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-deep-black text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="aura-page-aurora" />
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative z-10 max-w-xl w-full text-center"
+      >
+        <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-10 border border-gold/20 shadow-[0_0_40px_rgba(219,198,126,0.15)]">
+          <CheckCircle2 className="w-10 h-10 text-gold" />
+        </div>
+
+        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Activation Successful</h1>
+        <p className="text-gold/60 uppercase tracking-[0.4em] text-[10px] mb-12">The frequency is now yours to command.</p>
+
+        <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-b from-gold/5 to-transparent opacity-50 pointer-events-none" />
+          
+          {product ? (
+            <>
+              <div className="relative z-10 mb-10">
+                <span className="text-[10px] uppercase tracking-[0.3em] text-white/40 block mb-2">You have acquired</span>
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-gold">{product.title_en}</h2>
+                <p className="text-white/40 text-xs mt-2 italic font-sans">{product.title_ko}</p>
+              </div>
+
+              {product.downloadUrl ? (
+                <button 
+                  onClick={handleDownload}
+                  className="w-full bg-gold text-deep-black h-16 rounded-2xl font-bold uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-3 hover:bg-white transition-all shadow-[0_0_30px_rgba(219,198,126,0.3)] relative overflow-hidden group/btn"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full -translate-x-full group-hover/btn:animate-shimmer pointer-events-none" />
+                  <Download className="w-5 h-5 relative z-10" />
+                  <span className="relative z-10">Download Digital Asset</span>
+                </button>
+              ) : (
+                <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
+                  <AlertCircle className="w-5 h-5 mx-auto mb-3" />
+                  No download link found for this product. Please contact support.
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="py-10">
+              <p className="text-white/40 uppercase tracking-[0.2em] text-xs">Product alignment not found.</p>
+              <p className="text-white/20 text-[10px] mt-4">Please verify your activation or contact the Guardian.</p>
+            </div>
+          )}
+        </div>
+
+        <button 
+          onClick={() => navigate('/')}
+          className="mt-12 inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 hover:text-gold transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Return to Sanctuary
+        </button>
+      </motion.div>
+    </div>
+  );
+};
+
 function MainContent() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -1502,26 +1611,10 @@ function MainContent() {
         buyer_email: user?.email || 'anonymous'
       });
 
-      // Automatically trigger download
-      if (wp.imageUrl) {
-        const link = document.createElement('a');
-        link.href = wp.imageUrl;
-        link.download = `${wp.title_en.replace(/\s+/g, '_')}_AuraCanvas.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
       setIsPurchasing(false);
-      setRecentlyUnlockedIds((prev) => prev.includes(wp.id) ? prev : [...prev, wp.id]);
-
-      setTimeout(() => {
-        setIsSuccess(true);
-      }, 950);
-
-      setTimeout(() => {
-        setRecentlyUnlockedIds((prev) => prev.filter((id) => id !== wp.id));
-      }, 2600);
+      
+      // Redirect to success page with product slug
+      navigate(`/success?product=${wp.slug}`);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'orders');
     }
@@ -2190,6 +2283,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/success" element={<SuccessPage />} />
         <Route path="/" element={<MainContent />} />
         <Route path="/frequencies" element={<MainContent />} />
         <Route path="/about" element={<MainContent />} />
